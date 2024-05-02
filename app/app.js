@@ -6,7 +6,15 @@ const cors = require('cors')
 
 const biciPropria = require('./biciPropria.js');
 const position = require('./position.js');
+const prova = require('./prova.js');
 
+
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*'); // Consentire l'accesso da qualsiasi origine
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE'); // Metodi consentiti
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Intestazioni consentite
+    next();
+  });
 
 /**
  * Configure Express.js parsing middleware
@@ -66,6 +74,7 @@ app.use((req,res,next) => {
  */
 app.use('/api/v1/biciPropria', biciPropria);
 app.use('/api/v1/position', position);
+app.use('/api/v1/prova', prova);
 
 // Protect booklendings endpoint
 // access is restricted only to authenticated users

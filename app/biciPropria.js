@@ -54,3 +54,6 @@ router.post('/dest', async (req, res) => {
      */
     res.location("/api/v1/books/" + bookId).status(201).send();
 });
+
+
+module.exports = router;
