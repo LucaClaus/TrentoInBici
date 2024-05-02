@@ -1,15 +1,16 @@
 const express = require('express');
 const router = express.Router();
 
+
 router.post('', async (req, res) => {
 
     const position = req.body.position;
-
+    
     
     // Process the position data here
 
-    res.status(200).json({ message: 'Position received successfully' });
-	
+    res.status(200).json({ message: 'Position received successfully', body: position});
+    console.log(position);
 });
 
 

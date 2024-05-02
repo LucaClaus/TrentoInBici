@@ -2,58 +2,14 @@ const express = require('express');
 const router = express.Router();
 //const Book = require('./models/book'); // get our mongoose model
 
-router.get('', async (req, res) => {
-    
+//import { position } from './position.js';
 
-    let books = await Book.find({});
+//ricevere dal database tutte le rastrelliere
 
-    books = books.map( (book) => {
-        return {
-            self: '/api/v1/books/' + book.id,
-            title: book.title
-        };
-    });
-    res.status(200).json(books);
-});
+//calcolare geometricamente le 10 rastrelliere più vicine
 
+//collegarsi tramite API a OpenSourceRoutingMap che ritorna tutti i tragitti
 
-router.post('', async (req, res) => {
-
-	let book = new Book({
-        title: req.body.title
-    });
-    
-	book = await book.save();
-    
-    let bookId = book.id;
-
-    console.log('Book saved successfully');
-
-    /**
-     * Link to the newly created resource is returned in the Location header
-     * https://www.restapitutorial.com/lessons/httpmethods.html
-     */
-    res.location("/api/v1/books/" + bookId).status(201).send();
-});
-
-router.post('/dest', async (req, res) => {
-
-	let book = new Book({
-        title: req.body.title
-    });
-    
-	book = await book.save();
-    
-    let bookId = book.id;
-
-    console.log('Book saved successfully');
-
-    /**
-     * Link to the newly created resource is returned in the Location header
-     * https://www.restapitutorial.com/lessons/httpmethods.html
-     */
-    res.location("/api/v1/books/" + bookId).status(201).send();
-});
-
+//scegliere i migliori 5 tragitti e mostrare le descrizioni all'utente
 
 module.exports = router;
