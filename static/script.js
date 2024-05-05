@@ -29,12 +29,16 @@ function requestLocation() {
 }
 
 function ricercaRastrelliereDispositivo() {
+  const ul = document.getElementById('rastrelliere'); // Get the list where we will place our authors
+
+    ul.textContent = '';
+
   requestLocation()
       .then(position => {
           var latitude = position.coords.latitude;
           var longitude = position.coords.longitude;
 
-          return fetch('/api/v1/position', {
+          return fetch('/api/v1/biciPropria', {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json',
@@ -44,9 +48,21 @@ function ricercaRastrelliereDispositivo() {
       })
       .then(response => response.json())
       .then(function(data){
-        document.getElementById("latitude").innerHTML = data.body.latitude;
-        document.getElementById("longitude").innerHTML = data.body.longitude;
+
+        console.log("dati rastrelliere", data);
+        
+        return data.body.map(function(rastrelliera) {
+
+            let li = document.createElement('li');
+            let span = document.createElement('span');
+        
+            span.textContent="id: " + rastrelliera.id + "latitudine: " + rastrelliera.latitude + "longitudine: "+ rastrelliera.longitude;
+
+
+            li.appendChild(span);
+            ul.appendChild(li);
       })
+    })
       .catch(error => {
           console.error('Error:', error);
       });
