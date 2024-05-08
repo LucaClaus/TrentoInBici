@@ -35,9 +35,15 @@ function ricercaRastrelliereDispositivo() {
 
   requestLocation()
       .then(position => {
-          var latitude = position.coords.latitude;
-          var longitude = position.coords.longitude;
+          //posizione reale
+          //var latitude = position.coords.latitude; 
+          //var longitude = position.coords.longitude;
+          //posizione di prova
+          var latitude = 46.06963486035415; 
+          var longitude = 11.120475178226306;
 
+          document.getElementById('position').innerHTML="Posizione dispositivo: [" + latitude + ", " + longitude + "]";
+        
           return fetch('/api/v1/biciPropria', {
               method: 'POST',
               headers: {
@@ -56,7 +62,7 @@ function ricercaRastrelliereDispositivo() {
             let li = document.createElement('li');
             let span = document.createElement('span');
         
-            span.textContent="id: " + rastrelliera.id + "latitudine: " + rastrelliera.latitude + "longitudine: "+ rastrelliera.longitude;
+            span.textContent="id: " + rastrelliera.id + " latitudine: " + rastrelliera.latitude + " longitudine: "+ rastrelliera.longitude;
 
 
             li.appendChild(span);

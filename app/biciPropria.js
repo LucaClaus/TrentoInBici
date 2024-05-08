@@ -3,11 +3,11 @@ const router = express.Router();
 
 //const Rastrelliera = require('./models/rastrelliere'); // get our mongoose model
 var mongoose = require('mongoose');
-const rastrelliere = require('../models/rastrelliere');
+//const rastrelliere = require('../models/rastrelliere');
 var Schema = mongoose.Schema;
 
 // set up a mongoose model
-const provaRastrelliera = mongoose.model('provaRastrelliera', new Schema({ 
+const rastrelliere = mongoose.model('rastrellieres', new Schema({ 
 	id: String,
     latitude: Number,
     longitude: Number,
@@ -17,10 +17,15 @@ router.post('', async (req, res) => {
 
     const position = req.body.position;
     console.log("Coordinate Dispositivo: ", position);
+
     //ricevi dal database tutte le rastrelliere
-    let rastrelliere=await riceviRastrelliere();
-    console.log(rastrelliere);
+    let tutteRastrelliere=await riceviRastrelliere();
+    //console.log(tutteRastrelliere);
     
+    //calcola le 10 rastrelliere piu vicine alla posizione per mandare a OSRM
+    let rastrelliere = rastPiuVicine10(position, tutteRastrelliere);
+    //console.log(rastrelliere);
+
 
     //ritorna le rastrelliere 
     res.status(200).json({ message: 'Position received successfully', body: rastrelliere});
@@ -31,23 +36,40 @@ router.post('', async (req, res) => {
 //ricevere dal database tutte le rastrelliere
 async function riceviRastrelliere(){
 
-    const collectionName = provaRastrelliera.collection.name;
-    console.log('Il modello "provaRastrelliera" è associato alla collezione:', collectionName);
-    let rastrelliere = await provaRastrelliera.find({});
-    rastrelliere = rastrelliere.map( (rastrelliera) => {
+    const collectionName = rastrelliere.collection.name;
+    console.log('Il modello "rastrelliere" è associato alla collezione:', collectionName);
+    let rast = await rastrelliere.find({});
+    //console.log(rast);
+    rast = rast.map( (rastrelliera) => {
         return {
             id: rastrelliera.id,
             latitude: rastrelliera.latitude,
             longitude: rastrelliera.longitude,
         };
     });
-    return rastrelliere;
+    return rast;
 
+}
+
+function rastPiuVicine10(position, tutteRast){
+    let distanze = [];
+
+    for (let i = 0; i < tutteRast.length; i++) {
+        let dist = calcolaDistanzaGeometrica(position.latitude, position.longitude, tutteRast[i].latitude, tutteRast[i].longitude);
+        distanze.push({ distanza: dist, rast: tutteRast[i] });
+    }
+
+    distanze.sort((a, b) => a.distanza - b.distanza);
+
+    // Prendi solo i primi 5 elementi dell'array ordinato
+    let distanzeMinori = distanze.slice(0, 10).map(item => item.rast);
+
+    return distanzeMinori;
 }
 
 
 //calcolare geometricamente le 10 rastrelliere più vicine
-function calcolaGeometricamenteRastrelliereVicine(lat1, lon1, lat2, lon2) {
+function calcolaDistanzaGeometrica(lat1, lon1, lat2, lon2) {
     // Converti gradi in radianti
     const deg2rad = Math.PI / 180;
     lat1 *= deg2rad;
