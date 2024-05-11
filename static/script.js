@@ -42,6 +42,7 @@ function ricercaRastrelliereDispositivo() {
           var latitude = 46.06963486035415; 
           var longitude = 11.120475178226306;
 
+
           document.getElementById('position').innerHTML="Posizione dispositivo: [" + latitude + ", " + longitude + "]";
         
           return fetch('/api/v1/biciPropria', {
@@ -54,22 +55,21 @@ function ricercaRastrelliereDispositivo() {
       })
       .then(response => response.json())
       .then(function(data){
-
         console.log("dati rastrelliere", data);
-        
+        if (!data) {
+          console.error('Error: data is undefined');
+          return;
+        } 
         return data.body.map(function(rastrelliera) {
-
-            let li = document.createElement('li');
-            let span = document.createElement('span');
-        
-            span.textContent="id: " + rastrelliera.id + " latitudine: " + rastrelliera.latitude + " longitudine: "+ rastrelliera.longitude;
-
-
-            li.appendChild(span);
-            ul.appendChild(li);
+          let li = document.createElement('li'); 
+          let btn = document.createElement('button');
+          btn.style.display = 'block'; // Add this line
+          btn.textContent = "Distanza: " + rastrelliera.distance + " m" + ", Tempo: " + rastrelliera.travelTime + " s";
+          ul.appendChild(btn);
       })
     })
       .catch(error => {
           console.error('Error:', error);
       });
+  
 }
