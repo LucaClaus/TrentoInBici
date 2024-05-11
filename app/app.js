@@ -4,6 +4,8 @@ const express = require('express');
 const app = express();
 const cors = require('cors')
 
+app.use(express.static('public'));
+
 const biciPropria = require('./biciPropria.js');
 const position = require('./position.js');
 const prova = require('./prova.js');

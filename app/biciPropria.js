@@ -51,7 +51,9 @@ async function riceviRastrelliere(){
             latitude: rastrelliera.latitude,
             longitude: rastrelliera.longitude,
         };
+        
     });
+    
     return rast;
 }
 
