@@ -1,24 +1,5 @@
 const { rawListeners } = require("../app/app");
 
-function prova(){
-  //get the form object
-  var email = "prova"
-  // console.log(email);
-
-  fetch('../api/v1/prova', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify( { email: email } ),
-  })
-  .then((resp) => resp.json()) // Transform the data into json
-  .then(function(data) { // Here you get the data to modify as you please
-    document.getElementById("prova").innerHTML = data.message;
-    return;
-})
-  .catch( error => console.error(error) ); // If there is any error you will catch them here
-
-}
-
 //funzione per richiesta della geolocalizzazione
 function requestLocation() {
   return new Promise((resolve, reject) => {
