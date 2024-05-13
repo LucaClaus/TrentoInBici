@@ -62,10 +62,10 @@ function ricercaRastrelliereDispositivo() {
           
           document.getElementById('position').innerHTML="Posizione dispositivo: [" + latitude + ", " + longitude + "]";
           // Crea una mappa centrata sulla posizione del dispositivo
-          map.setView([latitude, longitude], 15);
+          map.setView([latitude, longitude], 19);
           // Aggiungi il layer di OpenStreetMap alla mappa
           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-              maxZoom: 19,
+              maxZoom: 21,
           }).addTo(map);
 
           // Aggiungi un marcatore blu per la posizione del dispositivo
