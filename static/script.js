@@ -29,6 +29,31 @@ function requestLocation() {
       }
   });
 }
+function coordinatesGoogleMaps(latitude, longitude){
+
+
+  //console.log("destination googlemaps:", destination);
+    fetch('/api/v1/googleMaps', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ destination: {latitude, longitude} })
+    })
+    .then(response => response.json())
+    .then(data => {
+        var directionsUrl= data.body;
+        window.open(directionsUrl);
+    })
+    .catch(error => {
+        console.error('Errore nella richiesta al backend:', error);
+    });
+
+// Esempio di utilizzo
+//var endPoint = "latitude,longitude";   // Coordinate di arrivo
+
+//getDirectionsFromBackend(endPoint);
+}
 
 function ricercaRastrelliereDispositivo() {
   const ul = document.getElementById('rastrelliere'); // Get the list where we will place our authors
@@ -37,6 +62,7 @@ function ricercaRastrelliereDispositivo() {
   let map 
   map = L.map('mappaRastrelliera')
   requestLocation()
+
       .then(position => {
           //posizione reale
           //var latitude = position.coords.latitude; 
@@ -44,6 +70,7 @@ function ricercaRastrelliereDispositivo() {
           //posizione di prova
           var latitude = 46.06963486035415; 
           var longitude = 11.120475178226306;
+          
 
 
           document.getElementById('position').innerHTML="Posizione dispositivo: [" + latitude + ", " + longitude + "]";
@@ -69,13 +96,17 @@ function ricercaRastrelliereDispositivo() {
       .then(function(data){
         
         return data.body.map(function(rastrelliera) {
-          let li = document.createElement('li'); 
+          //let li = document.createElement('li'); 
           let btn = document.createElement('button');
           btn.style.display = 'block'; // Add this line
           btn.textContent = "Distanza: " + rastrelliera.distance + " m" + ", Tempo: " + rastrelliera.travelTime + " s";
+          btn.onclick=async function() {
+            coordinatesGoogleMaps(rastrelliera.latitude, rastrelliera.longitude);
+        };
           ul.appendChild(btn);
           let marker = L.marker([rastrelliera.latitude, rastrelliera.longitude], {icon: L.icon({iconUrl: 'res/icona-rastrelliere.png'})});
           markers.push(marker);
+         
         })
       })
       .then(function() {

@@ -7,6 +7,7 @@ const cors = require('cors')
 app.use(express.static('public'));
 
 const biciPropria = require('./biciPropria.js');
+const googleMaps = require('./googleMaps.js');
 const position = require('./position.js');
 const prova = require('./prova.js');
 
@@ -75,6 +76,7 @@ app.use((req,res,next) => {
  * Authentication routing and middleware
  */
 app.use('/api/v1/biciPropria', biciPropria);
+app.use('/api/v1/googleMaps', googleMaps);
 app.use('/api/v1/position', position);
 app.use('/api/v1/prova', prova);
 
