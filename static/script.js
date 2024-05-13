@@ -10,6 +10,15 @@ function requestLocation() {
       }
   });
 }
+function showSpinner() {
+  document.getElementById("spinner").style.display = "block";
+}
+
+// Nasconde la rotellina di attesa
+function hideSpinner() {
+  document.getElementById("spinner").style.display = "none";
+}
+
 function coordinatesGoogleMaps(latitude, longitude){
 
 
@@ -30,13 +39,10 @@ function coordinatesGoogleMaps(latitude, longitude){
         console.error('Errore nella richiesta al backend:', error);
     });
 
-// Esempio di utilizzo
-//var endPoint = "latitude,longitude";   // Coordinate di arrivo
-
-//getDirectionsFromBackend(endPoint);
 }
 
 function ricercaRastrelliereDispositivo() {
+  showSpinner();
   const ul = document.getElementById('rastrelliere'); // Get the list where we will place our authors
   let markers = [];
   ul.textContent = '';
@@ -94,6 +100,7 @@ function ricercaRastrelliereDispositivo() {
         // Aggiungi tutti i marker dalla lista alla mappa
         markers.forEach(function(marker) {
           marker.addTo(map);
+          hideSpinner();
         });
       })
       .catch(error => {

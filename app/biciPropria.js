@@ -68,7 +68,7 @@ function rastPiuVicine10(position, tutteRast){
     distanze.sort((a, b) => a.distanza - b.distanza);
 
     // Prendi solo i primi 5 elementi dell'array ordinato
-    let distanzeMinori = distanze.slice(0, 10).map(item => item.rast);
+    let distanzeMinori = distanze.slice(0, 5).map(item => item.rast);
 
     return distanzeMinori;
 }
