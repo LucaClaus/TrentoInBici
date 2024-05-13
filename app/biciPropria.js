@@ -104,7 +104,7 @@ async function getDistancesFromPosition(startPosition, destinations) {
         let destination = destinations[i];
 
         // Prepare the URL for OSRM
-        let url = `http://router.project-osrm.org/route/v1/driving/${startPosition.longitude},${startPosition.latitude};${destination.longitude},${destination.latitude}?overview=false`;
+        let url = `http://router.project-osrm.org/route/v1/bicycle/${startPosition.longitude},${startPosition.latitude};${destination.longitude},${destination.latitude}?overview=false`;
 
         // Use axios to send a GET request to the OSRM API
         let response = await axios.get(url);

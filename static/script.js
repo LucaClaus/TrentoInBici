@@ -104,7 +104,7 @@ function ricercaRastrelliereDispositivo() {
             coordinatesGoogleMaps(rastrelliera.latitude, rastrelliera.longitude);
         };
           ul.appendChild(btn);
-          let marker = L.marker([rastrelliera.latitude, rastrelliera.longitude], {icon: L.icon({iconUrl: 'res/icona-rastrelliere.png'})});
+          let marker = L.marker([rastrelliera.latitude, rastrelliera.longitude], {icon: L.icon({iconUrl: 'res/icona-rastrelliera.png'})});
           markers.push(marker);
          
         })
