@@ -61,6 +61,8 @@ function ricercaRastrelliereDispositivo() {
   ul.textContent = '';
   let map 
   map = L.map('mappaRastrelliera')
+  first = true
+  let selectedCoordinates = null
   requestLocation()
 
       .then(position => {
@@ -71,8 +73,6 @@ function ricercaRastrelliereDispositivo() {
           var latitude = 46.06963486035415; 
           var longitude = 11.120475178226306;
           
-
-
           document.getElementById('position').innerHTML="Posizione dispositivo: [" + latitude + ", " + longitude + "]";
           // Crea una mappa centrata sulla posizione del dispositivo
           map.setView([latitude, longitude], 15);
@@ -97,16 +97,31 @@ function ricercaRastrelliereDispositivo() {
         
         return data.body.map(function(rastrelliera) {
           //let li = document.createElement('li'); 
-          let btn = document.createElement('button');
-          btn.style.display = 'block'; // Add this line
-          btn.textContent = "Distanza: " + rastrelliera.distance + " m" + ", Tempo: " + rastrelliera.travelTime + " s";
-          btn.onclick=async function() {
-            coordinatesGoogleMaps(rastrelliera.latitude, rastrelliera.longitude);
+          let btnRastrelliera = document.createElement('button');
+          btnRastrelliera.style.display = 'block'; // Add this line
+          btnRastrelliera.textContent = "Distanza: " + rastrelliera.distance + " m" + ", Tempo: " + rastrelliera.travelTime + " s";
+          btnRastrelliera.onclick=async function() {
+            markers.forEach(function(marker) {
+              map.removeLayer(marker);
+              selectedCoordinates = [rastrelliera.latitude, rastrelliera.longitude];
+            });
+            marker = L.marker([rastrelliera.latitude, rastrelliera.longitude], {icon: L.icon({iconUrl: 'res/icona-rastrelliera-selezionata.png'})});
+            markers.push(marker);
+            marker.addTo(map);
+            if(first){
+              let btnIniziaNavigazione = document.createElement('button');
+              btnIniziaNavigazione.textContent = "Inizia navigazione";
+              const divInitNav = document.getElementById('btnIniziaNavigazione');
+              divInitNav.appendChild(btnIniziaNavigazione);
+              first = false;
+            }
+            btnIniziaNavigazione.onclick = function() {
+              coordinatesGoogleMaps(selectedCoordinates[0], selectedCoordinates[1]);
+            };
         };
-          ul.appendChild(btn);
+          ul.appendChild(btnRastrelliera);
           let marker = L.marker([rastrelliera.latitude, rastrelliera.longitude], {icon: L.icon({iconUrl: 'res/icona-rastrelliera.png'})});
           markers.push(marker);
-         
         })
       })
       .then(function() {
@@ -118,6 +133,4 @@ function ricercaRastrelliereDispositivo() {
       .catch(error => {
           console.error('Error:', error);
       });
-
-  
 }
