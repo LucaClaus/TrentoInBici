@@ -5,6 +5,7 @@
     <title>TrentoInBici</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -15,6 +16,9 @@
     <button onclick="ricercaRastrelliereDispositivo()">Rastrelliera vicino a me</button>
     <p id="position">Posizione dispositivo: </p>
     <h2>Rastrelliere più vicine:</h2>
+    <div class="spinner-container" id="spinner">
+        <div class="spinner"></div>
+    </div>
 <ul id="rastrelliere"></ul>
 </div>
 <div id="btnIniziaNavigazione"></div>

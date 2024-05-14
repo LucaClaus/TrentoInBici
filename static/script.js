@@ -10,6 +10,15 @@ function requestLocation() {
       }
   });
 }
+function showSpinner() {
+  document.getElementById("spinner").style.display = "block";
+}
+
+// Nasconde la rotellina di attesa
+function hideSpinner() {
+  document.getElementById("spinner").style.display = "none";
+}
+
 function coordinatesGoogleMaps(latitude, longitude){
 
 
@@ -30,13 +39,10 @@ function coordinatesGoogleMaps(latitude, longitude){
         console.error('Errore nella richiesta al backend:', error);
     });
 
-// Esempio di utilizzo
-//var endPoint = "latitude,longitude";   // Coordinate di arrivo
-
-//getDirectionsFromBackend(endPoint);
 }
 
 function ricercaRastrelliereDispositivo() {
+  showSpinner();
   const ul = document.getElementById('rastrelliere'); // Get the list where we will place our authors
   let markers = [];
   ul.textContent = '';
@@ -56,10 +62,10 @@ function ricercaRastrelliereDispositivo() {
           
           document.getElementById('position').innerHTML="Posizione dispositivo: [" + latitude + ", " + longitude + "]";
           // Crea una mappa centrata sulla posizione del dispositivo
-          map.setView([latitude, longitude], 15);
+          map.setView([latitude, longitude], 19);
           // Aggiungi il layer di OpenStreetMap alla mappa
           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-              maxZoom: 19,
+              maxZoom: 21,
           }).addTo(map);
 
           // Aggiungi un marcatore blu per la posizione del dispositivo
@@ -109,6 +115,7 @@ function ricercaRastrelliereDispositivo() {
         // Aggiungi tutti i marker dalla lista alla mappa
         markers.forEach(function(marker) {
           marker.addTo(map);
+          hideSpinner();
         });
       })
       .catch(error => {
