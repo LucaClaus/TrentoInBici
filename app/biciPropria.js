@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 
+//numero di rastrelliere da mandare a OSRM (10 ci mette 5 sec, 5 ce ne mette la metà)
+const RASTRELLIERE_OSRM=5;
+
 //const Rastrelliera = require('./models/rastrelliere'); // get our mongoose model
 var mongoose = require('mongoose');
 //const rastrelliere = require('../models/rastrelliere');
@@ -29,14 +32,28 @@ router.post('', async (req, res) => {
 
     //ricevi dal database tutte le rastrelliere
     let tutteRastrelliere=await riceviRastrelliere();    
-    //calcola le 10 rastrelliere piu vicine alla posizione da mandare a OSRM
-    let dieciRastrellierePiùVicine = rastPiuVicine10(position, tutteRastrelliere);
+    //calcola le 10 rastrelliere piu vicine alla posizione geometricamente
+    let dieciRastrellierePiùVicine = await rastPiuVicine10(position, tutteRastrelliere);
+
+    console.log("Distanze calcolate geometricamente");
+    for(let i=0; i<dieciRastrellierePiùVicine.length;i++){
+        console.log(dieciRastrellierePiùVicine[i].id);
+    }
+
     //funzione che calcola le 5 rastrelliere più vicine da mostrare all'utente, da ritornare: posizione, distanza dalla posizione dell'utente chiamando OSRM
     let distances = await getDistancesFromPosition(position, dieciRastrellierePiùVicine);
-    //ritorna le rastrelliere 
-    distances.sort((a, b) => a.distance - b.distance);
-    let cinqueRastrellierePiuVicine = distances.slice(0, 5);
-    res.status(200).json({ message: 'Position received successfully', body: cinqueRastrellierePiuVicine });});
+    
+    console.log("Distanze calcolate con l'osmr");
+    for(let i=0; i<distances.length;i++){
+        console.log(distances[i].id + " " + distances[i].distance);
+    }
+    res.status(200).json({ message: 'Position received successfully', body: distances });
+});
+
+
+
+
+
 
 //ricevere dal database tutte le rastrelliere
 async function riceviRastrelliere(){
@@ -57,24 +74,28 @@ async function riceviRastrelliere(){
     return rast;
 }
 
-function rastPiuVicine10(position, tutteRast){
+async function rastPiuVicine10(position, tutteRast){
     let distanze = [];
 
     for (let i = 0; i < tutteRast.length; i++) {
-        let dist = calcolaDistanzaGeometrica(position.latitude, position.longitude, tutteRast[i].latitude, tutteRast[i].longitude);
+        let dist = await calcolaDistanzaGeometrica(position.latitude, position.longitude, tutteRast[i].latitude, tutteRast[i].longitude);
         distanze.push({ distanza: dist, rast: tutteRast[i] });
     }
+    for(let i=0;i<distanze.length;i++){
+        console.log("distanze: ", distanze[i].rast.id, distanze[i].distanza);
+    }
+    
 
     distanze.sort((a, b) => a.distanza - b.distanza);
 
     // Prendi solo i primi 5 elementi dell'array ordinato
-    let distanzeMinori = distanze.slice(0, 5).map(item => item.rast);
+    let distanzeMinori = distanze.slice(0, RASTRELLIERE_OSRM).map(item => item.rast);
 
     return distanzeMinori;
 }
 
 //calcolare geometricamente le 10 rastrelliere più vicine
-function calcolaDistanzaGeometrica(lat1, lon1, lat2, lon2) {
+async function calcolaDistanzaGeometrica(lat1, lon1, lat2, lon2) {
     // Converti gradi in radianti
     const deg2rad = Math.PI / 180;
     lat1 *= deg2rad;
@@ -104,7 +125,7 @@ async function getDistancesFromPosition(startPosition, destinations) {
         let destination = destinations[i];
 
         // Prepare the URL for OSRM
-        let url = `http://router.project-osrm.org/route/v1/bicycle/${startPosition.longitude},${startPosition.latitude};${destination.longitude},${destination.latitude}?overview=false`;
+        let url = `http://router.project-osrm.org/route/v1/bike/${startPosition.longitude},${startPosition.latitude};${destination.longitude},${destination.latitude}?overview=false`;
 
         // Use axios to send a GET request to the OSRM API
         let response = await axios.get(url);
@@ -122,13 +143,11 @@ async function getDistancesFromPosition(startPosition, destinations) {
         // Add the object to the distances array
         distances.push(rackWithDistanceTravelTime);
     }
-    return distances;
+     //ritorna le rastrelliere 
+     distances.sort((a, b) => a.distance - b.distance);
+     let cinqueRastrellierePiuVicine = distances.slice(0, 5);
+    
+    return cinqueRastrellierePiuVicine;
 }
-//collegarsi tramite API a OpenSourceRoutingMap che ritorna tutti i tragitti
-//esempio richiesta get http://router.project-osrm.org/route/v1/bicycle/11.032779,46.364261;11.026274,46.326757?overview=false
-
-//scegliere i migliori 5 tragitti e mostrare le descrizioni all'utente
-
-//openstreetmap
 
 module.exports = router;

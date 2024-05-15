@@ -56,9 +56,10 @@ function ricercaRastrelliereDispositivo() {
           //posizione reale
           //var latitude = position.coords.latitude; 
           //var longitude = position.coords.longitude;
-          //posizione di prova
-          var latitude = 46.06963486035415; 
-          var longitude = 11.120475178226306;
+          //posizione di prova via roma 91
+          var latitude = 46.069194964432604;
+          var longitude = 11.121176732183985;
+          
           
           document.getElementById('position').innerHTML="Posizione dispositivo: [" + latitude + ", " + longitude + "]";
           // Crea una mappa centrata sulla posizione del dispositivo
@@ -86,7 +87,7 @@ function ricercaRastrelliereDispositivo() {
           //let li = document.createElement('li'); 
           let btnRastrelliera = document.createElement('button');
           btnRastrelliera.style.display = 'block'; // Add this line
-          btnRastrelliera.textContent = "Distanza: " + rastrelliera.distance + " m" + ", Tempo: " + rastrelliera.travelTime + " s";
+          btnRastrelliera.textContent = "Id: "+ rastrelliera.id+" Distanza: " + rastrelliera.distance + " m" + ", Tempo: " + rastrelliera.travelTime + " s";
           btnRastrelliera.onclick=async function() {
             markers.forEach(function(marker) {
               map.removeLayer(marker);
