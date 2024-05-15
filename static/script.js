@@ -91,11 +91,11 @@ function ricercaRastrelliereDispositivo() {
           btnRastrelliera.onclick=async function() {
             markers.forEach(function(marker) {
               map.removeLayer(marker);
-              selectedCoordinates = [rastrelliera.latitude, rastrelliera.longitude];
             });
-            marker = L.marker([rastrelliera.latitude, rastrelliera.longitude], {icon: L.icon({iconUrl: 'res/icona-rastrelliera-selezionata.png'})});
-            markers.push(marker);
-            marker.addTo(map);
+            let selectedMarker = L.marker([rastrelliera.latitude, rastrelliera.longitude], {icon: L.icon({iconUrl: 'res/icona-rastrelliera-selezionata.png'})});
+            markers.push(selectedMarker);
+            selectedMarker.addTo(map);
+            selectedCoordinates = [rastrelliera.latitude, rastrelliera.longitude];
             if(first){
               let btnIniziaNavigazione = document.createElement('button');
               btnIniziaNavigazione.textContent = "Inizia navigazione";
