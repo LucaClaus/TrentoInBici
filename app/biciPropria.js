@@ -4,6 +4,10 @@ const axios = require('axios');
 
 //numero di rastrelliere da mandare a OSRM (10 ci mette 5 sec, 5 ce ne mette la metà)
 const RASTRELLIERE_OSRM=5;
+const LAT_SUP=46.1331;
+const LAT_INF=46.0284;
+const LON_SX= 11.0819;
+const LON_DX=11.1582;
 
 //const Rastrelliera = require('./models/rastrelliere'); // get our mongoose model
 var mongoose = require('mongoose');
@@ -30,6 +34,19 @@ router.post('', async (req, res) => {
     const position = req.body.position;
     console.log("Coordinate Dispositivo: ", position);
 
+    //se manca la posizione ritorna errore
+    if(!position || position.latitude==null || position.longitude==null){
+        res.status(400).json({ error: 'NO Position'});
+        return
+    }
+
+    //se la posizione data è la di fuori del comune di Trento torna errore
+    if(!(LAT_INF <= position.latitude && position.latitude < LAT_SUP) || !(LON_SX <= position.longitude && position.longitude < LON_DX)){
+        res.status(401).json({ error: 'La posizione non è compresa nel comune di Trento'});
+        console.log("posizione fuori dall'area");
+        return
+    }
+
     //ricevi dal database tutte le rastrelliere
     let tutteRastrelliere=await riceviRastrelliere();    
     //calcola le 10 rastrelliere piu vicine alla posizione geometricamente
@@ -47,8 +64,10 @@ router.post('', async (req, res) => {
     for(let i=0; i<distances.length;i++){
         console.log(distances[i].id + " " + distances[i].distance);
     }
+    console.log(distances);
     res.status(200).json({ message: 'Position received successfully', body: distances });
 });
+
 
 
 

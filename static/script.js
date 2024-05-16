@@ -56,7 +56,7 @@ function ricercaRastrelliereDispositivo() {
           //posizione reale
           //var latitude = position.coords.latitude; 
           //var longitude = position.coords.longitude;
-          //posizione di prova via roma 91
+ 
           var latitude = 46.069194964432604;
           var longitude = 11.121176732183985;
           
@@ -66,7 +66,7 @@ function ricercaRastrelliereDispositivo() {
           map.setView([latitude, longitude], 19);
           // Aggiungi il layer di OpenStreetMap alla mappa
           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-              maxZoom: 21,
+              maxZoom: 20,
           }).addTo(map);
 
           // Aggiungi un marcatore blu per la posizione del dispositivo

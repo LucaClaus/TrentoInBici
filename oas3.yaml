@@ -2,9 +2,113 @@ openapi: 3.0.0
 info:
   version: '1.0'
   title: "TrentoInBici OpenAPI 3.0"
-  description:
+  description: API for moving on bicycle in Trento
   license:
     name: MIT
 servers:
-  - url: http://localhost:8000/api/v1
+  - url: http://localhost:8080/api/v1
     description: Localhost
+paths:
+  /biciPropria:
+    post:
+      description: >-
+        Return the 5 racks nearest to your position
+      summary: Return 5 racks near my position
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                position:
+                  type: object
+                  properties:
+                    latitude:
+                      type: number
+                      format: double
+                      description: Latitude of device position.
+                      example: 46.7128
+                    longitude:
+                      type: number
+                      format: double
+                      description: Longitude of device position.
+                      example: 11.1211
+                  required:
+                    - latitude
+                    - longitude
+      responses:
+        '200':
+          description: Successo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Messaggio di conferma.
+                  body:
+                    type: array
+                    description: List of 5 racks near to the device position with distances and time
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: racks Id.
+                        longitude:
+                          type: number
+                          format: double
+                          description: racks longitude.
+                        latitude:
+                          type: number
+                          format: double
+                          description: racks latitude.
+                        travelTime:
+                          type: number
+                          format: double
+                          description: travelTime from device position to rack.
+                        distance:
+                          type: number
+                          format: double
+                          description: Distanza dalla posizione specificata.
+
+  /googleMaps:
+    post:
+      summary: Start navigation on GoogleMaps
+      description: >
+        Start navigation on GoogleMaps with the destination choosen.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                position:
+                  type: object
+                  properties:
+                    latitude:
+                      type: number
+                      format: double
+                      description: Latitude of destination.
+                      example: 46.7128
+                    longitude:
+                      type: number
+                      format: double
+                      description: Longitude of destination.
+                      example: 11.1211
+                  required:
+                    - latitude
+                    - longitude
+      responses:
+        '200':
+          description: Successo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  body:
+                    type: string
+                    description: URL for navigation.
