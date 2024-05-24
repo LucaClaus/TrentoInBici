@@ -3,7 +3,7 @@ const router = express.Router();
 const axios = require('axios');
 
 //numero di rastrelliere da mandare a OSRM (10 ci mette 5 sec, 5 ce ne mette la metà)
-const RASTRELLIERE_OSRM=5;
+const RASTRELLIERE_CALCOLATE_GEOMETRICAMENTE=5;
 const LAT_SUP=46.1331;
 const LAT_INF=46.0284;
 const LON_SX= 11.0819;
@@ -32,7 +32,7 @@ const rastrellieraFrontEnd = {
 router.post('', async (req, res) => {
 
     const position = req.body.position;
-    console.log("Coordinate Dispositivo: ", position);
+    //console.log("Coordinate Dispositivo: ", position);
 
     //se manca la posizione ritorna errore
     if(!position || position.latitude==null || position.longitude==null){
@@ -48,31 +48,24 @@ router.post('', async (req, res) => {
     }
 
     //ricevi dal database tutte le rastrelliere
-    let tutteRastrelliere=await riceviRastrelliere();    
-    //calcola le 10 rastrelliere piu vicine alla posizione geometricamente
-    let dieciRastrellierePiùVicine = await rastPiuVicine10(position, tutteRastrelliere);
+    let tutteRastrelliere=await riceviRastrelliere();
 
-    console.log("Distanze calcolate geometricamente");
-    for(let i=0; i<dieciRastrellierePiùVicine.length;i++){
-        console.log(dieciRastrellierePiùVicine[i].id);
-    }
+    //calcola le RASTRELLIERE_CALCOLATE_GEOMETRICAMENTE rastrelliere piu vicine alla posizione geometricamente
+    let rastrellierePiùVicineGeometricamente = await rastPiuVicineGeometricamente(position, tutteRastrelliere);
+    /*console.log("Distanze calcolate geometricamente");
+    for(let i=0; i<rastrellierePiùVicineGeometricamente.length;i++){
+        console.log(rastrellierePiùVicineGeometricamente[i].id);
+    }*/
 
     //funzione che calcola le 5 rastrelliere più vicine da mostrare all'utente, da ritornare: posizione, distanza dalla posizione dell'utente chiamando OSRM
-    let distances = await getDistancesFromPosition(position, dieciRastrellierePiùVicine);
-    
-    console.log("Distanze calcolate con l'osmr");
+    let distances = await getDistancesFromPosition(position, rastrellierePiùVicineGeometricamente);
+    /*console.log("Distanze calcolate con l'osmr");
     for(let i=0; i<distances.length;i++){
         console.log(distances[i].id + " " + distances[i].distance);
-    }
-    console.log(distances);
+    }*/
+
     res.status(200).json({ message: 'Position received successfully', body: distances });
 });
-
-
-
-
-
-
 
 //ricevere dal database tutte le rastrelliere
 async function riceviRastrelliere(){
@@ -92,8 +85,8 @@ async function riceviRastrelliere(){
     
     return rast;
 }
-
-async function rastPiuVicine10(position, tutteRast){
+//calcolare le tot rastrelliere più vicine geometricamente
+async function rastPiuVicineGeometricamente(position, tutteRast){
     let distanze = [];
 
     for (let i = 0; i < tutteRast.length; i++) {
@@ -104,15 +97,12 @@ async function rastPiuVicine10(position, tutteRast){
         console.log("distanze: ", distanze[i].rast.id, distanze[i].distanza);
     }
     
-
     distanze.sort((a, b) => a.distanza - b.distanza);
 
-    // Prendi solo i primi 5 elementi dell'array ordinato
-    let distanzeMinori = distanze.slice(0, RASTRELLIERE_OSRM).map(item => item.rast);
+    let distanzeMinori = distanze.slice(0, RASTRELLIERE_CALCOLATE_GEOMETRICAMENTE).map(item => item.rast);
 
     return distanzeMinori;
 }
-
 //calcolare geometricamente le 10 rastrelliere più vicine
 async function calcolaDistanzaGeometrica(lat1, lon1, lat2, lon2) {
     // Converti gradi in radianti
@@ -121,11 +111,9 @@ async function calcolaDistanzaGeometrica(lat1, lon1, lat2, lon2) {
     lon1 *= deg2rad;
     lat2 *= deg2rad;
     lon2 *= deg2rad;
-
     // Calcola la differenza di latitudine e longitudine
     const dLat = lat2 - lat1;
     const dLon = lon2 - lon1;
-
     // Calcola la distanza tra i due punti utilizzando la formula dell'emissione sferica
     const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
               Math.cos(lat1) * Math.cos(lat2) *
