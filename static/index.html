@@ -5,6 +5,10 @@
     <title>TrentoInBici</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.5/ol.css"></link>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.5/ol.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -13,10 +17,14 @@
 <h1>TrentoInBici</h1>
 
 <div>
-    <button onclick="ricercaRastrelliereDispositivo()">Rastrelliera vicino a me</button>
-    <button onclick="ricercaRastrelliereDestinazione()">Rastrelliera vicino alla mia destinazione</button>
-    <p id="labelDestinazione"></p>
+    <button onclick="posizioneDispositivo()">Rastrelliera vicino a me</button>
+    <button onclick="posizioneDestinazione()">Rastrelliera vicino alla mia destinazione</button>
+    <form id="addressFrom">
+        <p id="labelDestinazione"></p>
+    </form>
+    <p id="result"></p>
     <p id="position">Posizione dispositivo: </p>
+    <div id="btnConfermaDestinazione"></div>
     <h2>Rastrelliere più vicine:</h2>
     <div class="spinner-container" id="spinner">
         <div class="spinner"></div>
@@ -24,6 +32,7 @@
 <ul id="rastrelliere"></ul>
 </div>
 <div id="btnIniziaNavigazione"></div>
+<p id="alarmNavigazione"></p>
 
 <div id="mappaRastrelliera" style="height: 400px; width: 400px"></div>
 
@@ -32,6 +41,55 @@
 </div>
 
 <script src="script.js"></script>
+<script>
+    const latTrento=46.07235047020391;
+    const lonTrento=11.122617996278098;
+    let first=true;
+    let latDest;
+    let lonDest;
+    const epsg4326 = 'EPSG:4326';
+    const projection = ol.proj.get(epsg4326);
+      // Creazione della mappa
+      const map = new ol.Map({
+        target: 'mappaRastrelliera',
+        view: new ol.View({
+            center: ol.proj.fromLonLat([lonTrento, latTrento]),
+            zoom: 12
+        })
+    });
+
+    // Aggiunta dei layer OSM e Wikimedia
+    map.addLayer(new ol.layer.Tile({
+        source: new ol.source.OSM()
+    }));
+    map.addLayer(new ol.layer.Tile({
+        source: new ol.source.OSM({
+            url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
+            attributions: [
+                '&copy; <a href="http://www.openstreetmap.org/">OpenStreetMap</a>',
+                '&copy; <a href="https://foundation.wikimedia.org/wiki/Maps_Terms_of_Use">Wikimedia</a>'
+            ]
+        })
+    }));
+
+    // Aggiunta dei controlli di navigazione
+    map.addControl(new ol.control.Zoom());
+    map.addControl(new ol.control.MousePosition());
+    map.addControl(new ol.control.ScaleLine());
+    //map.addControl(new ol.control.LayerSwitcher());
+
+    const markerDest = new ol.layer.Vector({
+  source: new ol.source.Vector(),
+  style: new ol.style.Style({
+      image: new ol.style.Icon({
+          src: 'res/icona-posizione.png', //creare nuova icona
+          anchor: [0.5, 1],
+          scale: 0.8
+      })
+  })
+});
+map.addLayer(markerDest);
+</script>
     
 </body>
 
