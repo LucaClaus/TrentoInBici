@@ -1,23 +1,5 @@
 //const { rawListeners } = require("../app/app");
 
-//funzione per richiesta della geolocalizzazione
-function requestLocation() {
-  return new Promise((resolve, reject) => {
-      if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(resolve, reject);
-      } else {
-          reject(new Error("Geolocation is not supported by this browser."));
-      }
-  });
-}
-function showSpinner() {
-  document.getElementById("spinner").style.display = "block";
-}
-// Nasconde la rotellina di attesa
-function hideSpinner() {
-  document.getElementById("spinner").style.display = "none";
-}
-
 function coordinatesGoogleMaps(latitude, longitude){
   //console.log("destination googlemaps:", destination);
     fetch('/api/v1/googleMaps', {
@@ -55,108 +37,33 @@ async function chiamataAPIbiciPropria(latitude, longitude) {
   }
 }
 
-function pulsanteConfermaDestinazione(){
-            const btnConfermaDestinazione = document.createElement('button');
-            btnConfermaDestinazione.textContent = 'Conferma Destinazione';
-            btnConfermaDestinazione.type = 'submit';
-            btnConfermaDestinazione.onclick = function() {
-              ricercaRastrelliere(latDest, lonDest);
-            };
+//pulsante rastrelliera vicino a me
+async function posizioneDispositivo(){
 
-            const divInitNav = document.getElementById('btnConfermaDestinazione');
-            divInitNav.innerHTML = ''; // Rimuovi qualsiasi contenuto precedente
-            divInitNav.appendChild(btnConfermaDestinazione);
+  resetMappa();
+  rimuoviElementiCreati();
+    const position = await requestLocation();
+      
+    //posizione reale
+    //latitude = position.coords.latitude; 
+    //longitude = position.coords.longitude;
+    latitude = 46.069169527542655;
+    longitude = 11.127596809959554;
+
+    if(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX){
+      ricercaRastrelliere(latitude, longitude);
+    }else{
+      alert("La tua posizione è al di fuori dell'area consentita");
+    }
+
 
 }
 
-async function creaLabelDestinazione() {
+//pulsante rastrelliera vicino alla mia destinazione
+async function posizioneDestinazione() {
 
-  return new Promise((resolve, reject) => {
-
-    const container = document.getElementById("labelDestinazione");
-
-    // Pulizia del contenuto precedente del container
-    container.innerHTML = '';
-
-    const form = document.createElement('form');
-    form.id = 'addressForm';
-
-    const label = document.createElement('label');
-    label.textContent = 'Inserisci la tua destinazione: ';
-
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.id = 'addressInput';
-    input.name = 'inputString';
-    input.placeholder = 'La tua destinazione...';
-
-    const submit = document.createElement('button');
-    submit.type = 'submit';
-    submit.textContent = 'Invia';
-
-    // Aggiunta del label, dell'input e del submit button al form
-    form.appendChild(label);
-    form.appendChild(input);
-    form.appendChild(submit);
-
-    // Aggiunta del form al div container
-    container.appendChild(form);
-
-    // Aggiungi l'event listener al form creato dinamicamente
-    form.addEventListener('submit', function(event) {
-      event.preventDefault();
-
-      const address = document.getElementById('addressInput').value;
-      const resultElement = document.getElementById('result');
-
-      if (address) {
-        // Utilizzare il servizio di geocodifica Nominatim di OpenStreetMap
-        const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&addressdetails=1`;
-
-        fetch(url)
-          .then(response => response.json())
-          .then(data => {
-            if (data.length > 0) {
-              const place = data[0];
-              resultElement.textContent = `Via trovata: ${place.display_name}`;
-              resultElement.style.color = 'green';
-              latDest = parseFloat(place.lat);
-              lonDest = parseFloat(place.lon);
-              markerDest.getSource().clear();
-              const marker = new ol.Feature({
-                geometry: new ol.geom.Point(ol.proj.fromLonLat([lonDest, latDest]))
-              });
-              
-              const view = map.getView();
-              const newCenter = ol.proj.fromLonLat([lonDest, latDest]);
-              view.setCenter(newCenter);
-              view.setZoom(15);
-
-              markerDest.getSource().addFeature(marker);
-              pulsanteConfermaDestinazione();
-              //resolve({ latitude, longitude });
-            } else {
-              resultElement.textContent = 'Via non trovata. Verifica l\'indirizzo inserito.';
-              resultElement.style.color = 'red';
-              reject('Via non trovata');
-            }
-          })
-          .catch(error => {
-            console.error('Errore durante la richiesta:', error);
-            resultElement.textContent = 'Errore durante la verifica della via. Riprova più tardi.';
-            resultElement.style.color = 'red';
-            reject(error);
-          });
-      } else {
-        resultElement.textContent = 'Inserisci una via per favore.';
-        resultElement.style.color = 'red';
-        reject('Indirizzo non inserito');
-      }
-    });
-  });
-}
-
-  async function posizioneDestinazione() {
+    resetMappa();
+    rimuoviElementiCreati();
 
     const ul = document.getElementById('rastrelliere'); // Lista per visualizzare i dati delle rastrelliere
     ul.textContent = '';
@@ -166,12 +73,12 @@ async function creaLabelDestinazione() {
 // Variabili per memorizzare le coordinate
 let data;
 
-const rastrellieraLayer = new ol.layer.Vector({
-  source: new ol.source.Vector()
-});
-map.addLayer(rastrellieraLayer);
+creaLabelDestinazione();
 
 map.on('click', async function (event) {
+
+  resultElement.innerHTML='';
+  resetMappa();
   // Ottieni le coordinate del click
   const coordinates = event.coordinate;
   const transformedCoordinates = ol.proj.toLonLat(coordinates);
@@ -184,8 +91,8 @@ map.on('click', async function (event) {
   // Rimuovi i marker esistenti
   markerDest.getSource().clear();
 
-  // Crea un nuovo marker alle coordinate cliccate
-  const marker = new ol.Feature({
+  if(LAT_INF <= latDest && latDest < LAT_SUP && LON_SX <= lonDest && lonDest < LON_DX){
+    const marker = new ol.Feature({
       geometry: new ol.geom.Point(coordinates)
   });
 
@@ -193,9 +100,14 @@ map.on('click', async function (event) {
   markerDest.getSource().addFeature(marker);
 
   pulsanteConfermaDestinazione();
-});
+  }else{
+    resultElement.innerHTML='Posizione al di fuori dell\'area consentita'
+    resultElement.style.color = 'red';
+  }
 
-creaLabelDestinazione();
+  // Crea un nuovo marker alle coordinate cliccate
+  
+});
 
     // Impedisci lo scorrimento della mappa con la rotellina del mouse
     document.getElementById('mappaRastrelliera').addEventListener('wheel', function (event) {
@@ -203,23 +115,7 @@ creaLabelDestinazione();
     }, { passive: false });
   };
 
-  async function confermaDestinazione(latDest, lonDest){
-
-  }
-
-async function posizioneDispositivo(){
-    const position = await requestLocation();
-      
-    //posizione reale
-    //latitude = position.coords.latitude; 
-    //longitude = position.coords.longitude;
-    latitude = 46.069169527542655;
-    longitude = 11.127596809959554;
-
-    ricercaRastrelliere(latitude, longitude);
-
-}
-
+//funzione che ricerca le rastrelliera con api e restituisce sulla mappa
 async function ricercaRastrelliere(lat, lon){
   showSpinner();
   // Inizializzazione delle variabili
@@ -234,7 +130,8 @@ document.getElementById('mappaRastrelliera').addEventListener('wheel', function(
     event.preventDefault();
 }, { passive: false });
 
-document.getElementById('position').innerHTML = "Posizione dispositivo: [" + latitude + ", " + longitude + "]";
+const positionLabel= document.getElementById('position');
+positionLabel.innerHTML = "Posizione: [" + latitude + ", " + longitude + "]";
 
 const view = map.getView();
 const newCenter = ol.proj.fromLonLat([longitude, latitude]);
@@ -247,17 +144,7 @@ map.addControl(new ol.control.MousePosition());
 //map.addControl(new ol.control.LayerSwitcher());
 
 // Creazione del layer per i marker personalizzati
-const markerLayer = new ol.layer.Vector({
-    source: new ol.source.Vector(),
-    style: new ol.style.Style({
-        image: new ol.style.Icon({
-            src: 'res/icona-posizione.png',
-            anchor: [0.5, 1],
-            scale: 0.8
-        })
-    })
-});
-map.addLayer(markerLayer);
+
 
 // Aggiunta del marker centrale
 const centerFeature = new ol.Feature({
@@ -268,14 +155,16 @@ markerLayer.getSource().addFeature(centerFeature);
 // Chiamata all'API per ottenere i dati delle rastrelliere
 const data = await chiamataAPIbiciPropria(latitude, longitude);
 
-// Creazione del layer per i marker delle rastrelliere
-const rastrellieraLayer = new ol.layer.Vector({
-    source: new ol.source.Vector()
-});
-map.addLayer(rastrellieraLayer);
+titoloRastrelliere = document.getElementById("titoloRastrelliere");
+titoloRastrelliere.textContent="Rastrelliere più vicine";
+titoloRastrelliere.classList.add('elemRes');
+
+
+
 
 data.body.forEach(function(rastrelliera) {
     let btnRastrelliera = document.createElement('button');
+    btnRastrelliera.classList.add('elemCreato');
     btnRastrelliera.style.display = 'block';
     btnRastrelliera.textContent = "Id: " + rastrelliera.id + " Distanza: " + rastrelliera.distance + " m" + ", Tempo: " + rastrelliera.travelTime + " s";
 
@@ -296,6 +185,7 @@ data.body.forEach(function(rastrelliera) {
         selectedCoordinates = [rastrelliera.latitude, rastrelliera.longitude];
         if (first) {
             let btnIniziaNavigazione = document.createElement('button');
+            btnIniziaNavigazione.classList.add('elemCreato');
             btnIniziaNavigazione.textContent = "Inizia navigazione";
             const divInitNav = document.getElementById('btnIniziaNavigazione');
             divInitNav.appendChild(btnIniziaNavigazione);

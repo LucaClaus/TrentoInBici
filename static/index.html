@@ -7,88 +7,147 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.5/ol.css"></link>
-  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.5/ol.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.5/ol.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<h1>TrentoInBici</h1>
+<div class="container mt-4">
+    <h1 class="text-center">TrentoInBici</h1>
 
-<div>
-    <button onclick="posizioneDispositivo()">Rastrelliera vicino a me</button>
-    <button onclick="posizioneDestinazione()">Rastrelliera vicino alla mia destinazione</button>
-    <form id="addressFrom">
+    <div class="d-flex justify-content-center mb-3">
+        <button class="btn btn-primary mr-2" onclick="posizioneDispositivo()">Rastrelliera vicino a me</button>
+        <button class="btn btn-primary mr-2" onclick="posizioneDestinazione()">Rastrelliera vicino alla mia destinazione</button>
+        <button class="btn btn-primary mr-2" onclick="stazioneBikeSharing()">Stazione Bike Sharing più vicina</button>
+        <button class="btn btn-primary" onclick="tragittoInteroBikeSharing()">Sono senza bici e voglio arrivare a destinazione</button>
+    </div>
+    <form id="addressFrom" class="mb-3">
         <p id="labelDestinazione"></p>
     </form>
     <p id="result"></p>
-    <p id="position">Posizione dispositivo: </p>
     <div id="btnConfermaDestinazione"></div>
-    <h2>Rastrelliere più vicine:</h2>
-    <div class="spinner-container" id="spinner">
-        <div class="spinner"></div>
+    <p id="position" class="elemRes"></p>
+    <h2 class="mt-4" id="titoloRastrelliere"></h2>
+    <div class="spinner-container text-center" id="spinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
     </div>
-<ul id="rastrelliere"></ul>
-</div>
-<div id="btnIniziaNavigazione"></div>
-<p id="alarmNavigazione"></p>
+    <ul id="rastrelliere" class="list-group mt-3"></ul>
+    <div id="btnIniziaNavigazione" class="mt-3"></div>
+    <p id="alarmNavigazione"></p>
 
-<div id="mappaRastrelliera" style="height: 400px; width: 400px"></div>
+    <div id="mappaRastrelliera" class="mt-4" style="height: 400px; width: 100%"></div>
 
-<div id="mappe">
-
+    <div id="mappe" class="mt-4"></div>
 </div>
 
 <script src="script.js"></script>
+<script src="utils.js"></script>
+
 <script>
-    const latTrento=46.07235047020391;
-    const lonTrento=11.122617996278098;
-    let first=true;
-    let latDest;
-    let lonDest;
-    const epsg4326 = 'EPSG:4326';
-    const projection = ol.proj.get(epsg4326);
-      // Creazione della mappa
-      const map = new ol.Map({
-        target: 'mappaRastrelliera',
-        view: new ol.View({
-            center: ol.proj.fromLonLat([lonTrento, latTrento]),
-            zoom: 12
-        })
-    });
+   const latTrento=46.07235047020391;
+  const lonTrento=11.122617996278098;
+  //costanti confini di Trento
+    const LAT_SUP=46.1331;
+    const LAT_INF=46.0284;
+    const LON_SX= 11.0819;
+    const LON_DX=11.1582;
+  let first=true;
+  let latDest;
+  let lonDest;
+  const epsg4326 = 'EPSG:4326';
+  const projection = ol.proj.get(epsg4326);
+    // Creazione della mappa
+    const map = new ol.Map({
+      target: 'mappaRastrelliera',
+      view: new ol.View({
+          center: ol.proj.fromLonLat([lonTrento, latTrento]),
+          zoom: 12
+      })
+  });
 
-    // Aggiunta dei layer OSM e Wikimedia
-    map.addLayer(new ol.layer.Tile({
-        source: new ol.source.OSM()
-    }));
-    map.addLayer(new ol.layer.Tile({
-        source: new ol.source.OSM({
-            url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
-            attributions: [
-                '&copy; <a href="http://www.openstreetmap.org/">OpenStreetMap</a>',
-                '&copy; <a href="https://foundation.wikimedia.org/wiki/Maps_Terms_of_Use">Wikimedia</a>'
-            ]
-        })
-    }));
+  // Aggiunta dei layer OSM e Wikimedia
+  map.addLayer(new ol.layer.Tile({
+      source: new ol.source.OSM()
+  }));
+  map.addLayer(new ol.layer.Tile({
+      source: new ol.source.OSM({
+          url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
+          attributions: [
+              '&copy; <a href="http://www.openstreetmap.org/">OpenStreetMap</a>',
+              '&copy; <a href="https://foundation.wikimedia.org/wiki/Maps_Terms_of_Use">Wikimedia</a>'
+          ]
+      })
+  }));
 
-    // Aggiunta dei controlli di navigazione
-    map.addControl(new ol.control.Zoom());
-    map.addControl(new ol.control.MousePosition());
-    map.addControl(new ol.control.ScaleLine());
-    //map.addControl(new ol.control.LayerSwitcher());
+  // Aggiunta dei controlli di navigazione
+  map.addControl(new ol.control.Zoom());
+  map.addControl(new ol.control.MousePosition());
+  map.addControl(new ol.control.ScaleLine());
+  //map.addControl(new ol.control.LayerSwitcher());
 
-    const markerDest = new ol.layer.Vector({
+  //layer per marker destinazione
+  const markerDest = new ol.layer.Vector({
+source: new ol.source.Vector(),
+style: new ol.style.Style({
+    image: new ol.style.Icon({
+        src: 'res/icona-posizione.png', //creare nuova icona
+        anchor: [0.5, 1],
+        scale: 0.8
+    })
+})
+});
+map.addLayer(markerDest);
+
+//layer per marker rastrelliere
+const markerLayer = new ol.layer.Vector({
   source: new ol.source.Vector(),
   style: new ol.style.Style({
       image: new ol.style.Icon({
-          src: 'res/icona-posizione.png', //creare nuova icona
+          src: 'res/icona-posizione.png',
           anchor: [0.5, 1],
           scale: 0.8
       })
   })
 });
-map.addLayer(markerDest);
+map.addLayer(markerLayer);
+
+const rastrellieraLayer = new ol.layer.Vector({
+    source: new ol.source.Vector()
+});
+map.addLayer(rastrellieraLayer);
+
+const container = document.getElementById("labelDestinazione");
+
+// Pulizia del contenuto precedente del container
+container.innerHTML = '';
+
+const form = document.createElement('form');
+form.classList.add('elemCreato');
+form.id = 'addressForm';
+
+const label = document.createElement('label');
+label.classList.add('elemCreato');
+label.textContent = 'Inserisci la tua destinazione: ';
+
+const input = document.createElement('input');
+input.classList.add('elemCreato');
+input.type = 'text';
+input.id = 'addressInput';
+input.name = 'inputString';
+input.placeholder = 'La tua destinazione...';
+
+const submit = document.createElement('button');
+submit.classList.add('elemCreato');
+submit.type = 'submit';
+submit.textContent = 'Invia';
+const resultElement = document.createElement('p');
+resultElement.classList.add('elemCreato');
 </script>
     
 </body>
