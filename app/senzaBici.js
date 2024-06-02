@@ -44,7 +44,6 @@ router.post('', async (req, res) => {
         res.status(401).json({ error: 'La posizione non è compresa nel comune di Trento'});
         return
     }
-    console.log("sium");
     //ricevi dal database tutti gli stralli
     let tuttiStralli =await riceviStralli();
 
