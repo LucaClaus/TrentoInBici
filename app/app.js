@@ -8,6 +8,7 @@ app.use(express.static('public'));
 
 const biciPropria = require('./biciPropria.js');
 const googleMaps = require('./googleMaps.js');
+const senzaBici = require('./senzaBici.js');
 
 
 app.use((req, res, next) => {
@@ -68,13 +69,12 @@ app.use((req,res,next) => {
     next()
 })
 
-
-
 /**
  * Authentication routing and middleware
  */
 app.use('/api/v1/biciPropria', biciPropria);
 app.use('/api/v1/googleMaps', googleMaps);
+app.use('/api/v1/senzaBici', senzaBici);
 
 
 // Protect booklendings endpoint

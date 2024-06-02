@@ -17,7 +17,6 @@ function coordinatesGoogleMaps(latitude, longitude){
     .catch(error => {
         console.error('Errore nella richiesta al backend:', error);
     });
-
 }
 
 async function chiamataAPIbiciPropria(latitude, longitude) {
@@ -37,11 +36,32 @@ async function chiamataAPIbiciPropria(latitude, longitude) {
   }
 }
 
+async function chiamataAPISenzaBici(latitude, longitude) {
+    try {
+        const response = await fetch('/api/v1/senzaBici', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ position: { latitude, longitude } }),
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error', error);
+        throw error; 
+    }
+ }
+
+async function stazioneBikeSharing(){
+    const position = await requestLocation();
+    let data = await chiamataAPISenzaBici(46.070979730902216, 11.121208984250735)
+}
+
 //pulsante rastrelliera vicino a me
 async function posizioneDispositivo(){
-
-  resetMappa();
-  rimuoviElementiCreati();
+    resetMappa();
+    rimuoviElementiCreati();
     const position = await requestLocation();
       
     //posizione reale
@@ -55,13 +75,10 @@ async function posizioneDispositivo(){
     }else{
       alert("La tua posizione è al di fuori dell'area consentita");
     }
-
-
 }
 
 //pulsante rastrelliera vicino alla mia destinazione
 async function posizioneDestinazione() {
-
     resetMappa();
     rimuoviElementiCreati();
 
@@ -108,12 +125,30 @@ map.on('click', async function (event) {
   // Crea un nuovo marker alle coordinate cliccate
   
 });
-
     // Impedisci lo scorrimento della mappa con la rotellina del mouse
     document.getElementById('mappaRastrelliera').addEventListener('wheel', function (event) {
         event.preventDefault();
     }, { passive: false });
-  };
+};
+
+//pulsante stazione bike sharing più vicina
+async function posizioneDispositivo(){
+
+    resetMappa();
+    rimuoviElementiCreati();
+      const position = await requestLocation();
+        
+      //posizione reale
+      //latitude = position.coords.latitude; 
+      //longitude = position.coords.longitude;
+      latitude = 46.069169527542655;
+      longitude = 11.127596809959554;
+      if(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX){
+        ricercaRastrelliere(latitude, longitude);
+      }else{
+        alert("La tua posizione è al di fuori dell'area consentita");
+      }
+}
 
 //funzione che ricerca le rastrelliera con api e restituisce sulla mappa
 async function ricercaRastrelliere(lat, lon){
@@ -159,14 +194,11 @@ titoloRastrelliere = document.getElementById("titoloRastrelliere");
 titoloRastrelliere.textContent="Rastrelliere più vicine";
 titoloRastrelliere.classList.add('elemRes');
 
-
-
-
 data.body.forEach(function(rastrelliera) {
     let btnRastrelliera = document.createElement('button');
     btnRastrelliera.classList.add('elemCreato');
     btnRastrelliera.style.display = 'block';
-    btnRastrelliera.textContent = "Id: " + rastrelliera.id + " Distanza: " + rastrelliera.distance + " m" + ", Tempo: " + rastrelliera.travelTime + " s";
+    btnRastrelliera.textContent = " Distanza: " + rastrelliera.distance + " m" + ", Tempo: " + rastrelliera.travelTime + " s";
 
     btnRastrelliera.onclick = function() {
         rastrellieraLayer.getSource().clear();
@@ -213,6 +245,111 @@ data.body.forEach(function(rastrelliera) {
 });
 
 hideSpinner();
+}
 
+async function ricercaStralli(lat, lon){
+    showSpinner();
+    const ul = document.getElementById('rastrelliere'); // Lista per visualizzare i dati delle rastrelliere
+    ul.textContent = '';
+    let selectedCoordinates = null;
+    let first = true;
+    let latitude = lat;
+    let longitude = lon;
 
+    document.getElementById('mappaRastrelliera').addEventListener('wheel', function(event) {
+        event.preventDefault();
+    }, { passive: false });
+
+    const positionLabel= document.getElementById('position');
+    positionLabel.innerHTML = "Posizione: [" + latitude + ", " + longitude + "]";
+
+    const view = map.getView();
+    const newCenter = ol.proj.fromLonLat([longitude, latitude]);
+    view.setCenter(newCenter);
+    view.setZoom(15);
+
+    // Aggiunta dei controlli alla mappa
+    map.addControl(new ol.control.ScaleLine());
+    map.addControl(new ol.control.MousePosition());
+    
+    // Aggiunta del marker centrale
+    const centerFeature = new ol.Feature({
+        geometry: new ol.geom.Point(ol.proj.fromLonLat([longitude, latitude]))
+    });
+    markerLayer.getSource().addFeature(centerFeature);
+
+    // Chiamata all'API per ottenere i dati delle rastrelliere
+    const data = await chiamataAPISenzaBici(latitude, longitude);
+    titoloStralli = document.getElementById("titoloRastrelliere");
+    titoloStralli.textContent="Stralli più vicini";
+    titoloStralli.classList.add('elemRes');
+
+    data.body.forEach(function(strallo) {
+        let btnStrallo = document.createElement('button');
+        btnStrallo.classList.add('elemCreato');
+        btnStrallo.style.display = 'block';
+        btnStrallo.textContent =" Distanza: " + strallo.distance + " m" + ", Tempo: " + strallo.travelTime + " s";
+    
+        btnStrallo.onclick = function() {
+            rastrellieraLayer.getSource().clear();
+            let selectedMarkerFeature = new ol.Feature({
+                geometry: new ol.geom.Point(ol.proj.fromLonLat([strallo.longitude, strallo.latitude])),
+                description: "Selected Rastrelliera"
+            });
+            selectedMarkerFeature.setStyle(new ol.style.Style({
+                image: new ol.style.Icon({
+                    src: 'res/icona-rastrelliera-selezionata.png',
+                    anchor: [0.5, 1],
+                    scale: 0.8
+                })
+            }));
+            rastrellieraLayer.getSource().addFeature(selectedMarkerFeature);
+            selectedCoordinates = [strallo.latitude, strallo.longitude];
+            if (first) {
+                let btnIniziaNavigazione = document.createElement('button');
+                btnIniziaNavigazione.classList.add('elemCreato');
+                btnIniziaNavigazione.textContent = "Inizia navigazione";
+                const divInitNav = document.getElementById('btnIniziaNavigazione');
+                divInitNav.appendChild(btnIniziaNavigazione);
+                first = false;
+                btnIniziaNavigazione.onclick = function() {
+                    coordinatesGoogleMaps(selectedCoordinates[0], selectedCoordinates[1]);
+                };
+            }
+        };
+    
+        ul.appendChild(btnStrallo);
+    
+        let markerFeature = new ol.Feature({
+            geometry: new ol.geom.Point(ol.proj.fromLonLat([strallo.longitude, strallo.latitude])),
+            description: "Strallo"
+        });
+        markerFeature.setStyle(new ol.style.Style({
+            image: new ol.style.Icon({
+                src: 'res/icona-rastrelliera.png',
+                anchor: [0.5, 1],
+                scale: 0.8
+            })
+        }));
+        rastrellieraLayer.getSource().addFeature(markerFeature);
+    });
+    hideSpinner();
+}
+
+async function stazioneBikeSharing() {
+    resetMappa();
+    rimuoviElementiCreati();
+    const position = await requestLocation();
+        
+    //posizione reale
+    //latitude = position.coords.latitude; 
+    //longitude = position.coords.longitude;
+    latitude = 46.069169527542655;
+    longitude = 11.127596809959554;
+
+    if(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX){
+        ricercaStralli(latitude, longitude);
+    }else{
+        alert("La tua posizione è al di fuori dell'area consentita");
+    }
 }
