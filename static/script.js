@@ -134,189 +134,312 @@ map.on('click', async function (event) {
 
 //funzione che ricerca le rastrelliera con api e restituisce sulla mappa
 async function ricercaRastrelliere(lat, lon){
-  showSpinner();
-  // Inizializzazione delle variabili
-const ul = document.getElementById('rastrelliere'); // Lista per visualizzare i dati delle rastrelliere
-ul.textContent = '';
-let selectedCoordinates = null;
-let first = true;
-let latitude = lat;
-let longitude = lon;
-
-document.getElementById('mappaRastrelliera').addEventListener('wheel', function(event) {
-    event.preventDefault();
-}, { passive: false });
-
-const positionLabel= document.getElementById('position');
-positionLabel.innerHTML = "Posizione: [" + latitude + ", " + longitude + "]";
-
-const view = map.getView();
-const newCenter = ol.proj.fromLonLat([longitude, latitude]);
-view.setCenter(newCenter);
-view.setZoom(15);
-
-// Aggiunta dei controlli alla mappa
-map.addControl(new ol.control.ScaleLine());
-map.addControl(new ol.control.MousePosition());
-//map.addControl(new ol.control.LayerSwitcher());
-
-// Creazione del layer per i marker personalizzati
-
-
-// Aggiunta del marker centrale
-const centerFeature = new ol.Feature({
-    geometry: new ol.geom.Point(ol.proj.fromLonLat([longitude, latitude]))
-});
-markerLayer.getSource().addFeature(centerFeature);
-
-// Chiamata all'API per ottenere i dati delle rastrelliere
-const data = await chiamataAPIbiciPropria(latitude, longitude);
-
-titoloRastrelliere = document.getElementById("titoloRastrelliere");
-titoloRastrelliere.textContent="Rastrelliere più vicine";
-titoloRastrelliere.classList.add('elemRes');
-
-data.body.forEach(function(rastrelliera) {
-    let btnRastrelliera = document.createElement('button');
-    btnRastrelliera.classList.add('elemCreato');
-    btnRastrelliera.style.display = 'block';
-    btnRastrelliera.textContent = " Distanza: " + rastrelliera.distance + " m" + ", Tempo: " + rastrelliera.travelTime + " s";
-
-    btnRastrelliera.onclick = function() {
-        rastrellieraLayer.getSource().clear();
-        let selectedMarkerFeature = new ol.Feature({
-            geometry: new ol.geom.Point(ol.proj.fromLonLat([rastrelliera.longitude, rastrelliera.latitude])),
-            description: "Selected Rastrelliera"
-        });
-        selectedMarkerFeature.setStyle(new ol.style.Style({
-            image: new ol.style.Icon({
-                src: 'res/icona-rastrelliera-selezionata.png',
-                anchor: [0.5, 1],
-                scale: 0.8
-            })
-        }));
-        rastrellieraLayer.getSource().addFeature(selectedMarkerFeature);
-        selectedCoordinates = [rastrelliera.latitude, rastrelliera.longitude];
-        if (first) {
-            let btnIniziaNavigazione = document.createElement('button');
-            btnIniziaNavigazione.classList.add('elemCreato');
-            btnIniziaNavigazione.textContent = "Inizia navigazione";
-            const divInitNav = document.getElementById('btnIniziaNavigazione');
-            divInitNav.appendChild(btnIniziaNavigazione);
-            first = false;
-            btnIniziaNavigazione.onclick = function() {
-                coordinatesGoogleMaps(selectedCoordinates[0], selectedCoordinates[1]);
-            };
-        }
-    };
-
-    ul.appendChild(btnRastrelliera);
-
-    let markerFeature = new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.fromLonLat([rastrelliera.longitude, rastrelliera.latitude])),
-        description: "Rastrelliera"
-    });
-    markerFeature.setStyle(new ol.style.Style({
-        image: new ol.style.Icon({
-            src: 'res/icona-rastrelliera.png',
-            anchor: [0.5, 1],
-            scale: 0.8
-        })
-    }));
-    rastrellieraLayer.getSource().addFeature(markerFeature);
-});
-
-hideSpinner();
-}
+    showSpinner();
+    // Inizializzazione delle variabili
+  const ul = document.getElementById('rastrelliere'); // Lista per visualizzare i dati delle rastrelliere
+  ul.textContent = '';
+  let selectedCoordinates = null;
+  let first = true;
+  let latitude = lat;
+  let longitude = lon;
+  
+  document.getElementById('mappaRastrelliera').addEventListener('wheel', function(event) {
+      event.preventDefault();
+  }, { passive: false });
+  
+  const positionLabel= document.getElementById('position');
+  positionLabel.innerHTML = "Posizione: [" + latitude + ", " + longitude + "]";
+  
+  const view = map.getView();
+  const newCenter = ol.proj.fromLonLat([longitude, latitude]);
+  view.setCenter(newCenter);
+  view.setZoom(15);
+  
+  // Aggiunta dei controlli alla mappa
+  map.addControl(new ol.control.ScaleLine());
+  map.addControl(new ol.control.MousePosition());
+  //map.addControl(new ol.control.LayerSwitcher());
+  
+  // Creazione del layer per i marker personalizzati
+  
+  
+  // Aggiunta del marker centrale
+  const centerFeature = new ol.Feature({
+      geometry: new ol.geom.Point(ol.proj.fromLonLat([longitude, latitude]))
+  });
+  markerLayer.getSource().addFeature(centerFeature);
+  
+  // Chiamata all'API per ottenere i dati delle rastrelliere
+  const data = await chiamataAPIbiciPropria(latitude, longitude);
+  
+  titoloRastrelliere = document.getElementById("titoloRastrelliere");
+  titoloRastrelliere.textContent="Rastrelliere più vicine";
+  titoloRastrelliere.classList.add('elemRes');
+  
+  let lonSelected;
+  let latSelected;
+  
+  
+  data.body.forEach(function(rastrelliera) {
+      let btnRastrelliera = document.createElement('button');
+      btnRastrelliera.classList.add('elemCreato');
+      btnRastrelliera.style.display = 'block';
+      btnRastrelliera.textContent = "Id: " + rastrelliera.id + " Distanza: " + rastrelliera.distance + " m" + ", Tempo: " + rastrelliera.travelTime + " s";
+  
+      let markerFeature = new ol.Feature({
+          geometry: new ol.geom.Point(ol.proj.fromLonLat([rastrelliera.longitude, rastrelliera.latitude])),
+          description: "Rastrelliera"
+      });
+      markerFeature.setStyle(new ol.style.Style({
+          image: new ol.style.Icon({
+              src: 'res/icona-rastrelliera.png',
+              anchor: [0.5, 1],
+              scale: 0.8
+          })
+      }));
+      rastrellieraLayer.getSource().addFeature(markerFeature);
+  
+      btnRastrelliera.onclick = function() {
+  
+          if(lonSelected!=null && latSelected!=null){
+              let features = rastrellieraLayer.getSource().getFeatures();
+              let existingFeature = features.find(feature => {
+                  let coordinates = feature.getGeometry().getCoordinates();
+                  let lonLat = ol.proj.toLonLat(coordinates);
+  
+                  //fare approssimazione alle prime 7 cifre dopo il punto
+                  lonLat[0]=approx7cifre(lonLat[0]);
+                  lonLat[1]=approx7cifre(lonLat[1]);
+                  lonSelected=approx7cifre(lonSelected);
+                  latSelected=approx7cifre(latSelected);
+  
+                  return lonLat[0] === lonSelected && lonLat[1] === latSelected;
+              });
+  
+              if (existingFeature) {
+                  // Update the existing feature style
+                  existingFeature.setStyle(new ol.style.Style({
+                      image: new ol.style.Icon({
+                          src: 'res/icona-rastrelliera.png', 
+                          anchor: [0.5, 1],
+                          scale: 0.8
+                      })
+                  }));
+          }
+      }
+  
+          lonSelected=rastrelliera.longitude;
+          latSelected=rastrelliera.latitude;
+  
+          let features = rastrellieraLayer.getSource().getFeatures();
+  
+          let existingFeature = null;
+  
+          for (let i = 0; i < features.length; i++) {
+              let feature = features[i];
+              let coordinates = feature.getGeometry().getCoordinates();
+              let lonLat = ol.proj.toLonLat(coordinates);
+  
+              //fare approssimazione alle prime 7 cifre dopo il punto
+              lonLat[0]=approx7cifre(lonLat[0]);
+              lonLat[1]=approx7cifre(lonLat[1]);
+              lonSelected=approx7cifre(lonSelected);
+              latSelected=approx7cifre(latSelected);
+  
+              if (lonLat[0] === lonSelected && lonLat[1] === latSelected) {
+                  existingFeature = feature; 
+                  break; 
+              }
+          }
+  
+          if(existingFeature){
+              existingFeature.setStyle(new ol.style.Style({
+                  image: new ol.style.Icon({
+                      src: 'res/icona-rastrelliera-selezionata.png', 
+                      anchor: [0.5, 1],
+                      scale: 0.8
+                  })
+              }));
+          }
+    
+              
+  
+          selectedCoordinates = [rastrelliera.latitude, rastrelliera.longitude];
+  
+          if (first) {
+              let btnIniziaNavigazione = document.createElement('button');
+              btnIniziaNavigazione.classList.add('elemCreato');
+              btnIniziaNavigazione.textContent = "Inizia navigazione";
+              const divInitNav = document.getElementById('btnIniziaNavigazione');
+              divInitNav.appendChild(btnIniziaNavigazione);
+              first = false;
+              btnIniziaNavigazione.onclick = function() {
+                  coordinatesGoogleMaps(selectedCoordinates[0], selectedCoordinates[1]);
+              };
+          }
+      };
+  
+      ul.appendChild(btnRastrelliera);
+  
+  });
+  
+  hideSpinner();
+  
+  }
 
 async function ricercaStralli(lat, lon){
     showSpinner();
-    const ul = document.getElementById('rastrelliere'); // Lista per visualizzare i dati delle rastrelliere
-    ul.textContent = '';
-    let selectedCoordinates = null;
-    let first = true;
-    let latitude = lat;
-    let longitude = lon;
-
-    document.getElementById('mappaRastrelliera').addEventListener('wheel', function(event) {
-        event.preventDefault();
-    }, { passive: false });
-
-    const positionLabel= document.getElementById('position');
-    positionLabel.innerHTML = "Posizione: [" + latitude + ", " + longitude + "]";
-
-    const view = map.getView();
-    const newCenter = ol.proj.fromLonLat([longitude, latitude]);
-    view.setCenter(newCenter);
-    view.setZoom(15);
-
-    // Aggiunta dei controlli alla mappa
-    map.addControl(new ol.control.ScaleLine());
-    map.addControl(new ol.control.MousePosition());
-    
-    // Aggiunta del marker centrale
-    const centerFeature = new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.fromLonLat([longitude, latitude]))
-    });
-    markerLayer.getSource().addFeature(centerFeature);
+    // Inizializzazione delle variabili
+  const ul = document.getElementById('rastrelliere'); // Lista per visualizzare i dati delle rastrelliere
+  ul.textContent = '';
+  let selectedCoordinates = null;
+  let first = true;
+  let latitude = lat;
+  let longitude = lon;
+  
+  document.getElementById('mappaRastrelliera').addEventListener('wheel', function(event) {
+      event.preventDefault();
+  }, { passive: false });
+  
+  const positionLabel= document.getElementById('position');
+  positionLabel.innerHTML = "Posizione: [" + latitude + ", " + longitude + "]";
+  
+  const view = map.getView();
+  const newCenter = ol.proj.fromLonLat([longitude, latitude]);
+  view.setCenter(newCenter);
+  view.setZoom(15);
+  
+  // Aggiunta dei controlli alla mappa
+  map.addControl(new ol.control.ScaleLine());
+  map.addControl(new ol.control.MousePosition());
+  //map.addControl(new ol.control.LayerSwitcher());
+  
+  // Creazione del layer per i marker personalizzati
+  
+  
+  // Aggiunta del marker centrale
+  const centerFeature = new ol.Feature({
+      geometry: new ol.geom.Point(ol.proj.fromLonLat([longitude, latitude]))
+  });
+  markerLayer.getSource().addFeature(centerFeature);
 
     // Chiamata all'API per ottenere i dati delle rastrelliere
     const data = await chiamataAPISenzaBici(latitude, longitude);
+
     titoloStralli = document.getElementById("titoloRastrelliere");
     titoloStralli.textContent="Stralli più vicini";
     titoloStralli.classList.add('elemRes');
 
-    data.body.forEach(function(strallo) {
-        let btnStrallo = document.createElement('button');
-        btnStrallo.classList.add('elemCreato');
-        btnStrallo.style.display = 'block';
-        btnStrallo.textContent =" Distanza: " + strallo.distance + " m" + ", Tempo: " + strallo.travelTime + " s";
+    let lonSelected;
+  let latSelected;
+  
+  
+  data.body.forEach(function(rastrelliera) {
+      let btnRastrelliera = document.createElement('button');
+      btnRastrelliera.classList.add('elemCreato');
+      btnRastrelliera.style.display = 'block';
+      btnRastrelliera.textContent = "Id: " + rastrelliera.id + " Distanza: " + rastrelliera.distance + " m" + ", Tempo: " + rastrelliera.travelTime + " s";
+  
+      let markerFeature = new ol.Feature({
+          geometry: new ol.geom.Point(ol.proj.fromLonLat([rastrelliera.longitude, rastrelliera.latitude])),
+          description: "Rastrelliera"
+      });
+      markerFeature.setStyle(new ol.style.Style({
+          image: new ol.style.Icon({
+              src: 'res/icona-rastrelliera.png',
+              anchor: [0.5, 1],
+              scale: 0.8
+          })
+      }));
+      rastrellieraLayer.getSource().addFeature(markerFeature);
+  
+      btnRastrelliera.onclick = function() {
+  
+          if(lonSelected!=null && latSelected!=null){
+              let features = rastrellieraLayer.getSource().getFeatures();
+              let existingFeature = features.find(feature => {
+                  let coordinates = feature.getGeometry().getCoordinates();
+                  let lonLat = ol.proj.toLonLat(coordinates);
+  
+                  //fare approssimazione alle prime 7 cifre dopo il punto
+                  lonLat[0]=approx7cifre(lonLat[0]);
+                  lonLat[1]=approx7cifre(lonLat[1]);
+                  lonSelected=approx7cifre(lonSelected);
+                  latSelected=approx7cifre(latSelected);
+  
+                  return lonLat[0] === lonSelected && lonLat[1] === latSelected;
+              });
+  
+              if (existingFeature) {
+                  // Update the existing feature style
+                  existingFeature.setStyle(new ol.style.Style({
+                      image: new ol.style.Icon({
+                          src: 'res/icona-rastrelliera.png', 
+                          anchor: [0.5, 1],
+                          scale: 0.8
+                      })
+                  }));
+          }
+      }
+  
+          lonSelected=rastrelliera.longitude;
+          latSelected=rastrelliera.latitude;
+  
+          let features = rastrellieraLayer.getSource().getFeatures();
+  
+          let existingFeature = null;
+  
+          for (let i = 0; i < features.length; i++) {
+              let feature = features[i];
+              let coordinates = feature.getGeometry().getCoordinates();
+              let lonLat = ol.proj.toLonLat(coordinates);
+  
+              //fare approssimazione alle prime 7 cifre dopo il punto
+              lonLat[0]=approx7cifre(lonLat[0]);
+              lonLat[1]=approx7cifre(lonLat[1]);
+              lonSelected=approx7cifre(lonSelected);
+              latSelected=approx7cifre(latSelected);
+  
+              if (lonLat[0] === lonSelected && lonLat[1] === latSelected) {
+                  existingFeature = feature; 
+                  break; 
+              }
+          }
+  
+          if(existingFeature){
+              existingFeature.setStyle(new ol.style.Style({
+                  image: new ol.style.Icon({
+                      src: 'res/icona-rastrelliera-selezionata.png', 
+                      anchor: [0.5, 1],
+                      scale: 0.8
+                  })
+              }));
+          }
     
-        btnStrallo.onclick = function() {
-            rastrellieraLayer.getSource().clear();
-            let selectedMarkerFeature = new ol.Feature({
-                geometry: new ol.geom.Point(ol.proj.fromLonLat([strallo.longitude, strallo.latitude])),
-                description: "Selected Rastrelliera"
-            });
-            selectedMarkerFeature.setStyle(new ol.style.Style({
-                image: new ol.style.Icon({
-                    src: 'res/icona-rastrelliera-selezionata.png',
-                    anchor: [0.5, 1],
-                    scale: 0.8
-                })
-            }));
-            rastrellieraLayer.getSource().addFeature(selectedMarkerFeature);
-            selectedCoordinates = [strallo.latitude, strallo.longitude];
-            if (first) {
-                let btnIniziaNavigazione = document.createElement('button');
-                btnIniziaNavigazione.classList.add('elemCreato');
-                btnIniziaNavigazione.textContent = "Inizia navigazione";
-                const divInitNav = document.getElementById('btnIniziaNavigazione');
-                divInitNav.appendChild(btnIniziaNavigazione);
-                first = false;
-                btnIniziaNavigazione.onclick = function() {
-                    coordinatesGoogleMaps(selectedCoordinates[0], selectedCoordinates[1]);
-                };
-            }
-        };
-    
-        ul.appendChild(btnStrallo);
-    
-        let markerFeature = new ol.Feature({
-            geometry: new ol.geom.Point(ol.proj.fromLonLat([strallo.longitude, strallo.latitude])),
-            description: "Strallo"
-        });
-        markerFeature.setStyle(new ol.style.Style({
-            image: new ol.style.Icon({
-                src: 'res/icona-rastrelliera.png',
-                anchor: [0.5, 1],
-                scale: 0.8
-            })
-        }));
-        rastrellieraLayer.getSource().addFeature(markerFeature);
-    });
-    hideSpinner();
-}
+              
+  
+          selectedCoordinates = [rastrelliera.latitude, rastrelliera.longitude];
+  
+          if (first) {
+              let btnIniziaNavigazione = document.createElement('button');
+              btnIniziaNavigazione.classList.add('elemCreato');
+              btnIniziaNavigazione.textContent = "Inizia navigazione";
+              const divInitNav = document.getElementById('btnIniziaNavigazione');
+              divInitNav.appendChild(btnIniziaNavigazione);
+              first = false;
+              btnIniziaNavigazione.onclick = function() {
+                  coordinatesGoogleMaps(selectedCoordinates[0], selectedCoordinates[1]);
+              };
+          }
+      };
+  
+      ul.appendChild(btnRastrelliera);
+  
+  });
+  
+  hideSpinner();
+  
+  }
 
 async function ricercaStrallo(latS, lonS, lonD, latD){
     showSpinner();
