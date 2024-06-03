@@ -53,11 +53,6 @@ async function chiamataAPISenzaBici(latitude, longitude) {
     }
  }
 
-async function stazioneBikeSharing(){
-    const position = await requestLocation();
-    chiamataAPISenzaBici(46.070979730902216, 11.121208984250735)
-}
-
 //pulsante rastrelliera vicino a me
 async function posizioneDispositivo(){
     resetMappa();
@@ -184,7 +179,7 @@ async function ricercaRastrelliere(lat, lon){
       let btnRastrelliera = document.createElement('button');
       btnRastrelliera.classList.add('elemCreato');
       btnRastrelliera.style.display = 'block';
-      btnRastrelliera.textContent = "Id: " + rastrelliera.id + " Distanza: " + rastrelliera.distance + " m" + ", Tempo: " + rastrelliera.travelTime + " s";
+      btnRastrelliera.textContent = " Distanza: " + rastrelliera.distance + " m" + ", Tempo: " + rastrelliera.travelTime + " s";
   
       let markerFeature = new ol.Feature({
           geometry: new ol.geom.Point(ol.proj.fromLonLat([rastrelliera.longitude, rastrelliera.latitude])),
@@ -301,7 +296,7 @@ async function ricercaStralli(lat, lon){
       event.preventDefault();
   }, { passive: false });
   
-  const positionLabel= document.getElementById('position');
+  const positionLabel = document.getElementById('position');
   positionLabel.innerHTML = "Posizione: [" + latitude + ", " + longitude + "]";
   
   const view = map.getView();
@@ -331,14 +326,15 @@ async function ricercaStralli(lat, lon){
     titoloStralli.classList.add('elemRes');
 
     let lonSelected;
-  let latSelected;
+    let latSelected;
   
-  
-  data.body.forEach(function(rastrelliera) {
+    data.body.forEach(function(rastrelliera) {
       let btnRastrelliera = document.createElement('button');
       btnRastrelliera.classList.add('elemCreato');
       btnRastrelliera.style.display = 'block';
-      btnRastrelliera.textContent = "Id: " + rastrelliera.id + " Distanza: " + rastrelliera.distance + " m" + ", Tempo: " + rastrelliera.travelTime + " s";
+      btnRastrelliera.textContent = "Distanza: " + rastrelliera.distance + " m" + ", Tempo: " + rastrelliera.travelTime + " s" + 
+                                    ", Posti liberi: " + rastrelliera.numPostiLiberi + 
+                                    ", Bici disponibili: " + rastrelliera.numBiciDisponibili;
   
       let markerFeature = new ol.Feature({
           geometry: new ol.geom.Point(ol.proj.fromLonLat([rastrelliera.longitude, rastrelliera.latitude])),
@@ -448,10 +444,6 @@ async function ricercaStrallo(latS, lonS, latD, lonD){
     let latitudeDestiantion = latD;
     let longitudeDestiantion= lonD;
     let first = true;
-    console.log("latitudine di partenza: ", latitudeStart);
-    console.log("longitudine di partenza: ", longitudeStart);
-    console.log("latitudine di destinazione: ", latitudeDestiantion);
-    console.log("longitudine di destinazione: ", longitudeDestiantion);
 
     document.getElementById('mappaRastrelliera').addEventListener('wheel', function(event) {
         event.preventDefault();

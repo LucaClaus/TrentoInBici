@@ -21,14 +21,6 @@ const rastrelliere = mongoose.model('rastrellieres', new Schema({
     longitude: Number,
 }));
 
-const rastrellieraFrontEnd = {
-    id: String,
-    latitude: Number,
-    longitude: Number,
-    distance: Number,
-    travelTime: Number
-};
-
 router.post('', async (req, res) => {
 
     const position = req.body.position;

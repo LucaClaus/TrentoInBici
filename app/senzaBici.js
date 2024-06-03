@@ -21,14 +21,6 @@ const stralli = mongoose.model('strallis', new Schema({
     longitude: Number,
 }));
 
-const stralloFrontEnd = {
-    id: String,
-    latitude: Number,
-    longitude: Number,
-    distance: Number,
-    travelTime: Number
-};
-
 router.post('', async (req, res) => {
 
     const position = req.body.position;
@@ -51,8 +43,8 @@ router.post('', async (req, res) => {
     let stralliPiuViciniGeometricamente = await strPiuVicineGeometricamente(position, tuttiStralli);
 
     //funzione che calcola le 5 rastrelliere più vicine da mostrare all'utente, da ritornare: posizione, distanza dalla posizione dell'utente chiamando OSRM
-    let distances = await getDistancesFromPosition(position, stralliPiuViciniGeometricamente);
-    res.status(200).json({ message: 'Position received successfully', body: distances });
+    let data = await getDatiStallo(position, stralliPiuViciniGeometricamente);
+    res.status(200).json({ message: 'Position received successfully', body: data });
 });
 
 async function riceviStralli(){
@@ -104,8 +96,8 @@ async function calcolaDistanzaGeometrica(lat1, lon1, lat2, lon2) {
     return dist;
 }
 
-async function getDistancesFromPosition(startPosition, destinations) {
-    let distances = [];
+async function getDatiStallo(startPosition, destinations) {
+    let stalli = [];
 
     for (let i = 0; i < destinations.length; i++) {
         let destination = destinations[i];
@@ -118,22 +110,43 @@ async function getDistancesFromPosition(startPosition, destinations) {
         let route = response.data.routes[0];
         let distance = route.distance; // The distance is in meters
         let travelTime = route.duration; // The travel time is in seconds
+        let dataStallo = await chiamataAPIinfoStallo(destination.id)
 
-        let rackWithDistanceTravelTime = {
+        let datiStallo = {
             id: destination.id,
             latitude: destination.latitude,
             longitude: destination.longitude,
             distance: distance,
-            travelTime: travelTime
+            travelTime: travelTime,
+            numPostiLiberi: dataStallo.body.numPostiLiberi,
+            numBiciDisponibili: dataStallo.body.numBiciDisponibili
         };
         // Add the object to the distances array
-        distances.push(rackWithDistanceTravelTime);
+        stalli.push(datiStallo);
     }
      //ritorna le rastrelliere 
-     distances.sort((a, b) => a.distance - b.distance);
-     let treRastrellierePiùVicine = distances.slice(0, 3);
+     stalli.sort((a, b) => a.distance - b.distance);
+     let treRastrellierePiùVicine = stalli.slice(0, 3);
     
     return treRastrellierePiùVicine;
 }
+
+async function chiamataAPIinfoStallo(id) {
+    try {
+        const url = 'http://localhost:8080/api/v1/infoStallo';
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: id }),
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error', error);
+        throw error; 
+    }
+ }
 
 module.exports = router;
