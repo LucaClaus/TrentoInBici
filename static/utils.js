@@ -127,7 +127,6 @@ function pulsanteConfermaDestinazione(){
     const divInitNav = document.getElementById('btnConfermaDestinazione');
     divInitNav.innerHTML = ''; // Rimuovi qualsiasi contenuto precedente
     divInitNav.appendChild(btnConfermaDestinazione);
-
 }
 
 function approx7cifre(num){
