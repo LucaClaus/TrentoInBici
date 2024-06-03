@@ -164,7 +164,7 @@ async function ricercaRastrelliere(lat, lon){
   
   
   // Aggiunta del marker centrale
-  const centerFeature = new ol.Feature({
+ const centerFeature = new ol.Feature({
       geometry: new ol.geom.Point(ol.proj.fromLonLat([longitude, latitude]))
   });
   markerLayer.getSource().addFeature(centerFeature);
@@ -416,8 +416,6 @@ async function ricercaStralli(lat, lon){
               }));
           }
     
-              
-  
           selectedCoordinates = [rastrelliera.latitude, rastrelliera.longitude];
   
           if (first) {
@@ -441,7 +439,7 @@ async function ricercaStralli(lat, lon){
   
   }
 
-async function ricercaStrallo(latS, lonS, lonD, latD){
+async function ricercaStrallo(latS, lonS, latD, lonD){
     showSpinner();
     const ul = document.getElementById('rastrelliere'); // Lista per visualizzare i dati delle rastrelliere
     ul.textContent = '';
@@ -450,16 +448,18 @@ async function ricercaStrallo(latS, lonS, lonD, latD){
     let latitudeDestiantion = latD;
     let longitudeDestiantion= lonD;
     let first = true;
+    console.log("latitudine di partenza: ", latitudeStart);
+    console.log("longitudine di partenza: ", longitudeStart);
+    console.log("latitudine di destinazione: ", latitudeDestiantion);
+    console.log("longitudine di destinazione: ", longitudeDestiantion);
 
     document.getElementById('mappaRastrelliera').addEventListener('wheel', function(event) {
         event.preventDefault();
     }, { passive: false });
 
     const positionLabelStart = document.getElementById('position');
-    positionLabelStart.innerHTML = "Posizione: [" + latitudeStart + ", " + longitudeStart + "]";
-
-    const positionLabelDestinatio = document.getElementById('position');
-    positionLabelDestinatio.innerHTML = "Posizione: [" + latitudeDestiantion + ", " + longitudeDestiantion + "]";
+    positionLabelStart.innerHTML = "Posizione di partenza: [" + latitudeStart + ", " + longitudeStart + "] " + 
+                                    "Posizione di arrivo: [" + latitudeDestiantion + ", " + longitudeDestiantion + "]";
 
     const view = map.getView();
     const newCenter = ol.proj.fromLonLat([longitudeStart, latitudeStart]);
@@ -556,7 +556,8 @@ async function tragittoInteroBikeSharing() {
     resetMappa();
     rimuoviElementiCreati();
     const startPosition = await requestLocation();
-    creaLabelDestinazione();
+    //creaLabelDestinazioneStallo(startPosition.coordinates.latitude, startPosition.coordinates.longitude);
+    creaLabelDestinazioneStallo(46.069169527542655, 11.127596809959554);
 
     map.on('click', async function (event) {
 
@@ -581,15 +582,14 @@ async function tragittoInteroBikeSharing() {
 
     // Aggiungi il nuovo marker al layer
     markerDest.getSource().addFeature(marker);
-    //ricercaStrallo(startPosition.coords.latitude, startPosition.coords.longitude, lonDest, latDest)
-    ricercaStrallo(46.069169527542655, 11.127596809959554, lonDest, latDest)
+    //ricercaStrallo(startPosition.coords.latitude, startPosition.coords.longitude, latDest, lonDest)
+    ricercaStrallo(46.069169527542655, 11.127596809959554, latDest, lonDest)
 
     }else{
         resultElement.innerHTML='Posizione al di fuori dell\'area consentita'
         resultElement.style.color = 'red';
     }
     });
-
 
     // Impedisci lo scorrimento della mappa con la rotellina del mouse
     document.getElementById('mappaRastrelliera').addEventListener('wheel', function (event) {
