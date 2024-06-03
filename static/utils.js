@@ -129,3 +129,10 @@ function pulsanteConfermaDestinazione(){
     divInitNav.appendChild(btnConfermaDestinazione);
 
 }
+
+function approx7cifre(num){
+    var lonIntApprox = num * 10000000;
+    var lonRoundedApprox = Math.round(lonIntApprox);
+    lonRoundedApprox=lonRoundedApprox/10000000;
+    return lonRoundedApprox;
+}
