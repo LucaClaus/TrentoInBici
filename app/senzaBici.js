@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 
-//numero di rastrelliere da mandare a OSRM
+//numero di stralli da mandare a OSRM
 const RASTRELLIERE_CALCOLATE_GEOMETRICAMENTE=5;
 const LAT_SUP=46.1331;
 const LAT_INF=46.0284;
@@ -15,13 +15,13 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 // set up a mongoose model
-const rastrelliere = mongoose.model('rastrellieres', new Schema({ 
+const stralli = mongoose.model('strallis', new Schema({ 
 	id: String,
     latitude: Number,
     longitude: Number,
 }));
 
-const rastrellieraFrontEnd = {
+const stralloFrontEnd = {
     id: String,
     latitude: Number,
     longitude: Number,
@@ -32,7 +32,6 @@ const rastrellieraFrontEnd = {
 router.post('', async (req, res) => {
 
     const position = req.body.position;
-    //console.log("Coordinate Dispositivo: ", position);
 
     //se manca la posizione ritorna errore
     if(!position || position.latitude==null || position.longitude==null){
@@ -43,52 +42,38 @@ router.post('', async (req, res) => {
     //se la posizione data è la di fuori del comune di Trento torna errore
     if(!(LAT_INF <= position.latitude && position.latitude < LAT_SUP) || !(LON_SX <= position.longitude && position.longitude < LON_DX)){
         res.status(401).json({ error: 'La posizione non è compresa nel comune di Trento'});
-        console.log("posizione fuori dall'area");
         return
     }
+    //ricevi dal database tutti gli stralli
+    let tuttiStralli =await riceviStralli();
 
-    //ricevi dal database tutte le rastrelliere
-    let tutteRastrelliere = await riceviRastrelliere();
-
-    //calcola le RASTRELLIERE_CALCOLATE_GEOMETRICAMENTE rastrelliere piu vicine alla posizione geometricamente
-    let rastrellierePiùVicineGeometricamente = await rastPiuVicineGeometricamente(position, tutteRastrelliere);
-    /*console.log("Distanze calcolate geometricamente");
-    for(let i=0; i<rastrellierePiùVicineGeometricamente.length;i++){
-        console.log(rastrellierePiùVicineGeometricamente[i].id);
-    }*/
+    //calcola le STRALLI_CALCOLATE_GEOMETRICAMENTE stralli piu vicini alla posizione geometricamente
+    let stralliPiuViciniGeometricamente = await strPiuVicineGeometricamente(position, tuttiStralli);
 
     //funzione che calcola le 5 rastrelliere più vicine da mostrare all'utente, da ritornare: posizione, distanza dalla posizione dell'utente chiamando OSRM
-    let distances = await getDistancesFromPosition(position, rastrellierePiùVicineGeometricamente);
-    /*console.log("Distanze calcolate con l'osmr");
-    for(let i=0; i<distances.length;i++){
-        console.log(distances[i].id + " " + distances[i].distance);
-    }*/
-
+    let distances = await getDistancesFromPosition(position, stralliPiuViciniGeometricamente);
     res.status(200).json({ message: 'Position received successfully', body: distances });
 });
 
-//ricevere dal database tutte le rastrelliere
-async function riceviRastrelliere(){
-    const collectionName = rastrelliere.collection.name;
-    console.log('Il modello "rastrelliere" è associato alla collezione:', collectionName);
-    let rast = await rastrelliere.find({});
-    rast = rast.map( (rastrelliera) => {
+async function riceviStralli(){
+    const collectionName = stralli.collection.name;
+    console.log('Il modello "stralli" è associato alla collezione:', collectionName);
+    let str = await stralli.find({});
+    str = str.map( (strallo) => {
         return {
-            id: rastrelliera.id,
-            latitude: rastrelliera.latitude,
-            longitude: rastrelliera.longitude,
+            id: strallo.id,
+            latitude: strallo.latitude,
+            longitude: strallo.longitude,
         };
-        
     });
-    return rast;
+    return str;
 }
 
-//calcolare le tot rastrelliere più vicine geometricamente
-async function rastPiuVicineGeometricamente(position, tutteRast){
+async function strPiuVicineGeometricamente(position, tuttiStralli){
     let distanze = [];
-    for (let i = 0; i < tutteRast.length; i++) {
-        let dist = await calcolaDistanzaGeometrica(position.latitude, position.longitude, tutteRast[i].latitude, tutteRast[i].longitude);
-        distanze.push({ distanza: dist, rast: tutteRast[i] });
+    for (let i = 0; i < tuttiStralli.length; i++) {
+        let dist = await calcolaDistanzaGeometrica(position.latitude, position.longitude, tuttiStralli[i].latitude, tuttiStralli[i].longitude);
+        distanze.push({ distanza: dist, rast: tuttiStralli[i] });
     }
     
     distanze.sort((a, b) => a.distanza - b.distanza);
@@ -98,7 +83,6 @@ async function rastPiuVicineGeometricamente(position, tutteRast){
     return distanzeMinori;
 }
 
-//calcolare geometricamente le 10 rastrelliere più vicine
 async function calcolaDistanzaGeometrica(lat1, lon1, lat2, lon2) {
     // Converti gradi in radianti
     const deg2rad = Math.PI / 180;
@@ -147,9 +131,9 @@ async function getDistancesFromPosition(startPosition, destinations) {
     }
      //ritorna le rastrelliere 
      distances.sort((a, b) => a.distance - b.distance);
-     let cinqueRastrellierePiuVicine = distances.slice(0, 5);
+     let treRastrellierePiùVicine = distances.slice(0, 3);
     
-    return cinqueRastrellierePiuVicine;
+    return treRastrellierePiùVicine;
 }
 
 module.exports = router;

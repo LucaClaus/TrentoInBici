@@ -17,7 +17,6 @@ function coordinatesGoogleMaps(latitude, longitude){
     .catch(error => {
         console.error('Errore nella richiesta al backend:', error);
     });
-
 }
 
 async function chiamataAPIbiciPropria(latitude, longitude) {
@@ -37,11 +36,32 @@ async function chiamataAPIbiciPropria(latitude, longitude) {
   }
 }
 
+async function chiamataAPISenzaBici(latitude, longitude) {
+    try {
+        const response = await fetch('/api/v1/senzaBici', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ position: { latitude, longitude } }),
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error', error);
+        throw error; 
+    }
+ }
+
+async function stazioneBikeSharing(){
+    const position = await requestLocation();
+    chiamataAPISenzaBici(46.070979730902216, 11.121208984250735)
+}
+
 //pulsante rastrelliera vicino a me
 async function posizioneDispositivo(){
-
-  resetMappa();
-  rimuoviElementiCreati();
+    resetMappa();
+    rimuoviElementiCreati();
     const position = await requestLocation();
       
     //posizione reale
@@ -55,13 +75,10 @@ async function posizioneDispositivo(){
     }else{
       alert("La tua posizione è al di fuori dell'area consentita");
     }
-
-
 }
 
 //pulsante rastrelliera vicino alla mia destinazione
 async function posizioneDestinazione() {
-
     resetMappa();
     rimuoviElementiCreati();
 
@@ -100,6 +117,7 @@ map.on('click', async function (event) {
   markerDest.getSource().addFeature(marker);
 
   pulsanteConfermaDestinazione();
+
   }else{
     resultElement.innerHTML='Posizione al di fuori dell\'area consentita'
     resultElement.style.color = 'red';
@@ -108,12 +126,30 @@ map.on('click', async function (event) {
   // Crea un nuovo marker alle coordinate cliccate
   
 });
-
     // Impedisci lo scorrimento della mappa con la rotellina del mouse
     document.getElementById('mappaRastrelliera').addEventListener('wheel', function (event) {
         event.preventDefault();
     }, { passive: false });
-  };
+};
+
+//pulsante stazione bike sharing più vicina
+async function posizioneDispositivo(){
+
+    resetMappa();
+    rimuoviElementiCreati();
+      const position = await requestLocation();
+        
+      //posizione reale
+      //latitude = position.coords.latitude; 
+      //longitude = position.coords.longitude;
+      latitude = 46.069169527542655;
+      longitude = 11.127596809959554;
+      if(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX){
+        ricercaRastrelliere(latitude, longitude);
+      }else{
+        alert("La tua posizione è al di fuori dell'area consentita");
+      }
+}
 
 //funzione che ricerca le rastrelliera con api e restituisce sulla mappa
 async function ricercaRastrelliere(lat, lon){
@@ -159,8 +195,7 @@ titoloRastrelliere = document.getElementById("titoloRastrelliere");
 titoloRastrelliere.textContent="Rastrelliere più vicine";
 titoloRastrelliere.classList.add('elemRes');
 
-let lonSelected;
-let latSelected;
+
 
 
 data.body.forEach(function(rastrelliera) {
@@ -168,19 +203,6 @@ data.body.forEach(function(rastrelliera) {
     btnRastrelliera.classList.add('elemCreato');
     btnRastrelliera.style.display = 'block';
     btnRastrelliera.textContent = "Id: " + rastrelliera.id + " Distanza: " + rastrelliera.distance + " m" + ", Tempo: " + rastrelliera.travelTime + " s";
-
-    let markerFeature = new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.fromLonLat([rastrelliera.longitude, rastrelliera.latitude])),
-        description: "Rastrelliera"
-    });
-    markerFeature.setStyle(new ol.style.Style({
-        image: new ol.style.Icon({
-            src: 'res/icona-rastrelliera.png',
-            anchor: [0.5, 1],
-            scale: 0.8
-        })
-    }));
-    rastrellieraLayer.getSource().addFeature(markerFeature);
 
     btnRastrelliera.onclick = function() {
 
@@ -267,5 +289,6 @@ data.body.forEach(function(rastrelliera) {
 });
 
 hideSpinner();
+
 
 }
