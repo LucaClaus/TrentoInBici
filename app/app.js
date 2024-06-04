@@ -10,6 +10,7 @@ const biciPropria = require('./biciPropria.js');
 const googleMaps = require('./googleMaps.js');
 const senzaBici = require('./senzaBici.js');
 const infoStallo = require('./infoStallo.js');
+const gestoreDataBase = require('./gestoreDataBase.js');
 
 
 app.use((req, res, next) => {
@@ -47,6 +48,7 @@ app.use('/api/v1/biciPropria', biciPropria);
 app.use('/api/v1/googleMaps', googleMaps);
 app.use('/api/v1/senzaBici', senzaBici);
 app.use('/api/v1/infoStallo', infoStallo);
+app.use('/api/v1/gestoreDataBase', gestoreDataBase);
 
 /* Default 404 handler */
 app.use((req, res) => {

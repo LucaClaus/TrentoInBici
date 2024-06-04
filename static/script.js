@@ -85,6 +85,23 @@ async function chiamataAPISenzaBici(latitude, longitude) {
     }
  }
 
+async function chiamataAPIgestoreDatabase(latitude, longitude){
+    try {
+        const response = await fetch('/api/v1/gestoreDataBase', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ position: { latitude, longitude } }),
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error', error);
+        throw error; 
+    }
+}
+
 //pulsante rastrelliera vicino a me
 async function posizioneDispositivo(){
     resetMappa();
@@ -685,5 +702,11 @@ async function tuttiBikeSharing(){
         rastrellieraLayer.getSource().addFeature(markerFeature);
 
     });
+    hideSpinner();
+}
+
+async function aggiungiRastrelliera(){
+    showSpinner();
+    creaLableInserisciRastrelliera();
     hideSpinner();
 }
