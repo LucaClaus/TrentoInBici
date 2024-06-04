@@ -47,6 +47,12 @@ router.post('', async (req, res) => {
     res.status(200).json({ message: 'Position received successfully', body: data });
 });
 
+router.get('/all', async (req, res) => {
+    let tuttiStalli= await riceviStralli();
+    res.status(200).json({ message: 'All stalli received successfully', body: tuttiStalli });
+
+});
+
 async function riceviStralli(){
     const collectionName = stralli.collection.name;
     console.log('Il modello "stralli" è associato alla collezione:', collectionName);

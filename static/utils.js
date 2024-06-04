@@ -41,6 +41,8 @@ return new Promise((resolve, reject) => {
     // Aggiunta del form al div container
     container.appendChild(form);
 
+    document.getElementById('labelCliccaSuMappa').innerHTML="Oppure clicca sulla mappa sulla posizione desiderata";
+
     // Aggiungi l'event listener al form creato dinamicamente
     form.addEventListener('submit', function(event) {
 
@@ -198,7 +200,7 @@ async function resetMappa(){
 
 function pulsanteConfermaDestinazione(){
     const btnConfermaDestinazione = document.createElement('button');
-    btnConfermaDestinazione.classList.add('elemCreato');
+    btnConfermaDestinazione.classList.add('elemCreato', 'elemCreato', 'btn', 'btn-primary', 'mr-2');
     btnConfermaDestinazione.textContent = 'Conferma Destinazione';
     btnConfermaDestinazione.type = 'submit';
     btnConfermaDestinazione.onclick = function() {

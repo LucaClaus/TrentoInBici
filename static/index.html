@@ -19,13 +19,20 @@
 <div class="container mt-4">
     <h1 class="text-center">TrentoInBici</h1>
     <div class="d-flex justify-content-center mb-3">
-        <button class="btn btn-primary mr-2" onclick="posizioneDispositivo()">Rastrelliera vicino a me</button>
-        <button class="btn btn-primary mr-2" onclick="posizioneDestinazione()">Rastrelliera vicino alla mia destinazione</button>
-        <button class="btn btn-primary mr-2" onclick="stazioneBikeSharing()">Stazione Bike Sharing più vicina</button>
-        <button class="btn btn-primary" onclick="tragittoInteroBikeSharing()">Sono senza bici e voglio arrivare a destinazione</button>
+        <button id="btn1" class="btn btn-primary mr-2 btn-custom" onclick="posizioneDispositivo()">Rastrelliera vicino a me
+            <span class="tooltip">Clicca qui per visualizzare le rastrelliere più vicine a te</span></button>
+        <button id="btn2" class="btn btn-primary mr-2 btn-custom" onclick="posizioneDestinazione()">Rastrelliera vicino alla mia destinazione
+            <span class="tooltip">Clicca qui per visualizzare le rastrelliere più vicine al luogo desiderato</span></button>
+        <button id="btn3" class="btn btn-primary mr-2 btn-custom" onclick="stazioneBikeSharing()">Stazione Bike Sharing più vicina
+            <span class="tooltip">Clicca qui per visualizzare le stazioni Bike Sharing più vicine a te</span></button>
+        <button id="btn4" class="btn btn-primary mr-2 btn-custom" onclick="tragittoInteroBikeSharing()">Sono senza bici e voglio arrivare a destinazione
+            <span class="tooltip">Clicca qui per spostarti in bici verso la tua destinazione</span></button>
+        <button id="btn5" class="btn btn-primary mr-2 btn-custom" onclick="tutteRastrelliere()">Visualizza tutte le rastrelliere</button>
+        <button id="btn6" class="btn btn-primary mr-2 btn-custom" onclick="tuttiBikeSharing()">Visualizza tutti gli stalli Bike Sharing</button>
     </div>
     <form id="addressFrom" class="mb-3">
         <p id="labelDestinazione"></p>
+        <p id="labelCliccaSuMappa" class="elemRes"></p>
     </form>
     <p id="result"></p>
     <div id="btnConfermaDestinazione"></div>
@@ -142,7 +149,7 @@ input.name = 'inputString';
 input.placeholder = 'La tua destinazione...';
 
 const submit = document.createElement('button');
-submit.classList.add('elemCreato');
+submit.classList.add('elemCreato', 'btn', 'btn-primary', 'mr-2');
 submit.type = 'submit';
 submit.textContent = 'Invia';
 const resultElement = document.createElement('p');

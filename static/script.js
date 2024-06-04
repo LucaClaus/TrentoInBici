@@ -36,6 +36,22 @@ async function chiamataAPIbiciPropria(latitude, longitude) {
   }
 }
 
+async function chiamataAPIbiciPropriaAll(){
+    try {
+        const response = await fetch('/api/v1/biciPropria/all', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error', error);
+        throw error; 
+    }
+}
+
 async function chiamataAPISenzaBici(latitude, longitude) {
     try {
         const response = await fetch('/api/v1/senzaBici', {
@@ -44,6 +60,22 @@ async function chiamataAPISenzaBici(latitude, longitude) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ position: { latitude, longitude } }),
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error', error);
+        throw error; 
+    }
+ }
+
+ async function chiamataAPISenzaBiciAll(){
+    try {
+        const response = await fetch('/api/v1/senzaBici/all', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
         });
         const data = await response.json();
         return data;
@@ -177,7 +209,7 @@ async function ricercaRastrelliere(lat, lon){
   
   data.body.forEach(function(rastrelliera) {
       let btnRastrelliera = document.createElement('button');
-      btnRastrelliera.classList.add('elemCreato');
+      btnRastrelliera.classList.add('elemCreato', 'btn', 'btn-primary', 'mb-2');
       btnRastrelliera.style.display = 'block';
       btnRastrelliera.textContent = " Distanza: " + rastrelliera.distance + " m" + ", Tempo: " + rastrelliera.travelTime + " s";
   
@@ -263,7 +295,7 @@ async function ricercaRastrelliere(lat, lon){
   
           if (first) {
               let btnIniziaNavigazione = document.createElement('button');
-              btnIniziaNavigazione.classList.add('elemCreato');
+              btnIniziaNavigazione.classList.add('elemCreato','btn', 'btn-primary', 'mr-2');
               btnIniziaNavigazione.textContent = "Inizia navigazione";
               const divInitNav = document.getElementById('btnIniziaNavigazione');
               divInitNav.appendChild(btnIniziaNavigazione);
@@ -330,7 +362,7 @@ async function ricercaStralli(lat, lon){
   
     data.body.forEach(function(rastrelliera) {
       let btnRastrelliera = document.createElement('button');
-      btnRastrelliera.classList.add('elemCreato');
+      btnRastrelliera.classList.add('elemCreato', 'btn', 'btn-primary', 'mb-2');
       btnRastrelliera.style.display = 'block';
       btnRastrelliera.textContent = "Distanza: " + rastrelliera.distance + " m" + ", Tempo: " + rastrelliera.travelTime + " s" + 
                                     ", Posti liberi: " + rastrelliera.numPostiLiberi + 
@@ -416,7 +448,7 @@ async function ricercaStralli(lat, lon){
   
           if (first) {
               let btnIniziaNavigazione = document.createElement('button');
-              btnIniziaNavigazione.classList.add('elemCreato');
+              btnIniziaNavigazione.classList.add('elemCreato','btn', 'btn-primary', 'mr-2');
               btnIniziaNavigazione.textContent = "Inizia navigazione";
               const divInitNav = document.getElementById('btnIniziaNavigazione');
               divInitNav.appendChild(btnIniziaNavigazione);
@@ -588,3 +620,70 @@ async function tragittoInteroBikeSharing() {
         event.preventDefault();
     }, { passive: false });
 };
+
+async function tutteRastrelliere(){
+    showSpinner();
+
+    resetMappa();
+    rimuoviElementiCreati();
+
+    map.addControl(new ol.control.ScaleLine());
+    map.addControl(new ol.control.MousePosition());
+
+    document.getElementById('mappaRastrelliera').addEventListener('wheel', function(event) {
+        event.preventDefault();
+    }, { passive: false });
+
+    const data = await chiamataAPIbiciPropriaAll();
+
+    data.body.forEach(function(rastrelliera) {
+        let markerFeature = new ol.Feature({
+            geometry: new ol.geom.Point(ol.proj.fromLonLat([rastrelliera.longitude, rastrelliera.latitude])),
+            description: "Rastrelliera"
+        });
+        markerFeature.setStyle(new ol.style.Style({
+            image: new ol.style.Icon({
+                src: 'res/icona-rastrelliera.png',
+                anchor: [0.5, 1],
+                scale: 0.8
+            })
+        }));
+        rastrellieraLayer.getSource().addFeature(markerFeature);
+
+    });
+    hideSpinner();
+
+}
+
+async function tuttiBikeSharing(){
+    showSpinner();
+
+    resetMappa();
+    rimuoviElementiCreati();
+
+    map.addControl(new ol.control.ScaleLine());
+    map.addControl(new ol.control.MousePosition());
+
+    document.getElementById('mappaRastrelliera').addEventListener('wheel', function(event) {
+        event.preventDefault();
+    }, { passive: false });
+
+    const data = await chiamataAPISenzaBiciAll();
+
+    data.body.forEach(function(rastrelliera) {
+        let markerFeature = new ol.Feature({
+            geometry: new ol.geom.Point(ol.proj.fromLonLat([rastrelliera.longitude, rastrelliera.latitude])),
+            description: "Rastrelliera"
+        });
+        markerFeature.setStyle(new ol.style.Style({
+            image: new ol.style.Icon({
+                src: 'res/icona-rastrelliera.png',
+                anchor: [0.5, 1],
+                scale: 0.8
+            })
+        }));
+        rastrellieraLayer.getSource().addFeature(markerFeature);
+
+    });
+    hideSpinner();
+}

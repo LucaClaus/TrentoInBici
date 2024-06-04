@@ -26,3 +26,53 @@
       transform: translate(-50%, -50%) rotate(360deg);
     }
   }
+  body {
+    background-color: #c5e0b4; /* Colore di sfondo grigio chiaro */
+}
+h1 {
+  font-family: 'Montserrat', sans-serif; /* Utilizza Montserrat come primo font scelta, con un fallback a font sans-serif */
+  font-size: 70px;
+  color: #333;
+}
+
+.btn-custom {
+  position: relative;
+}
+
+.btn-text {
+  font-size: 16px;
+}
+
+.tooltip {
+  visibility: hidden;
+  width: 200px;
+  background-color: #333;
+  color: white;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px 12px;
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+}
+
+.btn-custom:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(5px);
+}

@@ -59,6 +59,12 @@ router.post('', async (req, res) => {
     res.status(200).json({ message: 'Position received successfully', body: distances });
 });
 
+router.get('/all', async (req, res) => {
+    let tutteRastrelliere= await riceviRastrelliere();
+    res.status(200).json({ message: 'All rastrelliere received successfully', body: tutteRastrelliere });
+
+});
+
 //ricevere dal database tutte le rastrelliere
 async function riceviRastrelliere(){
     const collectionName = rastrelliere.collection.name;
