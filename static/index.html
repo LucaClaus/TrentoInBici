@@ -134,9 +134,18 @@ const container = document.getElementById("labelDestinazione");
 // Pulizia del contenuto precedente del container
 container.innerHTML = '';
 
+const containerAggiungiRastrelliera = document.getElementById("labelDestinazione");
+
+// Pulizia del contenuto precedente del container
+containerAggiungiRastrelliera.innerHTML = '';
+
 const form = document.createElement('form');
 form.classList.add('elemCreato');
 form.id = 'addressForm';
+
+const formAggiungiRastrelliera = document.createElement('form');
+formAggiungiRastrelliera.classList.add('elemCreato');
+formAggiungiRastrelliera.id = 'addressForm';
 
 const label = document.createElement('label');
 label.classList.add('elemCreato');
@@ -155,6 +164,25 @@ submit.type = 'submit';
 submit.textContent = 'Invia';
 const resultElement = document.createElement('p');
 resultElement.classList.add('elemCreato');
+
+const labelAggiungiRastrelliera = document.createElement('label');
+labelAggiungiRastrelliera.classList.add('elemCreato');
+labelAggiungiRastrelliera.textContent = 'Inserisci la posizione della rastrelliera: ';
+
+const inputAggiungiRastrelliera = document.createElement('input');
+inputAggiungiRastrelliera.classList.add('elemCreato');
+inputAggiungiRastrelliera.type = 'text';
+inputAggiungiRastrelliera.id = 'addressInput';
+inputAggiungiRastrelliera.name = 'inputString';
+inputAggiungiRastrelliera.placeholder = 'La posizione della rastrelliera...';
+
+const submitAggiungiRastrelliera = document.createElement('button');
+submitAggiungiRastrelliera.classList.add('elemCreato', 'btn', 'btn-primary', 'mr-2');
+submitAggiungiRastrelliera.type = 'submit';
+submitAggiungiRastrelliera.textContent = 'Invia';
+
+const resultElementAggiungiRastrelliera = document.createElement('p');
+resultElementAggiungiRastrelliera.classList.add('elemCreato');
 </script>
 </body>
 </html>

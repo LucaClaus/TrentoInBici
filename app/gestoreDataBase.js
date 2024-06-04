@@ -32,7 +32,7 @@ router.post('', async (req, res) => {
         const rastrelliera = rastrellieres[i];
         const distance = calculateDistance(position.latitude, position.longitude, rastrelliera.latitude, rastrelliera.longitude);
         if (distance <= 0.05) { // 0.02 km = 20 meters
-            console.log('Rastrelliera trovata:', rastrelliera);
+            console.log('Rastrelliera trovata:');
             rastrellieraGiàPresente = true;
             break;
         }
@@ -47,7 +47,7 @@ router.post('', async (req, res) => {
         });
         // Save the new rastrelliera to the database
         await newRastrelliera.save();
-        console.log('New rastrelliera added:', newRastrelliera);
+        console.log('New rastrelliera added:');
     }
     res.status(200).json({ message: 'Position received successfully', body: rastrellieraGiàPresente });
 });

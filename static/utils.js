@@ -196,16 +196,16 @@ async function creaLableInserisciRastrelliera(){
     return new Promise((resolve, reject) => {
     
         // Aggiunta del label, dell'input e del submit button al form
-        form.appendChild(label);
-        form.appendChild(input);
-        form.appendChild(submit);
-        form.appendChild(resultElement);
+        formAggiungiRastrelliera.appendChild(labelAggiungiRastrelliera);
+        formAggiungiRastrelliera.appendChild(inputAggiungiRastrelliera);
+        formAggiungiRastrelliera.appendChild(submitAggiungiRastrelliera);
+        formAggiungiRastrelliera.appendChild(resultElementAggiungiRastrelliera);
     
         // Aggiunta del form al div container
-        container.appendChild(form);
+        containerAggiungiRastrelliera.appendChild(formAggiungiRastrelliera);
     
         // Aggiungi l'event listener al form creato dinamicamente
-        form.addEventListener('submit', function(event) {
+        formAggiungiRastrelliera.addEventListener('submit', function(event) {
     
         resetMappa();
         event.preventDefault();
