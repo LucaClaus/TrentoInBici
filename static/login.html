@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="script.js"></script>
+    <script src="login.js"></script>
+    <title>Login Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #c5e0b4;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .login-form span {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .login-form input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .login-form button {
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .login-form button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form action="api/v1/user" method="post" name="loginform" id="loginform" class="login-form">
+            <span>Logged User:</span>
+            <span id="loggedUser"></span>
+            <input type="email" name="email" value="davide.luca@gruppo19.com" id="loginEmail" placeholder="Email"/>
+            <input type="password" name="password" value="123" id="loginPassword" placeholder="Password"/>
+            <button type="button" onclick="login()">LogIn</button>
+            <a href="index.html"><button type="button">Esci</button></a>
+        </form>
+        <p id="loggedUser"></p>
+    </div>
+    <script>
+        var loggedUser = {};
+
+/**
+ * This function is called when login button is pressed.
+ * Note that this does not perform an actual authentication of the user.
+ * A student is loaded given the specified email,
+ * if it exists, the studentId is used in future calls.
+ */
+
+    </script>
+</body>
+</html>

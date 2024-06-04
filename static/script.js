@@ -91,6 +91,7 @@ async function chiamataAPIgestoreDatabase(latitude, longitude){
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'x-access-token': loggedUser.token
             },
             body: JSON.stringify({ position: { latitude, longitude } }),
         });
@@ -705,4 +706,10 @@ async function aggiungiRastrelliera(){
     showSpinner();
     creaLableInserisciRastrelliera();
     hideSpinner();
+}
+
+async function utenteLoggato(){
+    document.getElementById("emailLoggedUser").textContent="Benvenuto " + loggedUser.email;
+    document.getElementById("btnLogin").style.display="none";
+    document.getElementById("btn8").style.display="block";
 }

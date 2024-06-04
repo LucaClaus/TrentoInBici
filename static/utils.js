@@ -1,4 +1,4 @@
-const { Double } = require("mongodb");
+//const { Double } = require("mongodb");
 
 function requestLocation() {
 return new Promise((resolve, reject) => {
@@ -220,7 +220,7 @@ async function creaLableInserisciRastrelliera(){
     
             fetch(url)
             .then(response => response.json())
-            .then(data => {
+            .then(async function (data){
                 if (data.length > 0) {
                     const place = data[0];
                     const latitude = parseFloat(place.lat);
@@ -243,10 +243,13 @@ async function creaLableInserisciRastrelliera(){
                         view.setZoom(15);
         
                         markerDest.getSource().addFeature(marker);
-                        let rastrellieraGiàPresente = chiamataAPIgestoreDatabase(latDest, lonDest);
-                        if(rastrellieraGiàPresente){
-                            resultElement.textContent = 'Rastrelliera in questa posizione è presente nel sistema!';
-                            resultElement.style.color = 'red';
+                        let rastrellieraGiàPresente =await chiamataAPIgestoreDatabase(latDest, lonDest);
+                        if(rastrellieraGiàPresente.body){
+                            alert("Rastrelliera già presente nel sistema")
+                            rimuoviElementiCreati();
+                        }else{
+                            alert("La tua richiesta di aggiunta rastrelliera in via: "+ place.display_name + " è stata inviata. L'amministratore provvederà alla verifica e all'inserimento della rastrelliera nei nostri database")
+                            rimuoviElementiCreati();
                         }
                         // resolve({ latitude, longitude });
                     } else {

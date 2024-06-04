@@ -27,12 +27,39 @@
     }
   }
   body {
-    background-color: #c5e0b4; /* Colore di sfondo grigio chiaro */
+    /*background-color: #afa8a8;*/ /* Colore di sfondo grigio chiaro */
+    background-image: url('res/sfondo.jpg'); /* Percorso dell'immagine */
+    background-size: cover; /* Adatta l'immagine alla dimensione del body */
+    background-repeat: no-repeat; /* Evita che l'immagine si ripeta */
+    background-position: center center; /* Centra l'immagine */
+    background-attachment: fixed;
+    background-color: rgba(255, 255, 255, 2);
 }
 h1 {
   font-family: 'Montserrat', sans-serif; /* Utilizza Montserrat come primo font scelta, con un fallback a font sans-serif */
   font-size: 70px;
   color: #333;
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5); /* Colore bianco con trasparenza al 80% */
+  z-index: 1;
+}
+
+.content {
+  position: relative;
+  z-index: 2; /* Assicura che il contenuto sia sopra l'overlay */
+  /*padding: 20px;*/
+}
+#mappaRastrelliera {
+  height: 600px;
+  width: 100%;
+  border: 5px solid #000; /* Bordo di 2px di colore nero */
+  margin-top: 16px; /* Margine superiore di 16px */
 }
 
 .btn-custom {
