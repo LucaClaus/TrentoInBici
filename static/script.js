@@ -150,7 +150,7 @@ map.on('click', async function (event) {
   console.log('Click registered at:', coordinates, 'Lat/Lon:', latDest, lonDest);
 
   // Rimuovi i marker esistenti
-  markerDest.getSource().clear();
+  markerLayer.getSource().clear();
 
   if(LAT_INF <= latDest && latDest < LAT_SUP && LON_SX <= lonDest && lonDest < LON_DX){
     const marker = new ol.Feature({
@@ -158,7 +158,7 @@ map.on('click', async function (event) {
   });
 
   // Aggiungi il nuovo marker al layer
-  markerDest.getSource().addFeature(marker);
+  markerLayer.getSource().addFeature(marker);
 
   pulsanteConfermaDestinazione();
 
@@ -502,10 +502,6 @@ async function ricercaStrallo(latS, lonS, latD, lonD){
     positionLabelStart.innerHTML = "Posizione di partenza: [" + latitudeStart + ", " + longitudeStart + "] " + 
                                     "Posizione di arrivo: [" + latitudeDestiantion + ", " + longitudeDestiantion + "]";
 
-    const view = map.getView();
-    const newCenter = ol.proj.fromLonLat([longitudeStart, latitudeStart]);
-    view.setCenter(newCenter);
-    view.setZoom(15);
 
     // Aggiunta dei controlli alla mappa
     map.addControl(new ol.control.ScaleLine());

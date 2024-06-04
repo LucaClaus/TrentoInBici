@@ -71,7 +71,7 @@ return new Promise((resolve, reject) => {
                     //resultElement.style.color = 'green';
                     latDest = latitude;
                     lonDest = longitude;
-                    markerDest.getSource().clear();
+                    markerLayer.getSource().clear();
                     const marker = new ol.Feature({
                         geometry: new ol.geom.Point(ol.proj.fromLonLat([lonDest, latDest]))
                     });
@@ -81,7 +81,7 @@ return new Promise((resolve, reject) => {
                     view.setCenter(newCenter);
                     view.setZoom(15);
     
-                    markerDest.getSource().addFeature(marker);
+                    markerLayer.getSource().addFeature(marker);
                     pulsanteConfermaDestinazione();
                     // resolve({ latitude, longitude });
                 } else {
