@@ -5,17 +5,29 @@ return new Promise((resolve, reject) => {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(resolve, reject);
     } else {
+        alert("Posizione GPS non condivisa");
         reject(new Error("Geolocation is not supported by this browser."));
     }
 });
 }
+
+function inizializzaDivRes(){
+    document.getElementById("initDivResult").textContent="Clicca qui per iniziare";
+}
+
 function showSpinner() {
-document.getElementById("spinner").style.display = "block";
+    document.getElementById("spinner").style.display = "block";
 }
 // Nasconde la rotellina di attesa
 function hideSpinner() {
     document.getElementById("spinner").style.display = "none";
 }
+async function resetMappa(){
+    rastrellieraLayer.getSource().clear();
+    markerDest.getSource().clear();
+    markerLayer.getSource().clear();
+}
+
 function rimuoviElementiCreati() {
     const elementiDaRimuovere = document.querySelectorAll('.elemCreato');
     elementiDaRimuovere.forEach(elemento => {
@@ -26,6 +38,7 @@ function rimuoviElementiCreati() {
         elemento.textContent='';
     })
 });
+
 }
 
 async function creaLabelDestinazione() {
@@ -47,6 +60,8 @@ return new Promise((resolve, reject) => {
     form.addEventListener('submit', function(event) {
 
     resetMappa();
+    rimuoviElementiCreati()
+    creaLabelDestinazione();
     event.preventDefault();
 
     const address = document.getElementById('addressInput').value;
@@ -243,15 +258,9 @@ async function creaLableInserisciRastrelliera(){
                         view.setZoom(15);
         
                         markerDest.getSource().addFeature(marker);
-                        let rastrellieraGiàPresente =await chiamataAPIgestoreDatabase(latDest, lonDest);
-                        if(rastrellieraGiàPresente.body){
-                            alert("Rastrelliera già presente nel sistema")
-                            rimuoviElementiCreati();
-                        }else{
-                            alert("La tua richiesta di aggiunta rastrelliera in via: "+ place.display_name + " è stata inviata. L'amministratore provvederà alla verifica e all'inserimento della rastrelliera nei nostri database")
-                            rimuoviElementiCreati();
-                        }
-                        // resolve({ latitude, longitude });
+
+                        await pulsanteInserisciRastrelliera(latDest, lonDest, place)                  
+                        
                     } else {
                         // Le coordinate sono al di fuori dell'area geografica
                         resultElement.textContent = 'Via al di fuori dell\'area consentita.';
@@ -278,11 +287,34 @@ async function creaLableInserisciRastrelliera(){
         });
     });
 }
+async function pulsanteInserisciRastrelliera(latDest, lonDest, place){
+    const btnConfermaDestinazione = document.createElement('button');
+    btnConfermaDestinazione.classList.add('elemCreato', 'elemCreato', 'btn', 'btn-primary', 'mr-2');
+    btnConfermaDestinazione.textContent = 'Conferma Posizione';
+    btnConfermaDestinazione.type = 'submit';
+    btnConfermaDestinazione.onclick = async function() {
 
-async function resetMappa(){
-    rastrellieraLayer.getSource().clear();
-    markerDest.getSource().clear();
-    markerLayer.getSource().clear();
+        let rastrellieraGiàPresente =await chiamataAPIgestoreDatabase(latDest, lonDest);
+
+        if(rastrellieraGiàPresente.body){
+            alert("Rastrelliera già presente nel sistema")
+            rimuoviElementiCreati();
+            resetMappa();
+        }else{
+            if(place){
+                alert("La tua richiesta di aggiunta rastrelliera in via: "+ place.display_name + " è stata inviata. L'amministratore provvederà alla verifica e all'inserimento della rastrelliera nei nostri database")
+                rimuoviElementiCreati();
+            }else{
+                alert("La tua richiesta di aggiunta rastrelliera nella posizione: ["+ latDest+", "+ lonDest + " è stata inviata. L'amministratore provvederà alla verifica e all'inserimento della rastrelliera nei nostri database")
+                rimuoviElementiCreati();
+            }
+            
+        }
+    };
+
+    const divInitNav = document.getElementById('btnConfermaDestinazione');
+    divInitNav.innerHTML = ''; // Rimuovi qualsiasi contenuto precedente
+    divInitNav.appendChild(btnConfermaDestinazione);
 }
 
 function pulsanteConfermaDestinazione(){

@@ -141,6 +141,7 @@ map.on('click', async function (event) {
 
   resultElement.innerHTML='';
   resetMappa();
+  rimuoviElementiCreati();
   // Ottieni le coordinate del click
   const coordinates = event.coordinate;
   const transformedCoordinates = ol.proj.toLonLat(coordinates);
@@ -162,6 +163,7 @@ map.on('click', async function (event) {
   markerLayer.getSource().addFeature(marker);
 
   pulsanteConfermaDestinazione();
+  creaLabelDestinazione();
 
   }else{
     resultElement.innerHTML='Posizione al di fuori dell\'area consentita'
@@ -575,6 +577,7 @@ async function ricercaStrallo(latS, lonS, latD, lonD){
 async function stazioneBikeSharing() {
     resetMappa();
     rimuoviElementiCreati();
+    document.getElementById("divResult").style.display="block";
     const position = await requestLocation();
         
     //posizione reale
@@ -704,6 +707,21 @@ async function tuttiBikeSharing(){
 
 async function aggiungiRastrelliera(){
     showSpinner();
+    resetMappa();
+    rimuoviElementiCreati();
+    const position = await requestLocation();
+      
+    //posizione reale
+    //latitude = position.coords.latitude; 
+    //longitude = position.coords.longitude;
+    latitude = 46.069169527542655;
+    longitude = 11.127596809959554;
+
+    if(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX){
+        await pulsanteInserisciRastrelliera(latDest, lonDest)
+    }else{
+      alert("La tua posizione è al di fuori dell'area consentita");
+    }
     creaLableInserisciRastrelliera();
     hideSpinner();
 }
@@ -711,5 +729,21 @@ async function aggiungiRastrelliera(){
 async function utenteLoggato(){
     document.getElementById("emailLoggedUser").textContent="Benvenuto " + loggedUser.email;
     document.getElementById("btnLogin").style.display="none";
+    document.getElementById("btnLogout").style.display="block";
     document.getElementById("btn8").style.display="block";
+}
+
+function resetTimeout() {
+    clearTimeout(timeout);
+    timeout = setTimeout(logout, loggedUser.sessionTime);
+}
+
+function logout() {
+    alert("LOGOUT. Sarai reindirizzato alla pagina iniziale.");
+    sessionStorage.removeItem("loggedUserEmail");
+    sessionStorage.removeItem("loggedUserToken");
+    sessionStorage.removeItem("loggedUserId");
+    sessionStorage.removeItem("loggedUserSelf");
+    sessionStorage.removeItem("loggedUserTime");
+    window.location.href = "index.html";
 }

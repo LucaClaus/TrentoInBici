@@ -18,12 +18,14 @@ function login()
             loggedUser.email = data.email;
             loggedUser.id = data.id;
             loggedUser.self = data.self;
+            loggedUser.sessionTime= data.sessionTime;
             console.log(loggedUser.email);
 
-            localStorage.setItem("loggedUserEmail", loggedUser.email);
-            localStorage.setItem("loggedUserToken", loggedUser.token);
-            localStorage.setItem("loggedUserId", loggedUser.id);
-            localStorage.setItem("loggedUserSelf", loggedUser.self);
+            sessionStorage.setItem("loggedUserEmail", loggedUser.email);
+            sessionStorage.setItem("loggedUserToken", loggedUser.token);
+            sessionStorage.setItem("loggedUserId", loggedUser.id);
+            sessionStorage.setItem("loggedUserSelf", loggedUser.self);
+            sessionStorage.setItem("loggedUserTime", loggedUser.sessionTime);
 
             window.location.href = "index.html";
              

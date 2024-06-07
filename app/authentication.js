@@ -86,7 +86,7 @@ router.post('', async function(req, res) {
 		// other data encrypted in the token	
 	}
 	var options = {
-		expiresIn: 86400 // expires in 24 hours
+		expiresIn: 600 // 10 minuti
 	}
 	var token = jwt.sign(payload, process.env.SUPER_SECRET, options);
 
@@ -96,6 +96,7 @@ router.post('', async function(req, res) {
 		token: token,
 		email: user.email,
 		id: user._id,
+		sessionTime: options.expiresIn,
 		self: "api/v1/" + user._id
 	});
 
