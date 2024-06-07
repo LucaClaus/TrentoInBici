@@ -3,7 +3,7 @@ const router = express.Router();
 const axios = require('axios');
 
 //numero di stralli da mandare a OSRM
-const RASTRELLIERE_CALCOLATE_GEOMETRICAMENTE=5;
+const STALLI_CALCOLATI_GEOMETRICAMENTE=3;
 const LAT_SUP=46.1331;
 const LAT_INF=46.0284;
 const LON_SX= 11.0819;
@@ -15,7 +15,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 // set up a mongoose model
-const stralli = mongoose.model('strallis', new Schema({ 
+const stralli = mongoose.model('stallis', new Schema({ 
 	id: String,
     latitude: Number,
     longitude: Number,
@@ -36,47 +36,84 @@ router.post('', async (req, res) => {
         res.status(401).json({ error: 'La posizione non è compresa nel comune di Trento'});
         return
     }
-    //ricevi dal database tutti gli stralli
-    let tuttiStralli =await riceviStralli();
+    //ricevi dal database tutti gli stalli
+    let tuttiStalli =await riceviStalli();
 
-    //calcola le STRALLI_CALCOLATE_GEOMETRICAMENTE stralli piu vicini alla posizione geometricamente
-    let stralliPiuViciniGeometricamente = await strPiuVicineGeometricamente(position, tuttiStralli);
+    //calcola le STRALLI_CALCOLATI_GEOMETRICAMENTE stalli piu vicini alla posizione geometricamente
+    let stralliPiuViciniGeometricamente = await strPiuViciniGeometricamente(position, tuttiStalli);
 
-    //funzione che calcola le 5 rastrelliere più vicine da mostrare all'utente, da ritornare: posizione, distanza dalla posizione dell'utente chiamando OSRM
     let data = await getDatiStallo(position, stralliPiuViciniGeometricamente);
     res.status(200).json({ message: 'Position received successfully', body: data });
 });
 
+router.post('/tragittoIntero', async (req, res) => {
+
+    const positionStart = req.body.positionStart;
+    const positionDestination = req.body.positionDestination;
+
+    //se manca la posizione ritorna errore
+    if(!positionStart || positionStart.latitude==null || positionStart.longitude==null){
+        res.status(400).json({ error: 'NO Position'});
+        return
+    }
+    if(!positionDestination || positionDestination.latitude==null || positionDestination.longitude==null){
+        res.status(400).json({ error: 'NO Position'});
+        return
+    }
+
+    //se la posizione data è la di fuori del comune di Trento torna errore
+    if(!(LAT_INF <= positionStart.latitude && positionStart.latitude < LAT_SUP) || !(LON_SX <= positionStart.longitude && positionStart.longitude < LON_DX)){
+        res.status(401).json({ error: 'La posizione non è compresa nel comune di Trento'});
+        return
+    }
+    if(!(LAT_INF <= positionDestination.latitude && positionDestination.latitude < LAT_SUP) || !(LON_SX <= positionDestination.longitude && positionDestination.longitude < LON_DX)){
+        res.status(401).json({ error: 'La posizione non è compresa nel comune di Trento'});
+        return
+    }
+
+    //ricevi dal database tutti gli stalli
+    let tuttiStalli =await riceviStalli();
+
+    //calcola le STRALLI_CALCOLATI_GEOMETRICAMENTE stalli piu vicini alla posizione geometricamente
+    let stralliPiuViciniGeometricamenteStart = await strPiuViciniGeometricamente(positionStart, tuttiStalli);
+    let stralliPiuViciniGeometricamenteDestination = await strPiuViciniGeometricamente(positionDestination, tuttiStalli);
+
+    let data = await calcolaPercorsoMigliore(positionStart, positionDestination, stralliPiuViciniGeometricamenteStart, stralliPiuViciniGeometricamenteDestination);
+    let aPiedi = await tragittoAPiedi(positionStart.latitude, positionStart.longitude, positionDestination.latitude, positionDestination.longitude);
+    data.aPiedi = aPiedi;
+    res.status(200).json({ message: 'Tappe percorso più efficiente', body: data });
+});
+
 router.get('/all', async (req, res) => {
-    let tuttiStalli= await riceviStralli();
+    let tuttiStalli= await riceviStalli();
     res.status(200).json({ message: 'All stalli received successfully', body: tuttiStalli });
 
 });
 
-async function riceviStralli(){
+async function riceviStalli(){
     const collectionName = stralli.collection.name;
-    console.log('Il modello "stralli" è associato alla collezione:', collectionName);
+    console.log('Il modello "stalli" è associato alla collezione:', collectionName);
     let str = await stralli.find({});
-    str = str.map( (strallo) => {
+    str = str.map( (stallo) => {
         return {
-            id: strallo.id,
-            latitude: strallo.latitude,
-            longitude: strallo.longitude,
+            id: stallo.id,
+            latitude: stallo.latitude,
+            longitude: stallo.longitude,
         };
     });
     return str;
 }
 
-async function strPiuVicineGeometricamente(position, tuttiStralli){
+async function strPiuViciniGeometricamente(position, tuttiStalli){
     let distanze = [];
-    for (let i = 0; i < tuttiStralli.length; i++) {
-        let dist = await calcolaDistanzaGeometrica(position.latitude, position.longitude, tuttiStralli[i].latitude, tuttiStralli[i].longitude);
-        distanze.push({ distanza: dist, rast: tuttiStralli[i] });
+    for (let i = 0; i < tuttiStalli.length; i++) {
+        let dist = await calcolaDistanzaGeometrica(position.latitude, position.longitude, tuttiStalli[i].latitude, tuttiStalli[i].longitude);
+        distanze.push({ distanza: dist, str: tuttiStalli[i] });
     }
     
     distanze.sort((a, b) => a.distanza - b.distanza);
 
-    let distanzeMinori = distanze.slice(0, RASTRELLIERE_CALCOLATE_GEOMETRICAMENTE).map(item => item.rast);
+    let distanzeMinori = distanze.slice(0, STALLI_CALCOLATI_GEOMETRICAMENTE).map(item => item.str);
 
     return distanzeMinori;
 }
@@ -129,6 +166,7 @@ async function getDatiStallo(startPosition, destinations) {
         };
         // Add the object to the distances array
         stalli.push(datiStallo);
+        //console.log('Dati stallo:', datiStallo);
     }
      //ritorna le rastrelliere 
      stalli.sort((a, b) => a.distance - b.distance);
@@ -154,5 +192,44 @@ async function chiamataAPIinfoStallo(id) {
         throw error; 
     }
  }
+
+async function calcolaPercorsoMigliore(positionStart, positionDestination, stalliViciniStart, stalliViciniDestination){
+    let minDuration = Infinity;
+    let bestStops = null;
+    for (let element1 of stalliViciniStart) {
+        for (let element2 of stalliViciniDestination) {
+            if(element1.id === element2.id) continue;
+            const coordinates = [
+                [positionStart.longitude, positionStart.latitude], // Start
+                [element1.longitude, element1.latitude], // Waypoint 1
+                [element2.longitude, element2.latitude], // Waypoint 2
+                [positionDestination.longitude, positionDestination.latitude] // Destination
+            ];
+    
+            const coordinatesString = coordinates.map(coord => coord.join(',')).join(';');
+
+            let url = `http://router.project-osrm.org/route/v1/bike/${coordinatesString}?alternatives=false&steps=true&geometries=polyline&overview=full&annotations=true`
+            let response = await axios.get(url);
+            let route = response.data.routes[0];
+            let duration = route.duration;
+            let distance = route.distance;
+            if (duration < minDuration) {
+                minDuration = duration;
+                minDistance = distance;
+                bestStops = [element1, element2];
+            }
+        }
+    }
+    return { bestStops, minDuration, minDistance };
+}
+
+async function tragittoAPiedi(latitudeStart, longitudeStart, latitudeDestination, longitudeDestination){
+    let url = `http://router.project-osrm.org/route/v1/foot/${longitudeStart},${latitudeStart};${longitudeDestination},${latitudeDestination}?overview=false`;
+    let response = await axios.get(url);
+    let route = response.data.routes[0];
+    let duration = route.duration;
+    let distance = route.distance;
+    return { duration, distance };
+}
 
 module.exports = router;

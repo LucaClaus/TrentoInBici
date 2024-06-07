@@ -337,7 +337,7 @@ function pulsanteConfermaDestinazioneStallo(latStart, lonStart){
     btnConfermaDestinazione.textContent = 'Conferma Destinazione';
     btnConfermaDestinazione.type = 'submit';
     btnConfermaDestinazione.onclick = function() {
-      ricercaStrallo(latStart, lonStart, latDest, lonDest);
+      ricercaStallo(latStart, lonStart, latDest, lonDest);
     };
     const divInitNav = document.getElementById('btnConfermaDestinazione');
     divInitNav.innerHTML = ''; // Rimuovi qualsiasi contenuto precedente

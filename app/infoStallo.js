@@ -3,7 +3,6 @@ const router = express.Router();
 
 router.post('', async (req, res) => {
     const id = req.body.id;
-    const upperLimit = id + 5;
     let numPostiLiberi = 5;
     let numBiciDisponibili = 10;
     

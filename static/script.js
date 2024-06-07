@@ -69,6 +69,26 @@ async function chiamataAPISenzaBici(latitude, longitude) {
     }
  }
 
+ async function chiamataAPISenzaBici(latitudeStart, longitudeStart, latitudeDestination, longitudeDestination) {
+    let positionStart = { latitude: latitudeStart, longitude: longitudeStart };
+    let positionDestination = { latitude: latitudeDestination, longitude: longitudeDestination };
+    try {
+        const response = await fetch('/api/v1/senzaBici/tragittoIntero', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            
+            body: JSON.stringify({ positionStart, positionDestination}),
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error', error);
+        throw error; 
+    }
+ }
+
  async function chiamataAPISenzaBiciAll(){
     try {
         const response = await fetch('/api/v1/senzaBici/all', {
@@ -334,7 +354,7 @@ async function ricercaRastrelliere(lat, lon){
   
   }
 
-async function ricercaStralli(lat, lon){
+async function ricercaStalli(lat, lon){
     showSpinner();
     // Inizializzazione delle variabili
   const ul = document.getElementById('rastrelliere'); // Lista per visualizzare i dati delle rastrelliere
@@ -487,14 +507,14 @@ async function ricercaStralli(lat, lon){
   
   }
 
-async function ricercaStrallo(latS, lonS, latD, lonD){
+async function ricercaStallo(latS, lonS, latD, lonD){
     showSpinner();
     const ul = document.getElementById('rastrelliere'); // Lista per visualizzare i dati delle rastrelliere
     ul.textContent = '';
     let latitudeStart = latS;
     let longitudeStart = lonS;
-    let latitudeDestiantion = latD;
-    let longitudeDestiantion= lonD;
+    let latitudeDestination = latD;
+    let longitudeDestination= lonD;
     let first = true;
 
     document.getElementById('mappaRastrelliera').addEventListener('wheel', function(event) {
@@ -502,9 +522,7 @@ async function ricercaStrallo(latS, lonS, latD, lonD){
     }, { passive: false });
 
     const positionLabelStart = document.getElementById('position');
-    positionLabelStart.innerHTML = "Posizione di partenza: [" + latitudeStart + ", " + longitudeStart + "] " + 
-                                    "Posizione di arrivo: [" + latitudeDestiantion + ", " + longitudeDestiantion + "]";
-
+    
 
     // Aggiunta dei controlli alla mappa
     map.addControl(new ol.control.ScaleLine());
@@ -517,23 +535,19 @@ async function ricercaStrallo(latS, lonS, latD, lonD){
     markerLayer.getSource().addFeature(centerFeature);
 
     // Chiamata all'API per ottenere i dati degli stralli
-    const dataStage1 = await chiamataAPISenzaBici(latitudeStart, longitudeStart);
-    const dataStage2 = await chiamataAPISenzaBici(latitudeDestiantion, longitudeDestiantion);
+    const data = await chiamataAPISenzaBici(latitudeStart, longitudeStart, latitudeDestination, longitudeDestination);
+    positionLabelStart.innerHTML = "Tempo e distanza di percorrenza usando le bici del bike sharing: " + data.body.minDuration + " s "+ data.body.minDistance + " m"
+                                   + " || Tempo e distanza andando a piedi: " + data.body.aPiedi.duration + " s " + data.body.aPiedi.distance + " m";
 
-    let minDistanceElement1 = dataStage1.body.reduce((prev, curr) => {
-        return (prev.distanza < curr.distanza) ? prev : curr;
-    });
-
-    let minDistanceElement2 = dataStage2.body.reduce((prev, curr) => {
-        return (prev.distanza < curr.distanza) ? prev : curr;
-    });
-
-    if(minDistanceElement1.id == minDistanceElement2.id){
-        alert("Data la tua posizione di partenza e arrivo non ci sono due stralli che possono esserti utili");
+    let tappa1 = data.body.bestStops[0];
+    let tappa2 = data.body.bestStops[1];
+    
+    if(tappa1.latitude == tappa2.latitude && tappa1.longitude == tappa2.longitude){
+        alert("Non ci sono due stalli che permettono di raggiungere la destinazione con una bici del bike sharing");
     }
 
     let selectedMarkerFeature1 = new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.fromLonLat([minDistanceElement1.longitude, minDistanceElement1.latitude])),
+        geometry: new ol.geom.Point(ol.proj.fromLonLat([tappa1.longitude, tappa1.latitude])),
         description: "Selected Rastrelliera"
     });
     selectedMarkerFeature1.setStyle(new ol.style.Style({
@@ -546,7 +560,7 @@ async function ricercaStrallo(latS, lonS, latD, lonD){
     rastrellieraLayer.getSource().addFeature(selectedMarkerFeature1);
 
     let selectedMarkerFeature2 = new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.fromLonLat([minDistanceElement2.longitude, minDistanceElement2.latitude])),
+        geometry: new ol.geom.Point(ol.proj.fromLonLat([tappa2.longitude, tappa2.latitude])),
         description: "Selected Rastrelliera"
     });
     selectedMarkerFeature2.setStyle(new ol.style.Style({
@@ -566,7 +580,7 @@ async function ricercaStrallo(latS, lonS, latD, lonD){
         divInitNav.appendChild(btnIniziaNavigazione);
         first = false;
         btnIniziaNavigazione.onclick = function() {
-            let url = `https://www.google.com/maps/dir/?api=1&origin=${latitudeStart},${longitudeStart}&destination=${latitudeDestiantion},${longitudeDestiantion}&waypoints=${minDistanceElement1.latitude},${minDistanceElement1.longitude}|${minDistanceElement2.latitude},${minDistanceElement2.longitude}&travelmode=bicycling`;        
+            let url = `https://www.google.com/maps/dir/?api=1&origin=${latitudeStart},${longitudeStart}&destination=${latitudeDestination},${longitudeDestination}&waypoints=${tappa1.latitude},${tappa1.longitude}|${tappa2.latitude},${tappa2.longitude}&travelmode=bicycling`;        
             console.log(url);
             window.open(url);
         };    
@@ -587,7 +601,7 @@ async function stazioneBikeSharing() {
     longitude = 11.127596809959554;
 
     if(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX){
-        ricercaStralli(latitude, longitude);
+        ricercaStalli(latitude, longitude);
     }else{
         alert("La tua posizione è al di fuori dell'area consentita");
     }
@@ -623,8 +637,8 @@ async function tragittoInteroBikeSharing() {
 
     // Aggiungi il nuovo marker al layer
     markerDest.getSource().addFeature(marker);
-    //ricercaStrallo(startPosition.coords.latitude, startPosition.coords.longitude, latDest, lonDest)
-    ricercaStrallo(46.069169527542655, 11.127596809959554, latDest, lonDest)
+    //ricercaStallo(startPosition.coords.latitude, startPosition.coords.longitude, latDest, lonDest)
+    ricercaStallo(46.069169527542655, 11.127596809959554, latDest, lonDest)
 
     }else{
         resultElement.innerHTML='Posizione al di fuori dell\'area consentita'
