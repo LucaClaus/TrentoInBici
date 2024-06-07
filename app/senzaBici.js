@@ -15,7 +15,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 // set up a mongoose model
-const stralli = mongoose.model('strallis', new Schema({ 
+const stralli = mongoose.model('stallis', new Schema({ 
 	id: String,
     latitude: Number,
     longitude: Number,
@@ -55,13 +55,13 @@ router.get('/all', async (req, res) => {
 
 async function riceviStralli(){
     const collectionName = stralli.collection.name;
-    console.log('Il modello "stralli" è associato alla collezione:', collectionName);
+    console.log('Il modello "stalli" è associato alla collezione:', collectionName);
     let str = await stralli.find({});
-    str = str.map( (strallo) => {
+    str = str.map( (stallo) => {
         return {
-            id: strallo.id,
-            latitude: strallo.latitude,
-            longitude: strallo.longitude,
+            id: stallo.id,
+            latitude: stallo.latitude,
+            longitude: stallo.longitude,
         };
     });
     return str;

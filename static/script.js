@@ -485,7 +485,7 @@ async function ricercaStralli(lat, lon){
   
   }
 
-async function ricercaStrallo(latS, lonS, latD, lonD){
+async function ricercaStallo(latS, lonS, latD, lonD){
     showSpinner();
     const ul = document.getElementById('rastrelliere'); // Lista per visualizzare i dati delle rastrelliere
     ul.textContent = '';
@@ -620,8 +620,8 @@ async function tragittoInteroBikeSharing() {
 
     // Aggiungi il nuovo marker al layer
     markerDest.getSource().addFeature(marker);
-    //ricercaStrallo(startPosition.coords.latitude, startPosition.coords.longitude, latDest, lonDest)
-    ricercaStrallo(46.069169527542655, 11.127596809959554, latDest, lonDest)
+    //ricercaStallo(startPosition.coords.latitude, startPosition.coords.longitude, latDest, lonDest)
+    ricercaStallo(46.069169527542655, 11.127596809959554, latDest, lonDest)
 
     }else{
         resultElement.innerHTML='Posizione al di fuori dell\'area consentita'
