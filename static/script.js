@@ -534,12 +534,12 @@ async function ricercaStallo(latS, lonS, latD, lonD){
 
     // Chiamata all'API per ottenere i dati degli stralli
     const data = await chiamataAPISenzaBici(latitudeStart, longitudeStart, latitudeDestination, longitudeDestination);
-    positionLabelStart.innerHTML = "Tempo e distanza di percorrenza usando le bici del bike sharing: " + data.body.minDuration + " s"+ data.body.minDistance + " m"
+    positionLabelStart.innerHTML = "Tempo e distanza di percorrenza usando le bici del bike sharing: " + data.body.minDuration + " s "+ data.body.minDistance + " m"
                                    + " || Tempo e distanza andando a piedi: " + data.body.aPiedi.duration + " s " + data.body.aPiedi.distance + " m";
 
     let tappa1 = data.body.bestStops[0];
     let tappa2 = data.body.bestStops[1];
-
+    
     if(tappa1.latitude == tappa2.latitude && tappa1.longitude == tappa2.longitude){
         alert("Non ci sono due stalli che permettono di raggiungere la destinazione con una bici del bike sharing");
     }

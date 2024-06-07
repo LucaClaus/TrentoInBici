@@ -3,7 +3,7 @@ const router = express.Router();
 const axios = require('axios');
 
 //numero di stralli da mandare a OSRM
-const STALLI_CALCOLATI_GEOMETRICAMENTE=5;
+const STALLI_CALCOLATI_GEOMETRICAMENTE=3;
 const LAT_SUP=46.1331;
 const LAT_INF=46.0284;
 const LON_SX= 11.0819;
