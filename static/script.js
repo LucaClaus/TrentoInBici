@@ -540,6 +540,10 @@ async function ricercaStallo(latS, lonS, latD, lonD){
     let tappa1 = data.body.bestStops[0];
     let tappa2 = data.body.bestStops[1];
 
+    if(tappa1.latitude == tappa2.latitude && tappa1.longitude == tappa2.longitude){
+        alert("Non ci sono due stalli che permettono di raggiungere la destinazione con una bici del bike sharing");
+    }
+
     let selectedMarkerFeature1 = new ol.Feature({
         geometry: new ol.geom.Point(ol.proj.fromLonLat([tappa1.longitude, tappa1.latitude])),
         description: "Selected Rastrelliera"
