@@ -214,8 +214,8 @@ async function ricercaRastrelliere(lat, lon){
       event.preventDefault();
   }, { passive: false });
   
-  const positionLabel= document.getElementById('position');
-  positionLabel.innerHTML = "Posizione: [" + latitude + ", " + longitude + "]";
+  /*const positionLabel= document.getElementById('position');
+  positionLabel.innerHTML = "Posizione: [" + latitude + ", " + longitude + "]";*/
   
   const view = map.getView();
   const newCenter = ol.proj.fromLonLat([longitude, latitude]);
@@ -226,10 +226,7 @@ async function ricercaRastrelliere(lat, lon){
   map.addControl(new ol.control.ScaleLine());
   map.addControl(new ol.control.MousePosition());
   //map.addControl(new ol.control.LayerSwitcher());
-  
-  // Creazione del layer per i marker personalizzati
-  
-  
+
   // Aggiunta del marker centrale
  const centerFeature = new ol.Feature({
       geometry: new ol.geom.Point(ol.proj.fromLonLat([longitude, latitude]))
@@ -241,7 +238,6 @@ async function ricercaRastrelliere(lat, lon){
   
   titoloRastrelliere = document.getElementById("titoloRastrelliere");
   titoloRastrelliere.textContent="Rastrelliere più vicine";
-  titoloRastrelliere.classList.add('elemRes');
   
   let lonSelected;
   let latSelected;
@@ -328,21 +324,34 @@ async function ricercaRastrelliere(lat, lon){
                   })
               }));
           }
-    
-              
   
           selectedCoordinates = [rastrelliera.latitude, rastrelliera.longitude];
   
           if (first) {
               let btnIniziaNavigazione = document.createElement('button');
-              btnIniziaNavigazione.classList.add('elemCreato','btn', 'btn-primary', 'mr-2');
+              btnIniziaNavigazione.classList.add('elemCreato','btn', 'btn-success', 'mr-2');
               btnIniziaNavigazione.textContent = "Inizia navigazione";
               const divInitNav = document.getElementById('btnIniziaNavigazione');
+              let labelInitNav=document.createElement('p');
+              labelInitNav.classList.add('elemCreato')
+              labelInitNav.textContent = "Cliccando su Inizia Navigazione verrai reindirizzato sul sito di Google Maps per raggiungere al meglio la destinazione selezionata. Segui il percorso con tutte le tappe!"
+              divInitNav.appendChild(labelInitNav);
               divInitNav.appendChild(btnIniziaNavigazione);
               first = false;
-              btnIniziaNavigazione.onclick = function() {
-                  coordinatesGoogleMaps(selectedCoordinates[0], selectedCoordinates[1]);
-              };
+              if(latDest==null||lonDest==null){
+                    btnIniziaNavigazione.onclick = function() {
+                    coordinatesGoogleMaps(selectedCoordinates[0], selectedCoordinates[1]);
+                };
+              }else{
+                btnIniziaNavigazione.onclick = function() {
+                    let url = `https://www.google.com/maps/dir/?api=1&destination=${latDest},${lonDest}&waypoints=${selectedCoordinates[0]},${selectedCoordinates[1]}&travelmode=bicycling`;        
+                    latDest=null;
+                    lonDest=null;
+                    console.log(url);
+                    window.open(url);
+                };
+              }
+              
           }
       };
   
@@ -368,8 +377,8 @@ async function ricercaStalli(lat, lon){
       event.preventDefault();
   }, { passive: false });
   
-  const positionLabel = document.getElementById('position');
-  positionLabel.innerHTML = "Posizione: [" + latitude + ", " + longitude + "]";
+  /*const positionLabel = document.getElementById('position');
+  positionLabel.innerHTML = "Posizione: [" + latitude + ", " + longitude + "]";*/
   
   const view = map.getView();
   const newCenter = ol.proj.fromLonLat([longitude, latitude]);
@@ -381,9 +390,6 @@ async function ricercaStalli(lat, lon){
   map.addControl(new ol.control.MousePosition());
   //map.addControl(new ol.control.LayerSwitcher());
   
-  // Creazione del layer per i marker personalizzati
-  
-  
   // Aggiunta del marker centrale
   const centerFeature = new ol.Feature({
       geometry: new ol.geom.Point(ol.proj.fromLonLat([longitude, latitude]))
@@ -394,8 +400,7 @@ async function ricercaStalli(lat, lon){
     const data = await chiamataAPISenzaBici(latitude, longitude);
 
     titoloStralli = document.getElementById("titoloRastrelliere");
-    titoloStralli.textContent="Stralli più vicini";
-    titoloStralli.classList.add('elemRes');
+    titoloStralli.textContent="Stalli più vicini"
 
     let lonSelected;
     let latSelected;
@@ -488,9 +493,13 @@ async function ricercaStalli(lat, lon){
   
           if (first) {
               let btnIniziaNavigazione = document.createElement('button');
-              btnIniziaNavigazione.classList.add('elemCreato','btn', 'btn-primary', 'mr-2');
+              btnIniziaNavigazione.classList.add('elemCreato','btn', 'btn-success', 'mr-2');
               btnIniziaNavigazione.textContent = "Inizia navigazione";
               const divInitNav = document.getElementById('btnIniziaNavigazione');
+              let labelInitNav=document.createElement('p');
+              labelInitNav.classList.add('elemCreato')
+              labelInitNav.textContent = "Cliccando su Inizia Navigazione verrai reindirizzato sul sito di Google Maps per raggiungere al meglio la destinazione selezionata. Segui il percorso con tutte le tappe!"
+              divInitNav.appendChild(labelInitNav);
               divInitNav.appendChild(btnIniziaNavigazione);
               first = false;
               btnIniziaNavigazione.onclick = function() {

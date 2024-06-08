@@ -319,11 +319,12 @@ async function pulsanteInserisciRastrelliera(latDest, lonDest, place){
 
 function pulsanteConfermaDestinazione(){
     const btnConfermaDestinazione = document.createElement('button');
-    btnConfermaDestinazione.classList.add('elemCreato', 'elemCreato', 'btn', 'btn-primary', 'mr-2');
+    btnConfermaDestinazione.classList.add('elemCreato', 'elemCreato', 'btn', 'btn-success', 'mr-2');
     btnConfermaDestinazione.textContent = 'Conferma Destinazione';
     btnConfermaDestinazione.type = 'submit';
     btnConfermaDestinazione.onclick = function() {
       ricercaRastrelliere(latDest, lonDest);
+      rimuoviElementiCreati();
     };
 
     const divInitNav = document.getElementById('btnConfermaDestinazione');
