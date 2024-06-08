@@ -32,12 +32,12 @@ function rimuoviElementiCreati() {
     const elementiDaRimuovere = document.querySelectorAll('.elemCreato');
     elementiDaRimuovere.forEach(elemento => {
         elemento.remove();
-    
+    });
     const elementiDaResettare= document.querySelectorAll('.elemRes');
     elementiDaResettare.forEach(elemento =>{
         elemento.textContent='';
     })
-});
+
 
 }
 
@@ -67,6 +67,8 @@ return new Promise((resolve, reject) => {
     const address = document.getElementById('addressInput').value;
     
     resultElement.innerHTML='';
+    document.getElementById('titoloRastrelliere').innerHTML="";
+    document.getElementById('rastrelliere').innerHTML="";
 
     if (address) {
         // Utilizzare il servizio di geocodifica Nominatim di OpenStreetMap
@@ -104,11 +106,12 @@ return new Promise((resolve, reject) => {
                     resultElement.textContent = 'Via al di fuori dell\'area consentita.';
                     resultElement.style.color = 'red';
                     // Non hai bisogno di chiamare reject qui poiché non sembra che stai utilizzando una promise esterna
+                    //reject('via al di fuori')
                 }
             } else {
                 resultElement.textContent = 'Via non trovata. Verifica l\'indirizzo inserito.';
                 resultElement.style.color = 'red';
-                // reject('Via non trovata');
+                //reject('Via non trovata');
             }
         })
         .catch(error => {
@@ -135,9 +138,12 @@ async function creaLabelDestinazioneStallo(latStart, lonStart) {
         form.appendChild(input);
         form.appendChild(submit);
         form.appendChild(resultElement);
+
     
         // Aggiunta del form al div container
         container.appendChild(form);
+
+        document.getElementById('labelCliccaSuMappa').innerHTML="Oppure clicca sulla mappa sulla posizione desiderata";
     
         // Aggiungi l'event listener al form creato dinamicamente
         form.addEventListener('submit', function(event) {
@@ -148,6 +154,8 @@ async function creaLabelDestinazioneStallo(latStart, lonStart) {
         const address = document.getElementById('addressInput').value;
         
         resultElement.innerHTML='';
+        document.getElementById('titoloRastrelliere').innerHTML="";
+        document.getElementById('rastrelliere').innerHTML="";
     
         if (address) {
             // Utilizzare il servizio di geocodifica Nominatim di OpenStreetMap
@@ -325,6 +333,7 @@ function pulsanteConfermaDestinazione(){
     btnConfermaDestinazione.onclick = function() {
       ricercaRastrelliere(latDest, lonDest);
       rimuoviElementiCreati();
+      creaLabelDestinazione();
     };
 
     const divInitNav = document.getElementById('btnConfermaDestinazione');
@@ -334,20 +343,22 @@ function pulsanteConfermaDestinazione(){
 
 function pulsanteConfermaDestinazioneStallo(latStart, lonStart){
     const btnConfermaDestinazione = document.createElement('button');
-    btnConfermaDestinazione.classList.add('elemCreato');
+    btnConfermaDestinazione.classList.add('elemCreato', 'elemCreato', 'btn', 'btn-success', 'mr-2');
     btnConfermaDestinazione.textContent = 'Conferma Destinazione';
     btnConfermaDestinazione.type = 'submit';
     btnConfermaDestinazione.onclick = function() {
       ricercaStallo(latStart, lonStart, latDest, lonDest);
+      rimuoviElementiCreati();
+      creaLabelDestinazioneStallo()
     };
     const divInitNav = document.getElementById('btnConfermaDestinazione');
     divInitNav.innerHTML = ''; // Rimuovi qualsiasi contenuto precedente
     divInitNav.appendChild(btnConfermaDestinazione);
 }
 
-function approx7cifre(num){
-    var lonIntApprox = num * 10000000;
+function approxNcifre(num,n){
+    var lonIntApprox = num * 10 * n;
     var lonRoundedApprox = Math.round(lonIntApprox);
-    lonRoundedApprox=lonRoundedApprox/10000000;
+    lonRoundedApprox=lonRoundedApprox/(10*n);
     return lonRoundedApprox;
 }

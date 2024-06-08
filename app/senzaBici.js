@@ -4,6 +4,7 @@ const axios = require('axios');
 
 //numero di stralli da mandare a OSRM
 const STALLI_CALCOLATI_GEOMETRICAMENTE=3;
+const STALLI_CALCOLATI_TRAGITTO_INTERO=2;
 const LAT_SUP=46.1331;
 const LAT_INF=46.0284;
 const LON_SX= 11.0819;
@@ -43,6 +44,7 @@ router.post('', async (req, res) => {
     let stralliPiuViciniGeometricamente = await strPiuViciniGeometricamente(position, tuttiStalli);
 
     let data = await getDatiStallo(position, stralliPiuViciniGeometricamente);
+
     res.status(200).json({ message: 'Position received successfully', body: data });
 });
 
@@ -78,8 +80,13 @@ router.post('/tragittoIntero', async (req, res) => {
     let stralliPiuViciniGeometricamenteStart = await strPiuViciniGeometricamente(positionStart, tuttiStalli);
     let stralliPiuViciniGeometricamenteDestination = await strPiuViciniGeometricamente(positionDestination, tuttiStalli);
 
+    stralliPiuViciniGeometricamenteStart = stralliPiuViciniGeometricamenteStart.slice(0, 2);
+    stralliPiuViciniGeometricamenteDestination = stralliPiuViciniGeometricamenteDestination.slice(0, 2);
+
     let data = await calcolaPercorsoMigliore(positionStart, positionDestination, stralliPiuViciniGeometricamenteStart, stralliPiuViciniGeometricamenteDestination);
+    console.log(data)
     let aPiedi = await tragittoAPiedi(positionStart.latitude, positionStart.longitude, positionDestination.latitude, positionDestination.longitude);
+    console.log(aPiedi)
     data.aPiedi = aPiedi;
     res.status(200).json({ message: 'Tappe percorso più efficiente', body: data });
 });
@@ -143,16 +150,48 @@ async function getDatiStallo(startPosition, destinations) {
     let stalli = [];
 
     for (let i = 0; i < destinations.length; i++) {
+        console.log("dati stallo")
         let destination = destinations[i];
 
-        // Prepare the URL for OSRM
-        let url = `http://router.project-osrm.org/route/v1/bike/${startPosition.longitude},${startPosition.latitude};${destination.longitude},${destination.latitude}?overview=false`;
+        /*// Prepare the URL for OSRM
+        let url = `http://router.project-osrm.org/route/v1/walk/${startPosition.longitude},${startPosition.latitude};${destination.longitude},${destination.latitude}?overview=false`;
 
         // Use axios to send a GET request to the OSRM API
         let response = await axios.get(url);
         let route = response.data.routes[0];
         let distance = route.distance; // The distance is in meters
-        let travelTime = route.duration; // The travel time is in seconds
+        let travelTime = route.duration; // The travel time is in seconds*/
+
+        let travelTime=null;
+        let distance=null;
+
+        const profile = 'foot-walking'; // Profilo di trasporto per camminare
+    const apiKey = '5b3ce3597851110001cf6248b4b565f056b6422bafabab6dd7d5bf15';
+    const url = `https://api.openrouteservice.org/v2/directions/${profile}`;
+    const requestBody = {
+        coordinates: [[startPosition.longitude, startPosition.latitude], [destination.longitude, destination.latitude]],
+        profile: profile
+    };
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Errore durante la richiesta: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const route = data.routes[0];
+        const summary = route.summary;
+        travelTime = summary.duration / 60; // Converti la durata in minuti
+        distance = summary.distance / 1000; // Converti la distanza in km
         let dataStallo = await chiamataAPIinfoStallo(destination.id)
 
         let datiStallo = {
@@ -164,9 +203,14 @@ async function getDatiStallo(startPosition, destinations) {
             numPostiLiberi: dataStallo.body.numPostiLiberi,
             numBiciDisponibili: dataStallo.body.numBiciDisponibili
         };
-        // Add the object to the distances array
+
         stalli.push(datiStallo);
-        //console.log('Dati stallo:', datiStallo);
+        //await new Promise(resolve => setTimeout(resolve, 1000));
+
+    } catch (error) {
+        console.error('Errore durante la chiamata API:', error);
+        return null;
+    }
     }
      //ritorna le rastrelliere 
      stalli.sort((a, b) => a.distance - b.distance);
@@ -193,9 +237,12 @@ async function chiamataAPIinfoStallo(id) {
     }
  }
 
-async function calcolaPercorsoMigliore(positionStart, positionDestination, stalliViciniStart, stalliViciniDestination){
+/*async function calcolaPercorsoMigliore(positionStart, positionDestination, stalliViciniStart, stalliViciniDestination){
     let minDuration = Infinity;
+    let minDistance = Infinity;
     let bestStops = null;
+    var duration;
+    var distance;
     for (let element1 of stalliViciniStart) {
         for (let element2 of stalliViciniDestination) {
             if(element1.id === element2.id) continue;
@@ -208,11 +255,48 @@ async function calcolaPercorsoMigliore(positionStart, positionDestination, stall
     
             const coordinatesString = coordinates.map(coord => coord.join(',')).join(';');
 
-            let url = `http://router.project-osrm.org/route/v1/bike/${coordinatesString}?alternatives=false&steps=true&geometries=polyline&overview=full&annotations=true`
+            /*let url = `http://router.project-osrm.org/route/v1/bike/${coordinatesString}?alternatives=false&steps=true&geometries=polyline&overview=full&annotations=true`
             let response = await axios.get(url);
             let route = response.data.routes[0];
             let duration = route.duration;
             let distance = route.distance;
+
+            const apiKey = '5b3ce3597851110001cf6248b4b565f056b6422bafabab6dd7d5bf15';
+            const profile = 'cycling-regular'; // Profilo di trasporto
+
+
+            const url = `https://api.openrouteservice.org/v2/directions/${profile}`;
+
+            const requestBody = {
+                coordinates: coordinates,
+                profile: profile
+            };
+
+            try {
+                const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                throw new Error(`Errore durante la richiesta: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const route = data.routes[0];
+                const summary = route.summary;
+                duration= summary.duration / 60 , // Converti la durata in minuti
+                distance= summary.distance / 1000 // Converti la distanza in km
+                
+            } catch (error) {
+                console.error('Errore durante la chiamata API:', error);
+                return null;
+            }
+
             if (duration < minDuration) {
                 minDuration = duration;
                 minDistance = distance;
@@ -221,15 +305,143 @@ async function calcolaPercorsoMigliore(positionStart, positionDestination, stall
         }
     }
     return { bestStops, minDuration, minDistance };
+}*/
+
+async function calcolaPercorsoMigliore(positionStart, positionDestination, stalliViciniStart, stalliViciniDestination) {
+    let minDuration = Infinity;
+    let minDistance = Infinity;
+    let bestStops = null;
+
+    for (let element1 of stalliViciniStart) {
+        for (let element2 of stalliViciniDestination) {
+            if (element1.id === element2.id) continue;
+
+            // Calcola la tratta a piedi tra positionStart e lo stallo più vicino a positionStart
+            const walkingStart = await calcolaDistanzaAPiedi(positionStart, element1);
+
+            // Calcola la tratta a piedi tra positionDestination e lo stallo più vicino a positionDestination
+            const walkingDestination = await calcolaDistanzaAPiedi(positionDestination, element2);
+
+            // Calcola le tratte in bicicletta tra gli stalli intermedi
+            const bikingRoute = await calcolaPercorsoInBici(element1, element2);
+
+            const totalDuration = walkingStart.minDuration + bikingRoute.minDuration + walkingDestination.minDuration;
+            const totalDistance = walkingStart.minDistance + bikingRoute.minDistance + walkingDestination.minDistance;
+
+            if (totalDuration < minDuration) {
+                minDuration = totalDuration;
+                minDistance = totalDistance;
+                bestStops = [element1, element2];
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+    }
+
+    return { bestStops, minDuration, minDistance };
+}
+
+async function calcolaDistanzaAPiedi(start, destination) {
+    const profile = 'foot-walking'; // Profilo di trasporto per camminare
+    const apiKey = '5b3ce3597851110001cf6248b4b565f056b6422bafabab6dd7d5bf15';
+
+    const url = `https://api.openrouteservice.org/v2/directions/${profile}`;
+    const requestBody = {
+        coordinates: [[start.longitude, start.latitude], [destination.longitude, destination.latitude]],
+        profile: profile
+    };
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Errore durante la richiesta: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const route = data.routes[0];
+        const summary = route.summary;
+        const minDuration = summary.duration / 60; // Converti la durata in minuti
+        const minDistance = summary.distance / 1000; // Converti la distanza in km
+        return { bestStop: destination, minDuration, minDistance };
+    } catch (error) {
+        console.error('Errore durante la chiamata API:', error);
+        return null;
+    }
+}
+
+async function calcolaPercorsoInBici(start, destination) {
+    const profile = 'cycling-regular'; // Profilo di trasporto per andare in bici
+    const apiKey = '5b3ce3597851110001cf6248b4b565f056b6422bafabab6dd7d5bf15';
+
+    const url = `https://api.openrouteservice.org/v2/directions/${profile}`;
+    const requestBody = {
+        coordinates: [[start.longitude, start.latitude], [destination.longitude, destination.latitude]],
+        profile: profile
+    };
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Errore durante la richiesta: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const route = data.routes[0];
+        const summary = route.summary;
+        const minDuration = summary.duration / 60; // Converti la durata in minuti
+        const minDistance = summary.distance / 1000; // Converti la distanza in km
+        return { bestStops: [start, destination], minDuration, minDistance };
+    } catch (error) {
+        console.error('Errore durante la chiamata API:', error);
+        return null;
+    }
 }
 
 async function tragittoAPiedi(latitudeStart, longitudeStart, latitudeDestination, longitudeDestination){
-    let url = `http://router.project-osrm.org/route/v1/foot/${longitudeStart},${latitudeStart};${longitudeDestination},${latitudeDestination}?overview=false`;
+    /*let url = `http://router.project-osrm.org/route/v1/foot/${longitudeStart},${latitudeStart};${longitudeDestination},${latitudeDestination}?overview=false`;
     let response = await axios.get(url);
     let route = response.data.routes[0];
     let duration = route.duration;
     let distance = route.distance;
-    return { duration, distance };
+    return { duration, distance };*/
+    var mode= 'foot-walking'
+    var origin = longitudeStart+","+latitudeStart
+    var destination = longitudeDestination+","+latitudeDestination
+    const apiKey = '5b3ce3597851110001cf6248b4b565f056b6422bafabab6dd7d5bf15';
+    const url = `https://api.openrouteservice.org/v2/directions/${mode}?api_key=${apiKey}&start=${origin}&end=${destination}`;
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+  
+      if (data.features) {
+        const route = data.features[0];
+        const summary = route.properties.segments[0];
+        return {
+            duration: summary.duration / 60 , // Converti la durata in minuti
+            distance: summary.distance / 1000 // Converti la distanza in km
+        };
+      } else {
+        throw new Error(data.error || 'Errore durante la richiesta');
+      }
+    } catch (error) {
+      console.error('Errore durante la chiamata API:', error);
+    }
 }
 
 module.exports = router;
