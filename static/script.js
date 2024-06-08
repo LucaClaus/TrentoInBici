@@ -52,7 +52,7 @@ async function chiamataAPIbiciPropriaAll(){
     }
 }
 
-async function chiamataAPISenzaBici(latitude, longitude) {
+async function chiamataAPISenzaBiciI(latitude, longitude) {
     try {
         const response = await fetch('/api/v1/senzaBici', {
             method: 'POST',
@@ -69,7 +69,7 @@ async function chiamataAPISenzaBici(latitude, longitude) {
     }
  }
 
- async function chiamataAPISenzaBici(latitudeStart, longitudeStart, latitudeDestination, longitudeDestination) {
+ async function chiamataAPISenzaBiciII(latitudeStart, longitudeStart, latitudeDestination, longitudeDestination) {
     let positionStart = { latitude: latitudeStart, longitude: longitudeStart };
     let positionDestination = { latitude: latitudeDestination, longitude: longitudeDestination };
     try {
@@ -397,7 +397,8 @@ async function ricercaStalli(lat, lon){
   markerLayer.getSource().addFeature(centerFeature);
 
     // Chiamata all'API per ottenere i dati delle rastrelliere
-    const data = await chiamataAPISenzaBici(latitude, longitude);
+    const data = await chiamataAPISenzaBiciI(latitude, longitude);
+    console.log(data);
 
     titoloStralli = document.getElementById("titoloRastrelliere");
     titoloStralli.textContent="Stalli più vicini"
@@ -544,7 +545,7 @@ async function ricercaStallo(latS, lonS, latD, lonD){
     markerLayer.getSource().addFeature(centerFeature);
 
     // Chiamata all'API per ottenere i dati degli stralli
-    const data = await chiamataAPISenzaBici(latitudeStart, longitudeStart, latitudeDestination, longitudeDestination);
+    const data = await chiamataAPISenzaBiciII(latitudeStart, longitudeStart, latitudeDestination, longitudeDestination);
     positionLabelStart.innerHTML = "Tempo e distanza di percorrenza usando le bici del bike sharing: " + data.body.minDuration + " s "+ data.body.minDistance + " m"
                                    + " || Tempo e distanza andando a piedi: " + data.body.aPiedi.duration + " s " + data.body.aPiedi.distance + " m";
 
