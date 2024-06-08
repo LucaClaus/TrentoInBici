@@ -127,13 +127,42 @@ async function chiamataAPIgestoreDatabase(latitude, longitude){
 async function posizioneDispositivo(){
     resetMappa();
     rimuoviElementiCreati();
-    const position = await requestLocation();
+    var latitude;
+    var longitude;
+    try {
+        const position = await requestLocation();
+        latitude = position.coords.latitude; 
+        longitude = position.coords.longitude;
+        if(!(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX)){
+          alert("La tua posizione è al di fuori dell'area consentita");
+          return;
+        }
+    } catch (error) {
+        console.error('Errore durante la richiesta della posizione:', error);
+
+        if (error instanceof GeolocationPositionError) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    alert('Per proseguire è necessario autorizzare l\'accesso alla posizione.');
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert('Posizione non disponibile.');
+                    break;
+                case error.TIMEOUT:
+                    alert('Timeout nella richiesta della posizione.');
+                    break;
+                default:
+                    alert('Errore sconosciuto durante la richiesta della posizione.');
+                    break;
+            }
+            return
+        } else {
+            alert('Errore generico: ' + error.message);
+        }
+    }
       
-    //posizione reale
-    //latitude = position.coords.latitude; 
-    //longitude = position.coords.longitude;
-    latitude = 46.069169527542655;
-    longitude = 11.127596809959554;
+    //latitude = 46.069169527542655;
+    //longitude = 11.127596809959554;
 
     if(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX){
       ricercaRastrelliere(latitude, longitude);
@@ -525,7 +554,37 @@ async function ricercaStalli(lat, lon){
     resetMappa();
     rimuoviElementiCreati();
     document.getElementById("divResult").style.display="block";
-    const position = await requestLocation();
+    try {
+        const position = await requestLocation();
+        var latitude = position.coords.latitude; 
+        var longitude = position.coords.longitude;
+        if(!(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX)){
+          alert("La tua posizione è al di fuori dell'area consentita");
+          return;
+        }
+    } catch (error) {
+        console.error('Errore durante la richiesta della posizione:', error);
+
+        if (error instanceof GeolocationPositionError) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    alert('Per proseguire è necessario autorizzare l\'accesso alla posizione.');
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert('Posizione non disponibile.');
+                    break;
+                case error.TIMEOUT:
+                    alert('Timeout nella richiesta della posizione.');
+                    break;
+                default:
+                    alert('Errore sconosciuto durante la richiesta della posizione.');
+                    break;
+            }
+            return
+        } else {
+            alert('Errore generico: ' + error.message);
+        }
+    }
         
     //posizione reale
     //latitude = position.coords.latitude; 
@@ -647,7 +706,37 @@ async function ricercaStallo(latS, lonS, latD, lonD){
 async function tragittoInteroBikeSharing() {
     resetMappa();
     rimuoviElementiCreati();
-    const startPosition = await requestLocation();
+    try {
+        const position = await requestLocation();
+        var latitude = position.coords.latitude; 
+        var longitude = position.coords.longitude;
+        if(!(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX)){
+          alert("La tua posizione è al di fuori dell'area consentita");
+          return;
+        }
+    } catch (error) {
+        console.error('Errore durante la richiesta della posizione:', error);
+
+        if (error instanceof GeolocationPositionError) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    alert('Per proseguire è necessario autorizzare l\'accesso alla posizione.');
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert('Posizione non disponibile.');
+                    break;
+                case error.TIMEOUT:
+                    alert('Timeout nella richiesta della posizione.');
+                    break;
+                default:
+                    alert('Errore sconosciuto durante la richiesta della posizione.');
+                    break;
+            }
+            return
+        } else {
+            alert('Errore generico: ' + error.message);
+        }
+    }
     
     //posizione reale
     //latitude = position.coords.latitude; 
@@ -778,7 +867,37 @@ async function aggiungiRastrelliera(){
     showSpinner();
     resetMappa();
     rimuoviElementiCreati();
-    const position = await requestLocation();
+    try {
+        const position = await requestLocation();
+        var latitude = position.coords.latitude; 
+        var longitude = position.coords.longitude;
+        if(!(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX)){
+          alert("La tua posizione è al di fuori dell'area consentita");
+          return;
+        }
+    } catch (error) {
+        console.error('Errore durante la richiesta della posizione:', error);
+
+        if (error instanceof GeolocationPositionError) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    alert('Per proseguire è necessario autorizzare l\'accesso alla posizione.');
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert('Posizione non disponibile.');
+                    break;
+                case error.TIMEOUT:
+                    alert('Timeout nella richiesta della posizione.');
+                    break;
+                default:
+                    alert('Errore sconosciuto durante la richiesta della posizione.');
+                    break;
+            }
+            return
+        } else {
+            alert('Errore generico: ' + error.message);
+        }
+    }
       
     //posizione reale
     //latitude = position.coords.latitude; 

@@ -5,10 +5,37 @@ return new Promise((resolve, reject) => {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(resolve, reject);
     } else {
-        alert("Posizione GPS non condivisa");
         reject(new Error("Geolocation is not supported by this browser."));
     }
 });
+}
+async function getPosition(){
+    try {
+        const position = await requestLocation();
+        console.log('Position:', position);
+        return position;
+    } catch (error) {
+        console.error('Errore durante la richiesta della posizione:', error);
+
+        if (error instanceof GeolocationPositionError) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    alert('Per proseguire è necessario autorizzare l\'accesso alla posizione.');
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert('Posizione non disponibile.');
+                    break;
+                case error.TIMEOUT:
+                    alert('Timeout nella richiesta della posizione.');
+                    break;
+                default:
+                    alert('Errore sconosciuto durante la richiesta della posizione.');
+                    break;
+            }
+        } else {
+            alert('Errore generico: ' + error.message);
+        }
+    }
 }
 
 function inizializzaDivRes(){
