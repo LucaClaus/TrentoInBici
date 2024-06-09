@@ -71,7 +71,7 @@
             <span class="tooltip">Clicca qui per visualizzare le stazioni Bike Sharing più vicine a te</span></button>
         <button id="btn8" class="btn btn-info mr-2 btn-custom log" onclick="aggiungiRastrelliera()">Aggiungi rastrelliera</button>
         <button id="btn9" class="btn btn-info mr-2 btn-custom log" onclick="">Visualizza rastrelliere preferite</button>
-        <button id="btn9" class="btn btn-info mr-2 btn-custom log" onclick="">Fai una segnalazione</button>
+        <button id="btn10" class="btn btn-info mr-2 btn-custom log" onclick="">Fai una segnalazione</button>
     </div>
     <div class="row">
         <div class="col-md-6">
@@ -242,6 +242,8 @@ const resultElementAggiungiRastrelliera = document.createElement('p');
 resultElementAggiungiRastrelliera.classList.add('elemCreato');
 
 document.getElementById("btn8").style.display="none";
+document.getElementById("btn9").style.display="none";
+document.getElementById("btn10").style.display="none";
 document.getElementById("btnLogout").style.display="none";
 
 var loggedUser={
