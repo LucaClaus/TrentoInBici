@@ -84,9 +84,7 @@ router.post('/tragittoIntero', async (req, res) => {
     stralliPiuViciniGeometricamenteDestination = stralliPiuViciniGeometricamenteDestination.slice(0, 2);
 
     let data = await calcolaPercorsoMigliore(positionStart, positionDestination, stralliPiuViciniGeometricamenteStart, stralliPiuViciniGeometricamenteDestination);
-    console.log(data)
     let aPiedi = await tragittoAPiedi(positionStart.latitude, positionStart.longitude, positionDestination.latitude, positionDestination.longitude);
-    console.log(aPiedi)
     data.aPiedi = aPiedi;
     res.status(200).json({ message: 'Tappe percorso più efficiente', body: data });
 });
