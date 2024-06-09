@@ -131,8 +131,10 @@ async function posizioneDispositivo(){
     var longitude;
     try {
         const position = await requestLocation();
-        latitude = position.coords.latitude; 
-        longitude = position.coords.longitude;
+        //latitude = position.coords.latitude; 
+        //longitude = position.coords.longitude;
+        latitude = 46.069169527542655;
+        longitude = 11.127596809959554;
         if(!(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX)){
           alert("La tua posizione è al di fuori dell'area consentita");
           return;
@@ -160,9 +162,6 @@ async function posizioneDispositivo(){
             alert('Errore generico: ' + error.message);
         }
     }
-      
-    //latitude = 46.069169527542655;
-    //longitude = 11.127596809959554;
 
     if(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX){
       ricercaRastrelliere(latitude, longitude);
@@ -554,10 +553,14 @@ async function ricercaStalli(lat, lon){
     resetMappa();
     rimuoviElementiCreati();
     document.getElementById("divResult").style.display="block";
+    var latitude;
+    var longitude;
     try {
         const position = await requestLocation();
-        var latitude = position.coords.latitude; 
-        var longitude = position.coords.longitude;
+        //latitude = position.coords.latitude; 
+        //longitude = position.coords.longitude;
+        latitude = 46.069169527542655;
+        longitude = 11.127596809959554;
         if(!(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX)){
           alert("La tua posizione è al di fuori dell'area consentita");
           return;
@@ -586,12 +589,6 @@ async function ricercaStalli(lat, lon){
         }
     }
         
-    //posizione reale
-    //latitude = position.coords.latitude; 
-    //longitude = position.coords.longitude;
-    latitude = 46.069169527542655;
-    longitude = 11.127596809959554;
-
     if(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX){
         ricercaStalli(latitude, longitude);
     }else{
@@ -636,14 +633,15 @@ async function ricercaStallo(latS, lonS, latD, lonD){
 
     positionLabelStart.innerHTML = "Tempo e distanza di percorrenza usando le bici del bike sharing: " + data.body.minDuration + " min "+ data.body.minDistance + " km<br>"
                                    + " Tempo e distanza andando a piedi: " + data.body.aPiedi.duration + " min " + data.body.aPiedi.distance + " km";
+    positionLabelStart.style.color = 'green';
 
     let tappa1 = data.body.bestStops[0];
     let tappa2 = data.body.bestStops[1];
 
     if(data.body.minDuration<=data.body.aPiedi.duration){
-        positionLabelStart.innerHTML += "<br><br><br> Ti conviene il percorso Bike Sharing! <br> Sei più veloce di "+approxNcifre((data.body.aPiedi.duration-data.body.minDuration),2)+" min"
+        positionLabelStart.innerHTML += "<br><br><br> Ti conviene il percorso BIKE SHARING! <br> Sei più veloce di "+approxNcifre((data.body.aPiedi.duration-data.body.minDuration),2)+" min"
     }else{
-        positionLabelStart.innerHTML += "<br><br><br> Ti conviene andare a piedi! <br> Sei più veloce di "+approxNcifre((data.body.minDuration-data.body.aPiedi.duration),2)+" min"
+        positionLabelStart.innerHTML += "<br><br><br> Ti conviene andare A PIEDI! <br> Sei più veloce di "+approxNcifre((data.body.minDuration-data.body.aPiedi.duration),2)+" min"
     }
     
     if(tappa1.latitude == tappa2.latitude && tappa1.longitude == tappa2.longitude){
@@ -706,10 +704,14 @@ async function ricercaStallo(latS, lonS, latD, lonD){
 async function tragittoInteroBikeSharing() {
     resetMappa();
     rimuoviElementiCreati();
+    var latitude;
+    var longitude;
     try {
         const position = await requestLocation();
-        var latitude = position.coords.latitude; 
-        var longitude = position.coords.longitude;
+        //latitude = position.coords.latitude; 
+        //longitude = position.coords.longitude;
+        latitude = 46.069169527542655;
+        longitude = 11.127596809959554;
         if(!(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX)){
           alert("La tua posizione è al di fuori dell'area consentita");
           return;
@@ -738,11 +740,6 @@ async function tragittoInteroBikeSharing() {
         }
     }
     
-    //posizione reale
-    //latitude = position.coords.latitude; 
-    //longitude = position.coords.longitude;
-    latitude = 46.069169527542655;
-    longitude = 11.127596809959554;
     //creaLabelDestinazioneStallo(startPosition.coordinates.latitude, startPosition.coordinates.longitude);
     creaLabelDestinazioneStallo(latitude, longitude);
 
@@ -864,13 +861,17 @@ async function tuttiBikeSharing(){
 }
 
 async function aggiungiRastrelliera(){
-    showSpinner();
+
     resetMappa();
     rimuoviElementiCreati();
+    var latitude;
+    var longitude;
     try {
         const position = await requestLocation();
-        var latitude = position.coords.latitude; 
-        var longitude = position.coords.longitude;
+        //latitude = position.coords.latitude; 
+        //longitude = position.coords.longitude;      
+        latitude = 46.069169527542655;
+        longitude = 11.127596809959554;
         if(!(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX)){
           alert("La tua posizione è al di fuori dell'area consentita");
           return;
@@ -898,27 +899,38 @@ async function aggiungiRastrelliera(){
             alert('Errore generico: ' + error.message);
         }
     }
-      
-    //posizione reale
-    //latitude = position.coords.latitude; 
-    //longitude = position.coords.longitude;
-    latitude = 46.069169527542655;
-    longitude = 11.127596809959554;
 
     if(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX){
-        await pulsanteInserisciRastrelliera(latDest, lonDest)
+        const view = map.getView();
+        const newCenter = ol.proj.fromLonLat([longitude, latitude]);
+        view.setCenter(newCenter);
+        view.setZoom(18);
+        
+        // Aggiunta dei controlli alla mappa
+        map.addControl(new ol.control.ScaleLine());
+        map.addControl(new ol.control.MousePosition());
+        //map.addControl(new ol.control.LayerSwitcher());
+
+        // Aggiunta del marker centrale
+        const centerFeature = new ol.Feature({
+            geometry: new ol.geom.Point(ol.proj.fromLonLat([longitude, latitude]))
+        });
+        markerLayer.getSource().addFeature(centerFeature);
+        await pulsanteInserisciRastrelliera(latitude,longitude)
+
     }else{
       alert("La tua posizione è al di fuori dell'area consentita");
     }
+
     creaLableInserisciRastrelliera();
-    hideSpinner();
+    
 }
 
 async function utenteLoggato(){
     document.getElementById("emailLoggedUser").textContent="Benvenuto " + loggedUser.email;
     document.getElementById("btnLogin").style.display="none";
-    document.getElementById("btnLogout").style.display="block";
-    document.getElementById("btn8").style.display="block";
+    visualizzareElementiLog();
+    
 }
 
 function resetTimeout() {

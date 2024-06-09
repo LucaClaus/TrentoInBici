@@ -25,7 +25,7 @@
                     <p id="emailLoggedUser" class="mr-3"></p>
                     <a class="btn btn-primary" id="btnLogin" href="login.html">Login</a>
                 </li>
-                <button id="btnLogout" class="btn btn-primary mr-2" onclick="logout()">Logout</button>
+                <button id="btnLogout" class="btn btn-primary mr-2 log" onclick="logout()">Logout</button>
             </ul>
         </div>
     </nav>
@@ -37,19 +37,41 @@
         <p>Questa è la piattaforma per trovare rastrelliere per le tue biciclette e stazioni di bike 
             sharing a Trento. Puoi utilizzare i pulsanti qui sotto per cercare rastrelliere vicino a te, 
             vicino alla tua destinazione, la stazione di bike sharing più vicina, e altro ancora.</p>
-            <a class="btn btn-primary mr-2 btn-custom" id="btnInizia" href="#about">Inizia</a>
+            <a class="btn btn-primary mr-2 btn-custom" id="btnInizia" href="#info">Scopri di più</a>
+            <div class="images-container">
+                <img src="res/logoUnitn.png" alt="LogoUnitn">
+                <img src="res/logoComuneTrento.png" alt="logo-comuneTrento">
+            </div>
+            <div class="bike-animation"></div>
+    </div>
+    <div class="page-info" id="info">
+        <h2>Cosa si può fare su questa piattaforma?</h2>
+        <p>Se non hai una bici e devi andare in un posto e vuoi valutare se riesci ad arrivarci prima in bici puoi cliccare il 
+            pulsante "Sono senza bici e voglio arrivare a destinazione" che ti aiuterà a trovare gli stalli Bike Sharing più
+            vicini a te e alla tua destinazione e ti creerà il percorso più adatto.<br>
+            <b>Stallo Bike Sharing:</b>
+        </p>
+        <img class="info-image" src="res/stalloBikeSharing.jpg" alt="imgStalloBikeSharing">
+        <p>Se vuoi sapere dove puoi parcheggiare la tua bici in sicurezza in una rastrelliera, clicca "Rastrelliera vicino a me"<br>
+        <b>Rastrelliera:</b></p>
+        <img class="info-image" src="res/rastrelliera.png" alt="imgRastrelliera">
+
+        <a class="btn btn-primary mr-2 btn-custom" id="btnInizia" href="#about">Inizia</a>
+        
     </div>
     <!--<h1 class="text-center">TrentoInBici</h1>-->
     <div class="d-flex justify-content-center mb-3" id="about">
+        <button id="btn4" class="btn btn-primary mr-2 btn-custom" onclick="tragittoInteroBikeSharing()">Sono senza bici e voglio arrivare a destinazione
+            <span class="tooltip">Clicca qui per spostarti in bici verso la tua destinazione</span></button>
         <button id="btn1" class="btn btn-primary mr-2 btn-custom" onclick="posizioneDispositivo()">Rastrelliera vicino a me
             <span class="tooltip">Clicca qui per visualizzare le rastrelliere più vicine a te</span></button>
         <button id="btn2" class="btn btn-primary mr-2 btn-custom" onclick="posizioneDestinazione()">Rastrelliera vicino alla mia destinazione
             <span class="tooltip">Clicca qui per visualizzare le rastrelliere più vicine al luogo desiderato</span></button>
         <button id="btn3" class="btn btn-primary mr-2 btn-custom" onclick="stazioneBikeSharing()">Stazione Bike Sharing più vicina
             <span class="tooltip">Clicca qui per visualizzare le stazioni Bike Sharing più vicine a te</span></button>
-        <button id="btn4" class="btn btn-primary mr-2 btn-custom" onclick="tragittoInteroBikeSharing()">Sono senza bici e voglio arrivare a destinazione
-            <span class="tooltip">Clicca qui per spostarti in bici verso la tua destinazione</span></button>
-        <button id="btn8" class="btn btn-info mr-2 btn-custom" onclick="aggiungiRastrelliera()">Aggiungi rastrelliera</button>
+        <button id="btn8" class="btn btn-info mr-2 btn-custom log" onclick="aggiungiRastrelliera()">Aggiungi rastrelliera</button>
+        <button id="btn9" class="btn btn-info mr-2 btn-custom log" onclick="">Visualizza rastrelliere preferite</button>
+        <button id="btn9" class="btn btn-info mr-2 btn-custom log" onclick="">Fai una segnalazione</button>
     </div>
     <div class="row">
         <div class="col-md-6">

@@ -68,6 +68,13 @@ function rimuoviElementiCreati() {
 
 }
 
+function visualizzareElementiLog(){
+    const elementiDaRimuovere = document.querySelectorAll('.log');
+    elementiDaRimuovere.forEach(elemento => {
+        elemento.style.display="block"
+    });
+}
+
 async function creaLabelDestinazione() {
 
 return new Promise((resolve, reject) => {
@@ -262,7 +269,7 @@ async function creaLableInserisciRastrelliera(){
     
         const address = document.getElementById('addressInput').value;
         
-        resultElement.innerHTML='';
+        resultElementAggiungiRastrelliera.innerHTML='';
     
         if (address) {
             // Utilizzare il servizio di geocodifica Nominatim di OpenStreetMap
@@ -290,7 +297,7 @@ async function creaLableInserisciRastrelliera(){
                         const view = map.getView();
                         const newCenter = ol.proj.fromLonLat([lonDest, latDest]);
                         view.setCenter(newCenter);
-                        view.setZoom(15);
+                        view.setZoom(18);
         
                         markerDest.getSource().addFeature(marker);
 
@@ -298,25 +305,25 @@ async function creaLableInserisciRastrelliera(){
                         
                     } else {
                         // Le coordinate sono al di fuori dell'area geografica
-                        resultElement.textContent = 'Via al di fuori dell\'area consentita.';
-                        resultElement.style.color = 'red';
+                        resultElementAggiungiRastrelliera.textContent = 'Via al di fuori dell\'area consentita.';
+                        resultElementAggiungiRastrelliera.style.color = 'red';
                         // Non hai bisogno di chiamare reject qui poiché non sembra che stai utilizzando una promise esterna
                     }
                 } else {
-                    resultElement.textContent = 'Via non trovata. Verifica l\'indirizzo inserito.';
-                    resultElement.style.color = 'red';
+                    resultElementAggiungiRastrelliera.textContent = 'Via non trovata. Verifica l\'indirizzo inserito.';
+                    resultElementAggiungiRastrelliera.style.color = 'red';
                     // reject('Via non trovata');
                 }
             })
             .catch(error => {
                 console.error('Errore durante la richiesta:', error);
-                resultElement.textContent = 'Errore durante la verifica della via. Riprova più tardi.';
-                resultElement.style.color = 'red';
+                resultElementAggiungiRastrelliera.textContent = 'Errore durante la verifica della via. Riprova più tardi.';
+                resultElementAggiungiRastrelliera.style.color = 'red';
                 reject(error);
             });
         } else {
-            resultElement.textContent = 'Inserisci una via per favore.';
-            resultElement.style.color = 'red';
+            resultElementAggiungiRastrelliera.textContent = 'Inserisci una via per favore.';
+            resultElementAggiungiRastrelliera.style.color = 'red';
             reject('Indirizzo non inserito');
         }
         });
@@ -324,7 +331,7 @@ async function creaLableInserisciRastrelliera(){
 }
 async function pulsanteInserisciRastrelliera(latDest, lonDest, place){
     const btnConfermaDestinazione = document.createElement('button');
-    btnConfermaDestinazione.classList.add('elemCreato', 'elemCreato', 'btn', 'btn-primary', 'mr-2');
+    btnConfermaDestinazione.classList.add('elemCreato', 'btn', 'btn-success', 'mr-2');
     btnConfermaDestinazione.textContent = 'Conferma Posizione';
     btnConfermaDestinazione.type = 'submit';
     btnConfermaDestinazione.onclick = async function() {
@@ -338,10 +345,8 @@ async function pulsanteInserisciRastrelliera(latDest, lonDest, place){
         }else{
             if(place){
                 alert("La tua richiesta di aggiunta rastrelliera in via: "+ place.display_name + " è stata inviata. L'amministratore provvederà alla verifica e all'inserimento della rastrelliera nei nostri database")
-                rimuoviElementiCreati();
             }else{
                 alert("La tua richiesta di aggiunta rastrelliera nella posizione: ["+ latDest+", "+ lonDest + " è stata inviata. L'amministratore provvederà alla verifica e all'inserimento della rastrelliera nei nostri database")
-                rimuoviElementiCreati();
             }
             
         }
