@@ -678,7 +678,11 @@ async function ricercaStallo(latS, lonS, latD, lonD){
         let btnIniziaNavigazione = document.createElement('button');
         btnIniziaNavigazione.classList.add('elemCreato','btn', 'btn-success', 'mb-2', 'initNav');
         btnIniziaNavigazione.textContent = "Inizia navigazione: percorso Bike Sharing";
+        let labelInitNav=document.createElement('p');
+        labelInitNav.classList.add('elemCreato', 'initNav')
+        labelInitNav.textContent = "Cliccando su Inizia Navigazione verrai reindirizzato sul sito di Google Maps per raggiungere al meglio la destinazione selezionata. Segui il percorso con tutte le tappe!"
         const divInitNav = document.getElementById('btnIniziaNavigazione');
+        divInitNav.appendChild(labelInitNav);
         divInitNav.appendChild(btnIniziaNavigazione);
         first = false;
         btnIniziaNavigazione.onclick = function() {

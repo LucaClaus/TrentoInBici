@@ -188,6 +188,12 @@ async function creaLabelDestinazioneStallo(latStart, lonStart) {
         const address = document.getElementById('addressInput').value;
         
         resultElement.innerHTML='';
+        resultElement.innerHTML='';
+        document.getElementById('position').innerHTML="";
+        const elementiDaRimuovere = document.querySelectorAll('.initNav');
+        elementiDaRimuovere.forEach(elemento => {
+            elemento.remove();
+        });
         document.getElementById('titoloRastrelliere').innerHTML="";
         document.getElementById('rastrelliere').innerHTML="";
     
