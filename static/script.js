@@ -594,7 +594,7 @@ async function tragittoInteroBikeSharing() {
         lonStart = position.coords.longitude;
         //latitude = 46.069169527542655;
         //longitude = 11.127596809959554;
-        if(!(LAT_INF <= latStart && latStart < LAT_SUP && LON_SX <= lonStart && longitlonStartude < LON_DX)){
+        if(!(LAT_INF <= latStart && latStart < LAT_SUP && LON_SX <= lonStart && lonStart < LON_DX)){
           alert("La tua posizione è al di fuori dell'area consentita");
           return;
         }

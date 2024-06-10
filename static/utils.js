@@ -91,7 +91,7 @@ return new Promise((resolve, reject) => {
     document.getElementById('labelCliccaSuMappa').innerHTML="Oppure clicca sulla mappa sulla posizione desiderata";
 
     // Aggiungi l'event listener al form creato dinamicamente
-    form.addEventListener('submit', function(event) {
+    form.addEventListener('submit', async function(event) {
 
     resetMappa();
     rimuoviElementiCreati()
@@ -108,9 +108,9 @@ return new Promise((resolve, reject) => {
         // Utilizzare il servizio di geocodifica Nominatim di OpenStreetMap
         const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&addressdetails=1`;
 
-        fetch(url)
-        .then(response => response.json())
-        .then(data => {
+        try{
+            let response=await fetch(url)
+            let data=await response.json()
             if (data.length > 0) {
                 const place = data[0];
                 const latitude = parseFloat(place.lat);
@@ -147,13 +147,12 @@ return new Promise((resolve, reject) => {
                 resultElement.style.color = 'red';
                 //reject('Via non trovata');
             }
-        })
-        .catch(error => {
+        }catch(error) {
             console.error('Errore durante la richiesta:', error);
             resultElement.textContent = 'Errore durante la verifica della via. Riprova più tardi.';
             resultElement.style.color = 'red';
             reject(error);
-        });
+        }
     } else {
         resultElement.textContent = 'Inserisci una via per favore.';
         resultElement.style.color = 'red';
@@ -180,7 +179,7 @@ async function creaLabelDestinazioneStallo(latStart, lonStart) {
         document.getElementById('labelCliccaSuMappa').innerHTML="Oppure clicca sulla mappa sulla posizione desiderata";
     
         // Aggiungi l'event listener al form creato dinamicamente
-        form.addEventListener('submit', function(event) {
+        form.addEventListener('submit', async function(event) {
     
         resetMappa();
         event.preventDefault();
@@ -201,9 +200,9 @@ async function creaLabelDestinazioneStallo(latStart, lonStart) {
             // Utilizzare il servizio di geocodifica Nominatim di OpenStreetMap
             const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&addressdetails=1`;
     
-            fetch(url)
-            .then(response => response.json())
-            .then(data => {
+            try{
+                let response=await fetch(url)
+                let data = await response.json()
                 if (data.length > 0) {
                     const place = data[0];
                     const latitude = parseFloat(place.lat);
@@ -237,13 +236,12 @@ async function creaLabelDestinazioneStallo(latStart, lonStart) {
                     resultElement.style.color = 'red';
                     // reject('Via non trovata');
                 }
-            })
-            .catch(error => {
+        }catch(error){
                 console.error('Errore durante la richiesta:', error);
                 resultElement.textContent = 'Errore durante la verifica della via. Riprova più tardi.';
                 resultElement.style.color = 'red';
                 reject(error);
-            });
+            }
         } else {
             resultElement.textContent = 'Inserisci una via per favore.';
             resultElement.style.color = 'red';
