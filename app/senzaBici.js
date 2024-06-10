@@ -219,8 +219,8 @@ async function getDatiStallo(startPosition, destinations) {
 
 async function chiamataAPIinfoStallo(id) {
     try {
-        const url = 'http://localhost:8080/api/v1/infoStallo';
-        const response = await fetch(url, {
+        const url = '/api/v1/infoStallo';
+        const response = await fetch('/api/v1/infoStallo', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
