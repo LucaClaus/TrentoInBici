@@ -20,11 +20,6 @@ router.post('', async (req, res) => {
 });
 
 async function checkIdExists(id) {
-    /*return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve(true);
-        }, 100);
-    });*/
     if(id > 30 || id < 1) return false;
     return true
 }

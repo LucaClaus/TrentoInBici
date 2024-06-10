@@ -693,15 +693,14 @@ async function ricercaStallo(latS, lonS, latD, lonD){
 async function tragittoInteroBikeSharing() {
     resetMappa();
     rimuoviElementiCreati();
-    var latitude;
-    var longitude;
+
     try {
         const position = await requestLocation();
-        latitude = position.coords.latitude; 
-        longitude = position.coords.longitude;
+        latStart = position.coords.latitude; 
+        lonStart = position.coords.longitude;
         //latitude = 46.069169527542655;
         //longitude = 11.127596809959554;
-        if(!(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX)){
+        if(!(LAT_INF <= latStart && latStart < LAT_SUP && LON_SX <= lonStart && longitlonStartude < LON_DX)){
           alert("La tua posizione è al di fuori dell'area consentita");
           return;
         }
@@ -729,7 +728,7 @@ async function tragittoInteroBikeSharing() {
         }
     }
 
-    creaLabelDestinazioneStallo(latitude, longitude);
+    creaLabelDestinazioneStallo(latStart, lonStart);
 
     map.on('click', async function (event) {
 
@@ -759,7 +758,7 @@ async function tragittoInteroBikeSharing() {
         geometry: new ol.geom.Point(coordinates)
     });
 
-    pulsanteConfermaDestinazioneStallo(latitude, longitude);
+    pulsanteConfermaDestinazioneStallo(latStart, lonStart);
     creaLabelDestinazioneStallo();
 
     // Aggiungi il nuovo marker al layer
@@ -856,10 +855,10 @@ async function aggiungiRastrelliera(){
     var longitude;
     try {
         const position = await requestLocation();
-        //latitude = position.coords.latitude; 
-        //longitude = position.coords.longitude;      
-        latitude = 46.069169527542655;
-        longitude = 11.127596809959554;
+        latitude = position.coords.latitude; 
+        longitude = position.coords.longitude;      
+        //latitude = 46.069169527542655;
+        //longitude = 11.127596809959554;
         if(!(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX)){
           alert("La tua posizione è al di fuori dell'area consentita");
           return;

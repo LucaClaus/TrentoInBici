@@ -1,12 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-//const Rastrelliera = require('./models/rastrelliere'); // get our mongoose model
 var mongoose = require('mongoose');
-//const rastrelliere = require('../models/rastrelliere');
 
 var Schema = mongoose.Schema;
-
 
 let rastrelliereDaAggiungere = mongoose.model('rastrelliereDaAggiungeres');
 let rastrelliere = mongoose.model('rastrellieres')
@@ -54,7 +51,5 @@ router.post('/noAdd', async (req, res) => {
 
     res.status(200).json({ message: 'Racks deleted successfully',});
 });
-
-
 
 module.exports = router;
