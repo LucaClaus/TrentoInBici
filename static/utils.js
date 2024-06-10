@@ -391,7 +391,6 @@ function pulsanteConfermaDestinazioneStallo(latStart, lonStart){
     btnConfermaDestinazione.textContent = 'Conferma Destinazione';
     btnConfermaDestinazione.type = 'submit';
     btnConfermaDestinazione.onclick = function() {
-        resetMappa();
         ricercaStallo(latStart, lonStart, latDest, lonDest);
         rimuoviElementiCreati();
         creaLabelDestinazioneStallo(latStart, lonStart)
