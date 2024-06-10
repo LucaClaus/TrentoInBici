@@ -4,17 +4,15 @@ const axios = require('axios');
 
 //numero di rastrelliere da mandare a OSRM
 const RASTRELLIERE_CALCOLATE_GEOMETRICAMENTE=5;
+//coordinate di confine di Trento
 const LAT_SUP=46.1331;
 const LAT_INF=46.0284;
 const LON_SX= 11.0819;
 const LON_DX=11.1582;
 
-//const Rastrelliera = require('./models/rastrelliere'); // get our mongoose model
 var mongoose = require('mongoose');
-//const rastrelliere = require('../models/rastrelliere');
 var Schema = mongoose.Schema;
 
-// set up a mongoose model
 const rastrelliere = mongoose.model('rastrellieres', new Schema({ 
 	id: String,
     latitude: Number,
@@ -24,7 +22,6 @@ const rastrelliere = mongoose.model('rastrellieres', new Schema({
 router.post('', async (req, res) => {
 
     const position = req.body.position;
-    //console.log("Coordinate Dispositivo: ", position);
 
     //se manca la posizione ritorna errore
     if(!position || position.latitude==null || position.longitude==null){
@@ -35,7 +32,6 @@ router.post('', async (req, res) => {
     //se la posizione data è la di fuori del comune di Trento torna errore
     if(!(LAT_INF <= position.latitude && position.latitude < LAT_SUP) || !(LON_SX <= position.longitude && position.longitude < LON_DX)){
         res.status(401).json({ error: 'La posizione non è compresa nel comune di Trento'});
-        console.log("posizione fuori dall'area");
         return
     }
 
@@ -44,26 +40,20 @@ router.post('', async (req, res) => {
 
     //calcola le RASTRELLIERE_CALCOLATE_GEOMETRICAMENTE rastrelliere piu vicine alla posizione geometricamente
     let rastrellierePiùVicineGeometricamente = await rastPiuVicineGeometricamente(position, tutteRastrelliere);
-    /*console.log("Distanze calcolate geometricamente");
-    for(let i=0; i<rastrellierePiùVicineGeometricamente.length;i++){
-        console.log(rastrellierePiùVicineGeometricamente[i].id);
-    }*/
 
     //funzione che calcola le 5 rastrelliere più vicine da mostrare all'utente, da ritornare: posizione, distanza dalla posizione dell'utente chiamando OSRM
     let distances = await getDistancesFromPosition(position, rastrellierePiùVicineGeometricamente);
-    /*console.log("Distanze calcolate con l'osmr");
-    for(let i=0; i<distances.length;i++){
-        console.log(distances[i].id + " " + distances[i].distance);
-    }*/
 
     res.status(200).json({ message: 'Position received successfully', body: distances });
 });
 
-router.get('/all', async (req, res) => {
-    let tutteRastrelliere= await riceviRastrelliere();
-    res.status(200).json({ message: 'All rastrelliere received successfully', body: tutteRastrelliere });
+    router.get('/all', async (req, res) => {
 
-});
+        let tutteRastrelliere= await riceviRastrelliere();
+
+        res.status(200).json({ message: 'All rastrelliere received successfully', body: tutteRastrelliere });
+
+    });
 
 //ricevere dal database tutte le rastrelliere
 async function riceviRastrelliere(){
@@ -104,7 +94,7 @@ async function calcolaDistanzaGeometrica(lat1, lon1, lat2, lon2) {
     lon1 *= deg2rad;
     lat2 *= deg2rad;
     lon2 *= deg2rad;
-    // Calcola la differenza di latitudine e longitudine
+    
     const dLat = lat2 - lat1;
     const dLon = lon2 - lon1;
     // Calcola la distanza tra i due punti utilizzando la formula dell'emissione sferica

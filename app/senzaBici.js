@@ -5,17 +5,16 @@ const axios = require('axios');
 //numero di stalli da mandare a OSRM
 const STALLI_CALCOLATI_GEOMETRICAMENTE=3;
 const STALLI_CALCOLATI_TRAGITTO_INTERO=2;
+//coordinate confini Trento
 const LAT_SUP=46.1331;
 const LAT_INF=46.0284;
 const LON_SX= 11.0819;
 const LON_DX=11.1582;
 
-//const Rastrelliera = require('./models/rastrelliere'); // get our mongoose model
 var mongoose = require('mongoose');
-//const rastrelliere = require('../models/rastrelliere');
+
 var Schema = mongoose.Schema;
 
-// set up a mongoose model
 const stalli = mongoose.model('stallis', new Schema({ 
 	id: String,
     latitude: Number,
@@ -37,6 +36,7 @@ router.post('', async (req, res) => {
         res.status(401).json({ error: 'La posizione non è compresa nel comune di Trento'});
         return
     }
+
     //ricevi dal database tutti gli stalli
     let tuttiStalli =await riceviStalli();
 
@@ -98,7 +98,6 @@ router.get('/all', async (req, res) => {
 
 async function riceviStalli(){
     const collectionName = stalli.collection.name;
-    console.log('Il modello "stalli" è associato alla collezione:', collectionName);
     let str = await stalli.find({});
     str = str.map( (stallo) => {
         return {
@@ -152,25 +151,16 @@ async function getDatiStallo(startPosition, destinations) {
         console.log("dati stallo")
         let destination = destinations[i];
 
-        /*// Prepare the URL for OSRM
-        let url = `http://router.project-osrm.org/route/v1/walk/${startPosition.longitude},${startPosition.latitude};${destination.longitude},${destination.latitude}?overview=false`;
-
-        // Use axios to send a GET request to the OSRM API
-        let response = await axios.get(url);
-        let route = response.data.routes[0];
-        let distance = route.distance; // The distance is in meters
-        let travelTime = route.duration; // The travel time is in seconds*/
-
         let travelTime=null;
         let distance=null;
 
         const profile = 'foot-walking'; // Profilo di trasporto per camminare
-    const apiKey = process.env.APIKEY_ORS;
-    const url = `https://api.openrouteservice.org/v2/directions/${profile}`;
-    const requestBody = {
-        coordinates: [[startPosition.longitude, startPosition.latitude], [destination.longitude, destination.latitude]],
-        profile: profile
-    };
+        const apiKey = process.env.APIKEY_ORS;
+        const url = `https://api.openrouteservice.org/v2/directions/${profile}`;
+        const requestBody = {
+            coordinates: [[startPosition.longitude, startPosition.latitude], [destination.longitude, destination.latitude]],
+            profile: profile
+        };
 
     try {
         const response = await fetch(url, {
@@ -204,7 +194,6 @@ async function getDatiStallo(startPosition, destinations) {
         };
 
         stalli.push(datiStallo);
-        //await new Promise(resolve => setTimeout(resolve, 1000));
 
     } catch (error) {
         console.error('Errore durante la chiamata API:', error);
@@ -343,12 +332,15 @@ async function calcolaPercorsoInBici(start, destination) {
 }
 
 async function tragittoAPiedi(latitudeStart, longitudeStart, latitudeDestination, longitudeDestination){
+    //chiamata API OSRM
     /*let url = `http://router.project-osrm.org/route/v1/foot/${longitudeStart},${latitudeStart};${longitudeDestination},${latitudeDestination}?overview=false`;
     let response = await axios.get(url);
     let route = response.data.routes[0];
     let duration = route.duration;
     let distance = route.distance;
     return { duration, distance };*/
+
+    //chiamata API ORS
     var mode= 'foot-walking'
     var origin = longitudeStart+","+latitudeStart
     var destination = longitudeDestination+","+latitudeDestination

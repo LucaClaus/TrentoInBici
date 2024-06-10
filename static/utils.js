@@ -210,11 +210,9 @@ async function creaLabelDestinazioneStallo(latStart, lonStart) {
                     const longitude = parseFloat(place.lon);
         
                     if (LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX) {
-                        // Le coordinate sono all'interno dell'area geografica
-                        //resultElement.textContent = `Via trovata: ${place.display_name}`;
-                        //resultElement.style.color = 'green';
                         latDest = latitude;
                         lonDest = longitude;
+
                         markerDest.getSource().clear();
                         const marker = new ol.Feature({
                             geometry: new ol.geom.Point(ol.proj.fromLonLat([lonDest, latDest]))
@@ -393,7 +391,7 @@ function pulsanteConfermaDestinazioneStallo(latStart, lonStart){
     btnConfermaDestinazione.onclick = function() {
       ricercaStallo(latStart, lonStart, latDest, lonDest);
       rimuoviElementiCreati();
-      creaLabelDestinazioneStallo()
+      creaLabelDestinazioneStallo(latStart, lonStart)
     };
     const divInitNav = document.getElementById('btnConfermaDestinazione');
     divInitNav.innerHTML = ''; // Rimuovi qualsiasi contenuto precedente

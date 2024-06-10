@@ -1,19 +1,17 @@
 const express = require('express');
 const router = express.Router();
 
-//const Rastrelliera = require('./models/rastrelliere'); // get our mongoose model
 var mongoose = require('mongoose');
-//const rastrelliere = require('../models/rastrelliere');
 
 var Schema = mongoose.Schema;
 
-// set up a mongoose model
 const rastrellieraDaAggiungere = mongoose.model('rastrelliereDaAggiungeres', new Schema({ 
 	id: Number,
     latitude: Number,
     longitude: Number,
 }));
 
+//coordinate di confine di Trento
 const LAT_SUP=46.1331;
 const LAT_INF=46.0284;
 const LON_SX= 11.0819;
@@ -37,7 +35,6 @@ if (mongoose.models.rastrellieres) {
 router.post('', async (req, res) => {
     const position = req.body.position;
     let rastrellieraGiaPresente = false;
-    let rastrellieraGiaSegnalata = false;
     const rastrellieres = await rastrelliere.find({});
     const rastrellieresDaAggiungere = await rastrelliereI.find({});
 
@@ -45,7 +42,6 @@ router.post('', async (req, res) => {
         res.status(400).json({ error: 'NO Position'});
         return
     }
-
     //se la posizione data è la di fuori del comune di Trento torna errore
     if(!(LAT_INF <= position.latitude && position.latitude < LAT_SUP) || !(LON_SX <= position.longitude && position.longitude < LON_DX)){
         res.status(401).json({ error: 'La posizione non è compresa nel comune di Trento'});

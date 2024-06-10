@@ -28,20 +28,23 @@
   }
   @media screen and (max-width: 768px) {
     .container {
-        position: absolute;
+        position: relative;
         padding-left: 0 !important;
         padding-right: 0 !important;
         margin-left: 0;
         margin-right: 0;
     }
     .content {
-      position: absolute;
+      position: relative;
       padding-left: 0 !important;
       padding-right: 0 !important;
       margin-left: 0;
       margin-right: 0;
   }
-  
+  .row{
+    flex: 0 0 100%;
+        max-width: 100%;
+  }
    .col-md-6:first-child {
         flex: 0 0 100%;
         max-width: 100%;
@@ -50,6 +53,10 @@
     .col-md-6:last-child {
         flex: 0 0 100%;
         max-width: 100%;
+    }
+    #about{
+      margin-left: 10px;
+      margin-right: 10px;
     }
   
     #mappaRastrelliera {
