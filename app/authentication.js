@@ -43,13 +43,13 @@ router.post('', async function(req, res) {
 	
 		// local user not found
 		if (!user) {
-			res.json({ success: false, message: 'Authentication failed. User not found.' });
+			res.status(400).json({ success: false, message: 'Authentication failed. User not found.' });
 			return;
 		}
 	
 		// check if password matches
 		if (user.password != req.body.password) {
-			res.json({ success: false, message: 'Authentication failed. Wrong password.' });
+			res.status(400).json({ success: false, message: 'Authentication failed. Wrong password.' });
 			return;
 		}
 	}
@@ -57,7 +57,6 @@ router.post('', async function(req, res) {
 	if(user.email=='admin'){
 		admin=true;
 	}
-	
 	// if user is found or created create a token
 	var payload = {
 		email: user.email,
@@ -70,7 +69,7 @@ router.post('', async function(req, res) {
 	}
 	var token = jwt.sign(payload, process.env.SUPER_SECRET, options);
 
-	res.json({
+	res.status(200).json({
 		success: true,
 		message: 'Enjoy your token!',
 		token: token,
