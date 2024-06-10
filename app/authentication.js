@@ -42,6 +42,7 @@ async function verify( token ) {
 router.post('', async function(req, res) {
 
 	var user = {};
+	var admin=false;
 
 	if ( req.body.googleToken ) {
 		const payload = await verify( req.body.googleToken ).catch(console.error);
@@ -61,7 +62,6 @@ router.post('', async function(req, res) {
 	}
 	else {
 		// find the user in the local db
-        console.log(req.body.email);
 		user = await User.findOne({
 			email: req.body.email
 		}).exec();
@@ -78,15 +78,20 @@ router.post('', async function(req, res) {
 			return;
 		}
 	}
+
+	if(user.email=='admin'){
+		admin=true;
+	}
 	
 	// if user is found or created create a token
 	var payload = {
 		email: user.email,
-		id: user._id
+		id: user._id,
+		admin: admin
 		// other data encrypted in the token	
 	}
 	var options = {
-		expiresIn: 600 // 10 minuti
+		expiresIn: 600, // 10 minuti
 	}
 	var token = jwt.sign(payload, process.env.SUPER_SECRET, options);
 
@@ -96,12 +101,11 @@ router.post('', async function(req, res) {
 		token: token,
 		email: user.email,
 		id: user._id,
+		admin: admin,
 		sessionTime: options.expiresIn,
 		self: "api/v1/" + user._id
 	});
 
 });
-
-
 
 module.exports = router;

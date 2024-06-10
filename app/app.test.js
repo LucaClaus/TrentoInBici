@@ -1,13 +1,16 @@
 const request = require('supertest');
 const app     = require('./app');
 
-test('app module should be defined', () => {
-  expect(app).toBeDefined();
-});
+describe('Test biciPropria', () => {
+  //test 1
+  test('app module should be defined', () => {
+    expect(app).toBeDefined();
+  });
 
-test('GET / should return 200', () => {
-  return request(app)
-    .get('/')
-    .expect(200);
+  //test 2
+  test('GET / should return 200', () => {
+    return request(app)
+      .get('/')
+      .expect(200);
+  });
 });
-

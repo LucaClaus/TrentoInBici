@@ -75,7 +75,7 @@
     </div>
     <div class="row">
         <div class="col-md-6">
-            <div id="divResult">
+            <div id="divResult" class="divResult">
                 <h3 id="initDivResult">Clicca un pulsante per iniziare:</h3>
                 <form id="addressFrom" class="mb-3">
                     <p id="labelDestinazione"></p>
@@ -123,6 +123,8 @@
   let first=true;
   let latDest;
   let lonDest;
+
+  document.querySelector('.divResult').style.height = 'auto';
 
   const epsg4326 = 'EPSG:4326';
   const projection = ol.proj.get(epsg4326);
