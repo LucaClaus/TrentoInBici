@@ -581,113 +581,7 @@ async function stazioneBikeSharing() {
     }
 }
 
-async function ricercaStallo(latS, lonS, latD, lonD){
-    showSpinner();
-    const ul = document.getElementById('rastrelliere'); // Lista per visualizzare i dati delle rastrelliere
-    ul.textContent = '';
-    let latitudeStart = latS;
-    let longitudeStart = lonS;
-    let latitudeDestination = latD;
-    let longitudeDestination= lonD;
-    let first = true;
 
-    document.getElementById('mappaRastrelliera').addEventListener('wheel', function(event) {
-        event.preventDefault();
-    }, { passive: false });
-
-    const positionLabelStart = document.getElementById('position');
-    
-
-    // Aggiunta dei controlli alla mappa
-    map.addControl(new ol.control.ScaleLine());
-    map.addControl(new ol.control.MousePosition());
-    
-    // Aggiunta del marker centrale
-    const centerFeature = new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.fromLonLat([longitudeStart, latitudeStart]))
-    });
-    markerLayer.getSource().addFeature(centerFeature);
-
-    // Chiamata all'API per ottenere i dati degli stralli
-    const data = await chiamataAPISenzaBiciII(latitudeStart, longitudeStart, latitudeDestination, longitudeDestination);
-    
-    data.body.minDistance=approxNcifre(data.body.minDistance,2);
-    data.body.minDuration=approxNcifre(data.body.minDuration,2);
-    data.body.aPiedi.duration=approxNcifre(data.body.aPiedi.duration,2);
-    data.body.aPiedi.distance=approxNcifre(data.body.aPiedi.distance,2);
-
-    positionLabelStart.innerHTML = "Tempo e distanza di percorrenza usando le bici del bike sharing: " + data.body.minDuration + " min "+ data.body.minDistance + " km<br>"
-                                   + " Tempo e distanza andando a piedi: " + data.body.aPiedi.duration + " min " + data.body.aPiedi.distance + " km";
-    positionLabelStart.style.color = 'green';
-
-    let tappa1 = data.body.bestStops[0];
-    let tappa2 = data.body.bestStops[1];
-
-    if(data.body.minDuration<=data.body.aPiedi.duration){
-        positionLabelStart.innerHTML += "<br><br><br> Ti conviene il percorso BIKE SHARING! <br> Sei più veloce di "+approxNcifre((data.body.aPiedi.duration-data.body.minDuration),2)+" min"
-    }else{
-        positionLabelStart.innerHTML += "<br><br><br> Ti conviene andare A PIEDI! <br> Sei più veloce di "+approxNcifre((data.body.minDuration-data.body.aPiedi.duration),2)+" min"
-    }
-    
-    if(tappa1.latitude == tappa2.latitude && tappa1.longitude == tappa2.longitude){
-        alert("Non ci sono due stalli che permettono di raggiungere la destinazione con una bici del bike sharing");
-    }
-
-    let selectedMarkerFeature1 = new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.fromLonLat([tappa1.longitude, tappa1.latitude])),
-        description: "Selected Rastrelliera"
-    });
-    selectedMarkerFeature1.setStyle(new ol.style.Style({
-        image: new ol.style.Icon({
-            src: 'res/icona-rastrelliera-selezionata.png',
-            anchor: [0.5, 1],
-            scale: 0.8
-        })
-    }));
-    rastrellieraLayer.getSource().addFeature(selectedMarkerFeature1);
-
-    let selectedMarkerFeature2 = new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.fromLonLat([tappa2.longitude, tappa2.latitude])),
-        description: "Selected Rastrelliera"
-    });
-    selectedMarkerFeature2.setStyle(new ol.style.Style({
-        image: new ol.style.Icon({
-            src: 'res/icona-rastrelliera-selezionata.png',
-            anchor: [0.5, 1],
-            scale: 0.8
-        })
-    }));
-    rastrellieraLayer.getSource().addFeature(selectedMarkerFeature2);
-    
-    if (first) {
-        let btnIniziaNavigazione = document.createElement('button');
-        btnIniziaNavigazione.classList.add('elemCreato','btn', 'btn-success', 'mb-2', 'initNav');
-        btnIniziaNavigazione.textContent = "Inizia navigazione: percorso Bike Sharing";
-        let labelInitNav=document.createElement('p');
-        labelInitNav.classList.add('elemCreato', 'initNav')
-        labelInitNav.textContent = "Cliccando su Inizia Navigazione verrai reindirizzato sul sito di Google Maps per raggiungere al meglio la destinazione selezionata. Segui il percorso con tutte le tappe!"
-        const divInitNav = document.getElementById('btnIniziaNavigazione');
-        divInitNav.appendChild(labelInitNav);
-        divInitNav.appendChild(btnIniziaNavigazione);
-        first = false;
-        btnIniziaNavigazione.onclick = function() {
-            let url = `https://www.google.com/maps/dir/?api=1&destination=${latitudeDestination},${longitudeDestination}&waypoints=${tappa1.latitude},${tappa1.longitude}|${tappa2.latitude},${tappa2.longitude}&travelmode=bicycling`;        
-            console.log(url);
-            window.open(url);
-        };    
-        let btnIniziaNavigazionePiedi = document.createElement('button');
-        btnIniziaNavigazionePiedi.classList.add('elemCreato','btn', 'btn-success', 'mr-2', 'initNav');
-        btnIniziaNavigazionePiedi.textContent = "Inizia navigazione: a piedi";
-        const divInitNavPiedi = document.getElementById('btnIniziaNavigazione');
-        divInitNavPiedi.appendChild(btnIniziaNavigazionePiedi);
-        btnIniziaNavigazionePiedi.onclick = function() {
-            let url = `https://www.google.com/maps/dir/?api=1&destination=${latitudeDestination},${longitudeDestination}&travelmode=walking`;        
-            console.log(url);
-            window.open(url);
-        }; 
-    }
-    hideSpinner();
-}
 
 
 async function tragittoInteroBikeSharing() {
@@ -764,8 +658,6 @@ async function tragittoInteroBikeSharing() {
 
     // Aggiungi il nuovo marker al layer
     markerDest.getSource().addFeature(marker);
-    //ricercaStallo(startPosition.coords.latitude, startPosition.coords.longitude, latDest, lonDest)
-    //ricercaStallo(latitude, longitude, latDest, lonDest)
 
     }else{
         rimuoviElementiCreati();

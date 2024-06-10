@@ -4,23 +4,33 @@
 const request = require('supertest');
 const app     = require('./app');
 const mongoose = require('mongoose');
-
 require('dotenv').config();
 
 describe('Test senzaBici', () => {
-    var token
+    let token;
     beforeAll(async () => {
         fetch('http://localhost:8080/api/v1/authentication', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify( { email: "davide.luca@gruppo19.com", password: "123" } ),
         })
-        .then((resp) => resp.json()) // Transform the data into json
+        .then((resp) => {
+            if (!resp.ok) {
+                throw new Error(`HTTP error! status: ${resp.status}`);
+            }
+            return resp.json();
+        }) // Transform the data into json
         .then(function(data) { // Here you get the data to modify as you please
             if(data.success){
-                token = data.token
+                token = data.token;
+                console.log('Token:', token);
+            } else {
+                console.log('Authentication failed:', data);
             }
         })
+        .catch(function(error) {
+            console.log('Request failed:', error);
+        });
         jest.setTimeout(8000);
         jest.unmock('mongoose');
         connection = await  mongoose.connect(process.env.DB_URL, {useNewUrlParser: true, useUnifiedTopology: true});
@@ -48,7 +58,7 @@ describe('Test senzaBici', () => {
         };
         const response = await request(app).post('/api/v1/gestoreDataBase').send(position).set('x-access-token', token);
         expect(response.statusCode).toBe(401);
-    });
+    }, 20000);
     //test 28
     test('POST /api/v1/gestoreDataBase rastrelliera already present in the database', async () => {
         const position = {
@@ -73,17 +83,19 @@ describe('Test senzaBici', () => {
         expect(response.body.body.rastrellieraGiaPresente).toBe(false);
         expect(response.body.body.rastrellieraGiaSegnalata).toBe(true);
     }, 20000);
+
     test('POST /api/v1/gestoreDataBase rastrelliera not in the system', async () => {
         const position = {
             "position": {
-                "latitude": 46.0703773020106, 
-                "longitude": 11.121799049872447
+                "latitude": 46.08973826181626, 
+                "longitude": 11.115990954537102
             }
         };
         const response = await request(app).post('/api/v1/gestoreDataBase').send(position).set('x-access-token', token);
         expect(response.body.body.rastrellieraGiaPresente).toBe(false);
         expect(response.body.body.rastrellieraGiaSegnalata).toBe(false);
     }, 20000);
+
     //test 31
     test('POST /api/v1/gestoreDataBase missing longitude', async () => {
         const position = {
@@ -92,7 +104,7 @@ describe('Test senzaBici', () => {
                 "longitude": null
             }
         };
-        const response = await request(app).post('/api/v1/gestoreDataBase').send(position).set('Authorization', `Bearer ${token}`);
-        expect(response.statusCode).toBe(401);
+        const response = await request(app).post('/api/v1/gestoreDataBase').send(position).set('x-access-token', token);
+        expect(response.statusCode).toBe(400);
     });
 });
