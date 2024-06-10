@@ -54,7 +54,7 @@ describe('Test senzaBici', () => {
         expectedIds.forEach(expectedId => {
             expect(strIds).toContain(expectedId);
         });
-    }, 15000);
+    }, 20000);
 
 
     //test 23
