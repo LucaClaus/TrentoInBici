@@ -16,10 +16,9 @@ router.post('', async (req, res) => {
     res.status(200).json({ message: 'Url for navigation', body: directionsUrl});
 });
 
+function generateDirectionsUrl(destination) {
 
-    function generateDirectionsUrl(destination) {
+    return `https://www.google.com/maps/dir/?api=1&destination=${destination.latitude},${destination.longitude}&travelmode=bicycling`;
+}
 
-        return `https://www.google.com/maps/dir/?api=1&destination=${destination.latitude},${destination.longitude}&travelmode=bicycling`;
-    }
-
-    module.exports = router;
+module.exports = router;
