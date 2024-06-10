@@ -6,7 +6,7 @@
     <title>TrentoInBici</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+    <script src="https://www.openlayers.org/api/OpenLayers.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.5/ol.css"></link>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.5/ol.js"></script>
@@ -148,7 +148,8 @@
   map.addLayer(new ol.layer.Tile({
       source: new ol.source.OSM()
   }));
-  map.addLayer(new ol.layer.Tile({
+  //problemi CORS
+  /*map.addLayer(new ol.layer.Tile({
       source: new ol.source.OSM({
           url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
           attributions: [
@@ -156,7 +157,7 @@
               '&copy; <a href="https://foundation.wikimedia.org/wiki/Maps_Terms_of_Use">Wikimedia</a>'
           ]
       })
-  }));
+  }));*/
 
   // Aggiunta dei controlli di navigazione
   map.addControl(new ol.control.Zoom());
