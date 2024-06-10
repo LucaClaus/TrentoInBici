@@ -92,6 +92,7 @@ router.post('/tragittoIntero', async (req, res) => {
 
 router.get('/all', async (req, res) => {
     let tuttiStalli= await riceviStalli();
+    let data = await getDatiStallo(null, tuttiStalli);
     res.status(200).json({ message: 'All stalli received successfully', body: tuttiStalli });
 
 });
@@ -146,6 +147,24 @@ async function calcolaDistanzaGeometrica(lat1, lon1, lat2, lon2) {
 
 async function getDatiStallo(startPosition, destinations) {
     let stalli = [];
+    if(startPosition==null){
+        for (let i = 0; i < destinations.length; i++) {
+            let destination = destinations[i];
+            let dataStallo = await chiamataAPIinfoStallo(destination.id)
+            let datiStallo = {
+                id: destination.id,
+                latitude: destination.latitude,
+                longitude: destination.longitude,
+                distance: 0,
+                travelTime: 0,
+                numPostiLiberi: dataStallo.body.numPostiLiberi,
+                numBiciDisponibili: dataStallo.body.numBiciDisponibili
+            };
+
+            stalli.push(datiStallo);
+        }
+        return treRastrellierePiùVicine;
+    }
 
     for (let i = 0; i < destinations.length; i++) {
         console.log("dati stallo")
