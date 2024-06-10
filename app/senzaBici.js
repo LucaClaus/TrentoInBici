@@ -163,7 +163,7 @@ async function getDatiStallo(startPosition, destinations) {
 
             stalli.push(datiStallo);
         }
-        return treRastrellierePiùVicine;
+        return stalli;
     }
 
     for (let i = 0; i < destinations.length; i++) {
