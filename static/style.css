@@ -26,6 +26,37 @@
       transform: translate(-50%, -50%) rotate(360deg);
     }
   }
+  @media screen and (max-width: 768px) {
+    .container {
+        position: absolute;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    .content {
+      position: absolute;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      margin-left: 0;
+      margin-right: 0;
+  }
+  
+   .col-md-6:first-child {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+  
+    .col-md-6:last-child {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+  
+    #mappaRastrelliera {
+        height: 400px; /* Puoi modificare l'altezza a seconda delle tue necessità */
+        width: 100%; /* Assicura che la mappa occupi tutta la larghezza del genitore */
+    }
+  }
   body {
     /*background-color: #afa8a8;*/ /* Colore di sfondo grigio chiaro */
     background-image: url('res/sfondo.jpg'); /* Percorso dell'immagine */
@@ -177,3 +208,4 @@ h1 {
   opacity: 1;
   transform: translateX(-50%) translateY(5px);
 }
+

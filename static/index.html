@@ -2,6 +2,7 @@
 <html>
 
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TrentoInBici</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -17,7 +18,7 @@
 <body>
     <div class="overlay"></div>
     <div class="content">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <!--<nav class="navbar navbar-expand-md navbar-light bg-light">
         <a class="navbar-brand" href="#">TrentoInBici</a>
         <div class="collapse navbar-collapse justify-content-end">
             <ul class="navbar-nav">
@@ -28,8 +29,23 @@
                 <button id="btnLogout" class="btn btn-primary mr-2 log" onclick="logout()">Logout</button>
             </ul>
         </div>
+    </nav>-->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">TrentoInBici</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    
+        <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <p id="emailLoggedUser" class="mr-3"></p>
+                    <a class="btn btn-primary" id="btnLogin" href="login.html">Login</a>
+                </li>
+                <button id="btnLogout" class="btn btn-primary mr-2 log" onclick="logout()">Logout</button>
+            </ul>
+        </div>
     </nav>
-
 <div class="container mt-4">
     <div class="page-description">
         <h1>Benvenuto a TrentoInBici</h1>
@@ -125,6 +141,7 @@
   let lonDest;
 
   document.querySelector('.divResult').style.height = 'auto';
+  document.querySelector('.page-info').style.height = 'auto';
 
   const epsg4326 = 'EPSG:4326';
   const projection = ol.proj.get(epsg4326);

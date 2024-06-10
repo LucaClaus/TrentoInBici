@@ -434,7 +434,7 @@ async function ricercaStalli(lat, lon){
         btnStallo.style.display = 'block';
         btnStallo.textContent = "Distanza: " + approxNcifre((stallo.distance),2) + " km" + 
                                         ", Posti liberi: " + stallo.numPostiLiberi + 
-                                        ", Bici disponibili: " + stallo.numBiciDisponibili + " " + stallo.id
+                                        ", Bici disponibili: " + stallo.numBiciDisponibili
     
         let markerFeature = new ol.Feature({
             geometry: new ol.geom.Point(ol.proj.fromLonLat([stallo.longitude, stallo.latitude])),
