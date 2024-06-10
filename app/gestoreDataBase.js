@@ -9,13 +9,18 @@ var Schema = mongoose.Schema;
 
 // set up a mongoose model
 const rastrellieraDaAggiungere = mongoose.model('rastrelliereDaAggiungeres', new Schema({ 
-	id: String,
+	id: Number,
     latitude: Number,
     longitude: Number,
 }));
 
-let rastrelliere;
+const LAT_SUP=46.1331;
+const LAT_INF=46.0284;
+const LON_SX= 11.0819;
+const LON_DX=11.1582;
 
+let rastrelliere;
+let rastrelliereI;
 
 if (mongoose.models.rastrellieres) {
     rastrelliere = mongoose.model('rastrellieres');
@@ -23,21 +28,51 @@ if (mongoose.models.rastrellieres) {
     rastrelliere = mongoose.model('rastrellieres', yourSchema);
 }
 
+if (mongoose.models.rastrellieres) {
+    rastrelliereI = mongoose.model('rastrelliereDaAggiungeres');
+} else {
+    rastrelliereI = mongoose.model('rastrelliereDaAggiungeres', yourSchema);
+}
+
 router.post('', async (req, res) => {
     const position = req.body.position;
-    let rastrellieraGiàPresente = false;
+    let rastrellieraGiaPresente = false;
+    let rastrellieraGiaSegnalata = false;
     const rastrellieres = await rastrelliere.find({});
+    const rastrellieresDaAggiungere = await rastrelliereI.find({});
+
+    if(!position || position.latitude==null || position.longitude==null){
+        res.status(400).json({ error: 'NO Position'});
+        return
+    }
+
+    //se la posizione data è la di fuori del comune di Trento torna errore
+    if(!(LAT_INF <= position.latitude && position.latitude < LAT_SUP) || !(LON_SX <= position.longitude && position.longitude < LON_DX)){
+        res.status(401).json({ error: 'La posizione non è compresa nel comune di Trento'});
+        return
+    }
 
     for (let i = 0; i < rastrellieres.length; i++) {
         const rastrelliera = rastrellieres[i];
         const distance = calculateDistance(position.latitude, position.longitude, rastrelliera.latitude, rastrelliera.longitude);
         if (distance <= 0.05) { // 0.02 km = 20 meters
             console.log('Rastrelliera trovata:');
-            rastrellieraGiàPresente = true;
+            rastrellieraGiaPresente = true;
             break;
         }
     }
-    if (!rastrellieraGiàPresente) {
+
+    for (let i = 0; i < rastrellieresDaAggiungere.length; i++) {
+        const rastrelliera = rastrellieresDaAggiungere[i];
+        const distance = calculateDistance(position.latitude, position.longitude, rastrelliera.latitude, rastrelliera.longitude);
+        if (distance <= 0.05) { // 0.02 km = 20 meters
+            console.log('Rastrelliera trovata');
+            rastrellieraGiaSegnalata = true;
+            break;
+        }
+    }
+
+    if (!rastrellieraGiaPresente && !rastrellieresDaAggiungere) {
         console.log('Nessuna rastrelliera trovata con queste coordinate');
         const numRastrelliere = await rastrellieraDaAggiungere.countDocuments();
         const newRastrelliera = new rastrellieraDaAggiungere({
@@ -47,9 +82,8 @@ router.post('', async (req, res) => {
         });
         // Save the new rastrelliera to the database
         await newRastrelliera.save();
-        console.log('New rastrelliera added:');
+        console.log('New rastrelliera added to the database');
     }
-    console.log("data tragitto intero: ", rastrellieraGiàPresente)
     res.status(200).json({ message: 'Position received successfully', body: rastrellieraGiàPresente });
 });
 

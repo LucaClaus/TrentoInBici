@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 
-//numero di stralli da mandare a OSRM
+//numero di stalli da mandare a OSRM
 const STALLI_CALCOLATI_GEOMETRICAMENTE=3;
 const STALLI_CALCOLATI_TRAGITTO_INTERO=2;
 const LAT_SUP=46.1331;
@@ -16,7 +16,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 // set up a mongoose model
-const stralli = mongoose.model('stallis', new Schema({ 
+const stalli = mongoose.model('stallis', new Schema({ 
 	id: String,
     latitude: Number,
     longitude: Number,
@@ -40,10 +40,10 @@ router.post('', async (req, res) => {
     //ricevi dal database tutti gli stalli
     let tuttiStalli =await riceviStalli();
 
-    //calcola le STRALLI_CALCOLATI_GEOMETRICAMENTE stalli piu vicini alla posizione geometricamente
-    let stralliPiuViciniGeometricamente = await strPiuViciniGeometricamente(position, tuttiStalli);
+    //calcola le STALLI_CALCOLATI_GEOMETRICAMENTE stalli piu vicini alla posizione geometricamente
+    let stalliPiuViciniGeometricamente = await strPiuViciniGeometricamente(position, tuttiStalli);
 
-    let data = await getDatiStallo(position, stralliPiuViciniGeometricamente);
+    let data = await getDatiStallo(position, stalliPiuViciniGeometricamente);
 
     res.status(200).json({ message: 'Position received successfully', body: data });
 });
@@ -76,14 +76,14 @@ router.post('/tragittoIntero', async (req, res) => {
     //ricevi dal database tutti gli stalli
     let tuttiStalli =await riceviStalli();
 
-    //calcola le STRALLI_CALCOLATI_GEOMETRICAMENTE stalli piu vicini alla posizione geometricamente
-    let stralliPiuViciniGeometricamenteStart = await strPiuViciniGeometricamente(positionStart, tuttiStalli);
-    let stralliPiuViciniGeometricamenteDestination = await strPiuViciniGeometricamente(positionDestination, tuttiStalli);
+    //calcola le STALLI_CALCOLATI_GEOMETRICAMENTE stalli piu vicini alla posizione geometricamente
+    let stalliPiuViciniGeometricamenteStart = await strPiuViciniGeometricamente(positionStart, tuttiStalli);
+    let stalliPiuViciniGeometricamenteDestination = await strPiuViciniGeometricamente(positionDestination, tuttiStalli);
 
-    stralliPiuViciniGeometricamenteStart = stralliPiuViciniGeometricamenteStart.slice(0, 2);
-    stralliPiuViciniGeometricamenteDestination = stralliPiuViciniGeometricamenteDestination.slice(0, 2);
+    stalliPiuViciniGeometricamenteStart = stalliPiuViciniGeometricamenteStart.slice(0, 2);
+    stalliPiuViciniGeometricamenteDestination = stalliPiuViciniGeometricamenteDestination.slice(0, 2);
 
-    let data = await calcolaPercorsoMigliore(positionStart, positionDestination, stralliPiuViciniGeometricamenteStart, stralliPiuViciniGeometricamenteDestination);
+    let data = await calcolaPercorsoMigliore(positionStart, positionDestination, stalliPiuViciniGeometricamenteStart, stalliPiuViciniGeometricamenteDestination);
     let aPiedi = await tragittoAPiedi(positionStart.latitude, positionStart.longitude, positionDestination.latitude, positionDestination.longitude);
     data.aPiedi = aPiedi;
 
@@ -97,9 +97,9 @@ router.get('/all', async (req, res) => {
 });
 
 async function riceviStalli(){
-    const collectionName = stralli.collection.name;
+    const collectionName = stalli.collection.name;
     console.log('Il modello "stalli" è associato alla collezione:', collectionName);
-    let str = await stralli.find({});
+    let str = await stalli.find({});
     str = str.map( (stallo) => {
         return {
             id: stallo.id,
