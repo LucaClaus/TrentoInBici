@@ -372,6 +372,7 @@ function pulsanteConfermaDestinazione(){
     btnConfermaDestinazione.type = 'submit';
     btnConfermaDestinazione.onclick = function() {
       ricercaRastrelliere(latDest, lonDest);
+      resetMappa();
       rimuoviElementiCreati();
       creaLabelDestinazione();
     };
@@ -388,6 +389,7 @@ function pulsanteConfermaDestinazioneStallo(latStart, lonStart){
     btnConfermaDestinazione.type = 'submit';
     btnConfermaDestinazione.onclick = function() {
       ricercaStallo(latStart, lonStart, latDest, lonDest);
+      resetMappa();
       rimuoviElementiCreati();
       creaLabelDestinazioneStallo(latStart, lonStart)
     };
