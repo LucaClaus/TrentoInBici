@@ -35,6 +35,7 @@ if (mongoose.models.rastrellieres) {
 router.post('', async (req, res) => {
     const position = req.body.position;
     let rastrellieraGiaPresente = false;
+    let rastrellieraGiaSegnalata = false;
     const rastrellieres = await rastrelliere.find({});
     const rastrellieresDaAggiungere = await rastrelliereI.find({});
 

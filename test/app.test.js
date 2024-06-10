@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app     = require('./app');
+const app     = require('../app/app');
 
 describe('Test biciPropria', () => {
   //test 1

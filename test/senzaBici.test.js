@@ -2,7 +2,7 @@
  * https://www.npmjs.com/package/supertest
  */
 const request = require('supertest');
-const app     = require('./app');
+const app     = require('../app/app');
 const mongoose = require('mongoose');
 require('dotenv').config();
 

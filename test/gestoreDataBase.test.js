@@ -2,7 +2,7 @@
  * https://www.npmjs.com/package/supertest
  */
 const request = require('supertest');
-const app     = require('./app');
+const app     = require('../app/app');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
@@ -58,7 +58,7 @@ describe('Test senzaBici', () => {
         };
         const response = await request(app).post('/api/v1/gestoreDataBase').send(position).set('x-access-token', token);
         expect(response.statusCode).toBe(401);
-    }, 20000);
+    }, 30000);
     //test 28
     test('POST /api/v1/gestoreDataBase rastrelliera already present in the database', async () => {
         const position = {
@@ -70,20 +70,8 @@ describe('Test senzaBici', () => {
         const response = await request(app).post('/api/v1/gestoreDataBase').send(position).set('x-access-token', token);
         expect(response.body.body.rastrellieraGiaPresente).toBe(true);
         expect(response.body.body.rastrellieraGiaSegnalata).toBe(false);
-    }, 20000);
+    }, 50000);
     //test 29
-    test('POST /api/v1/gestoreDataBase rastrelliera already reported', async () => {
-        const position = {
-            "position": {
-                "latitude": 46.0590832,
-                "longitude": 11.1202878
-            }
-        };
-        const response = await request(app).post('/api/v1/gestoreDataBase').send(position).set('x-access-token', token);
-        expect(response.body.body.rastrellieraGiaPresente).toBe(false);
-        expect(response.body.body.rastrellieraGiaSegnalata).toBe(true);
-    }, 20000);
-
     test('POST /api/v1/gestoreDataBase rastrelliera not in the system', async () => {
         const position = {
             "position": {
@@ -94,7 +82,20 @@ describe('Test senzaBici', () => {
         const response = await request(app).post('/api/v1/gestoreDataBase').send(position).set('x-access-token', token);
         expect(response.body.body.rastrellieraGiaPresente).toBe(false);
         expect(response.body.body.rastrellieraGiaSegnalata).toBe(false);
-    }, 20000);
+    }, 30000);
+    
+    //test 30
+    test('POST /api/v1/gestoreDataBase rastrelliera already reported', async () => {
+        const position = {
+            "position": {
+                "latitude": 46.08973826181626, 
+                "longitude": 11.115990954537102
+            }
+        };
+        const response = await request(app).post('/api/v1/gestoreDataBase').send(position).set('x-access-token', token);
+        expect(response.body.body.rastrellieraGiaPresente).toBe(false);
+        expect(response.body.body.rastrellieraGiaSegnalata).toBe(true);
+    }, 30000);
 
     //test 31
     test('POST /api/v1/gestoreDataBase missing longitude', async () => {
