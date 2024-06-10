@@ -219,8 +219,8 @@ async function getDatiStallo(startPosition, destinations) {
 
 async function chiamataAPIinfoStallo(id) {
     try {
-        const url = '/api/v1/infoStallo';
-        const response = await fetch('/api/v1/infoStallo', {
+        const url = 'https://trentoinbici.onrender.com/api/v1/infoStallo';
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
