@@ -109,8 +109,13 @@ return new Promise((resolve, reject) => {
         const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&addressdetails=1`;
 
         try{
-            let response=await fetch(url)
-            let data=await response.json()
+            let response= await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            let data= await response.json()
             if (data.length > 0) {
                 const place = data[0];
                 const latitude = parseFloat(place.lat);
@@ -149,8 +154,7 @@ return new Promise((resolve, reject) => {
             }
         }catch(error) {
             console.error('Errore durante la richiesta:', error);
-            resultElement.textContent = 'Errore durante la verifica della via. Riprova più tardi.';
-            resultElement.style.color = 'red';
+            alert('Errore durante la verifica della via. Riprova più tardi.');
             reject(error);
         }
     } else {
@@ -201,7 +205,7 @@ async function creaLabelDestinazioneStallo(latStart, lonStart) {
             const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&addressdetails=1`;
     
             try{
-                let response=await fetch(url)
+                let response=await fetch(url);
                 let data = await response.json()
                 if (data.length > 0) {
                     const place = data[0];
@@ -224,7 +228,7 @@ async function creaLabelDestinazioneStallo(latStart, lonStart) {
         
                         markerDest.getSource().addFeature(marker);
                         pulsanteConfermaDestinazioneStallo(latStart, lonStart);
-                        // resolve({ latitude, longitude });
+                        resolve({ latitude, longitude });
                     } else {
                         // Le coordinate sono al di fuori dell'area geografica
                         resultElement.textContent = 'Via al di fuori dell\'area consentita.';
@@ -234,12 +238,11 @@ async function creaLabelDestinazioneStallo(latStart, lonStart) {
                 } else {
                     resultElement.textContent = 'Via non trovata. Verifica l\'indirizzo inserito.';
                     resultElement.style.color = 'red';
-                    // reject('Via non trovata');
+                    reject('Via non trovata');
                 }
         }catch(error){
                 console.error('Errore durante la richiesta:', error);
-                resultElement.textContent = 'Errore durante la verifica della via. Riprova più tardi.';
-                resultElement.style.color = 'red';
+                alert('Errore durante la verifica della via. Riprova più tardi.');
                 reject(error);
             }
         } else {
@@ -371,10 +374,10 @@ function pulsanteConfermaDestinazione(){
     btnConfermaDestinazione.textContent = 'Conferma Destinazione';
     btnConfermaDestinazione.type = 'submit';
     btnConfermaDestinazione.onclick = function() {
-      ricercaRastrelliere(latDest, lonDest);
-      resetMappa();
-      rimuoviElementiCreati();
-      creaLabelDestinazione();
+        resetMappa()
+        ricercaRastrelliere(latDest, lonDest);
+        rimuoviElementiCreati();
+        creaLabelDestinazione();
     };
 
     const divInitNav = document.getElementById('btnConfermaDestinazione');
@@ -388,10 +391,10 @@ function pulsanteConfermaDestinazioneStallo(latStart, lonStart){
     btnConfermaDestinazione.textContent = 'Conferma Destinazione';
     btnConfermaDestinazione.type = 'submit';
     btnConfermaDestinazione.onclick = function() {
-      ricercaStallo(latStart, lonStart, latDest, lonDest);
-      resetMappa();
-      rimuoviElementiCreati();
-      creaLabelDestinazioneStallo(latStart, lonStart)
+        resetMappa();
+        ricercaStallo(latStart, lonStart, latDest, lonDest);
+        rimuoviElementiCreati();
+        creaLabelDestinazioneStallo(latStart, lonStart)
     };
     const divInitNav = document.getElementById('btnConfermaDestinazione');
     divInitNav.innerHTML = ''; // Rimuovi qualsiasi contenuto precedente

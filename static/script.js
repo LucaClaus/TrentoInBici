@@ -201,8 +201,8 @@ map.on('click', async function (event) {
     markerLayer.getSource().clear();
 
     if(LAT_INF <= latDest && latDest < LAT_SUP && LON_SX <= lonDest && lonDest < LON_DX){
-    const marker = new ol.Feature({
-    geometry: new ol.geom.Point(coordinates)
+        const marker = new ol.Feature({
+        geometry: new ol.geom.Point(coordinates)
     });
 
     // Aggiungi il nuovo marker al layer
@@ -240,9 +240,6 @@ async function ricercaRastrelliere(lat, lon){
         event.preventDefault();
     }, { passive: false });
 
-    /*const positionLabel= document.getElementById('position');
-    positionLabel.innerHTML = "Posizione: [" + latitude + ", " + longitude + "]";*/
-
     const view = map.getView();
     const newCenter = ol.proj.fromLonLat([longitude, latitude]);
     view.setCenter(newCenter);
@@ -254,10 +251,13 @@ async function ricercaRastrelliere(lat, lon){
     //map.addControl(new ol.control.LayerSwitcher());
 
     // Aggiunta del marker centrale
-    const centerFeature = new ol.Feature({
+    markerLayer.getSource().clear();
+    const marker = new ol.Feature({
         geometry: new ol.geom.Point(ol.proj.fromLonLat([longitude, latitude]))
     });
-    markerLayer.getSource().addFeature(centerFeature);
+
+    // Aggiungi il nuovo marker al layer
+    markerLayer.getSource().addFeature(marker);
 
     // Chiamata all'API per ottenere i dati delle rastrelliere
     const data = await chiamataAPIbiciPropria(latitude, longitude);
