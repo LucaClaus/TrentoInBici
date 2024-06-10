@@ -335,6 +335,7 @@ async function creaLableInserisciRastrelliera(){
         });
     });
 }
+
 async function pulsanteInserisciRastrelliera(latDest, lonDest, place){
     const btnConfermaDestinazione = document.createElement('button');
     btnConfermaDestinazione.classList.add('elemCreato', 'btn', 'btn-success', 'mr-2');
@@ -342,10 +343,16 @@ async function pulsanteInserisciRastrelliera(latDest, lonDest, place){
     btnConfermaDestinazione.type = 'submit';
     btnConfermaDestinazione.onclick = async function() {
 
-        let rastrellieraGiàPresente =await chiamataAPIgestoreDatabase(latDest, lonDest);
+        let data = await chiamataAPIgestoreDatabase(latDest, lonDest);
+        let rastrellieraGiàPresente = data.body.rastrellieraGiaPresente
+        let rastrellieraGiàSegnalata = data.body.rastrellieraGiaSegnalata
 
-        if(rastrellieraGiàPresente.body){
+        if(rastrellieraGiàPresente){
             alert("Rastrelliera già presente nel sistema")
+            rimuoviElementiCreati();
+            resetMappa();
+        }else if(rastrellieraGiàSegnalata){
+            alert("Rastrelliera già segnalata")
             rimuoviElementiCreati();
             resetMappa();
         }else{
@@ -354,7 +361,6 @@ async function pulsanteInserisciRastrelliera(latDest, lonDest, place){
             }else{
                 alert("La tua richiesta di aggiunta rastrelliera nella posizione: ["+ latDest+", "+ lonDest + " è stata inviata. L'amministratore provvederà alla verifica e all'inserimento della rastrelliera nei nostri database")
             }
-            
         }
     };
 
