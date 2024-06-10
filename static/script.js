@@ -131,10 +131,10 @@ async function posizioneDispositivo(){
     var longitude;
     try {
         const position = await requestLocation();
-        //latitude = position.coords.latitude; 
-        //longitude = position.coords.longitude;
-        latitude = 46.069169527542655;
-        longitude = 11.127596809959554;
+        latitude = position.coords.latitude; 
+        longitude = position.coords.longitude;
+        //latitude = 46.069169527542655;
+        //longitude = 11.127596809959554;
         if(!(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX)){
           alert("La tua posizione è al di fuori dell'area consentita");
           return;
@@ -557,10 +557,10 @@ async function ricercaStalli(lat, lon){
     var longitude;
     try {
         const position = await requestLocation();
-        //latitude = position.coords.latitude; 
-        //longitude = position.coords.longitude;
-        latitude = 46.069169527542655;
-        longitude = 11.127596809959554;
+        latitude = position.coords.latitude; 
+        longitude = position.coords.longitude;
+        //latitude = 46.069169527542655;
+        //longitude = 11.127596809959554;
         if(!(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX)){
           alert("La tua posizione è al di fuori dell'area consentita");
           return;
@@ -712,10 +712,10 @@ async function tragittoInteroBikeSharing() {
     var longitude;
     try {
         const position = await requestLocation();
-        //latitude = position.coords.latitude; 
-        //longitude = position.coords.longitude;
-        latitude = 46.069169527542655;
-        longitude = 11.127596809959554;
+        latitude = position.coords.latitude; 
+        longitude = position.coords.longitude;
+        //latitude = 46.069169527542655;
+        //longitude = 11.127596809959554;
         if(!(LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX)){
           alert("La tua posizione è al di fuori dell'area consentita");
           return;

@@ -13,13 +13,12 @@ function login()
     .then((resp) => resp.json()) // Transform the data into json
     .then(function(data) { // Here you get the data to modify as you please
         if(data.success){
-            console.log(data);
+
             loggedUser.token = data.token;
             loggedUser.email = data.email;
             loggedUser.id = data.id;
             loggedUser.self = data.self;
             loggedUser.sessionTime= data.sessionTime;
-            console.log(loggedUser.email);
 
             sessionStorage.setItem("loggedUserEmail", loggedUser.email);
             sessionStorage.setItem("loggedUserToken", loggedUser.token);
@@ -27,8 +26,12 @@ function login()
             sessionStorage.setItem("loggedUserSelf", loggedUser.self);
             sessionStorage.setItem("loggedUserTime", loggedUser.sessionTime);
 
-            window.location.href = "index.html";
-             
+            if(data.admin){
+                window.location.href = "admin.html";
+            }else{
+                window.location.href = "index.html";
+            }
+
         }else{
             alert("Errore di autenticazione!");
         }

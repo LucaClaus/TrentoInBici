@@ -86,6 +86,7 @@ router.post('/tragittoIntero', async (req, res) => {
     let data = await calcolaPercorsoMigliore(positionStart, positionDestination, stralliPiuViciniGeometricamenteStart, stralliPiuViciniGeometricamenteDestination);
     let aPiedi = await tragittoAPiedi(positionStart.latitude, positionStart.longitude, positionDestination.latitude, positionDestination.longitude);
     data.aPiedi = aPiedi;
+
     res.status(200).json({ message: 'Tappe percorso più efficiente', body: data });
 });
 

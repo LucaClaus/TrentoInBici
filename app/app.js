@@ -11,8 +11,10 @@ const googleMaps = require('./googleMaps.js');
 const senzaBici = require('./senzaBici.js');
 const infoStallo = require('./infoStallo.js');
 const gestoreDataBase = require('./gestoreDataBase.js');
+const adminDatabase = require('./adminDatabase.js');
 const authentication = require('./authentication.js');
 const tokenChecker = require('./tokenChecker.js');
+const tokenCheckerAdmin = require('./tokenCheckerAdmin.js');
 
 
 app.use((req, res, next) => {
@@ -49,6 +51,7 @@ app.use((req,res,next) => {
 app.use('/api/v1/authentication', authentication);
 
 app.use('/api/v1/gestoreDataBase', tokenChecker);
+app.use('/api/v1/adminDatabase', tokenCheckerAdmin);
 
 
 app.use('/api/v1/biciPropria', biciPropria);
@@ -56,6 +59,7 @@ app.use('/api/v1/googleMaps', googleMaps);
 app.use('/api/v1/senzaBici', senzaBici);
 app.use('/api/v1/infoStallo', infoStallo);
 app.use('/api/v1/gestoreDataBase', gestoreDataBase);
+app.use('/api/v1/adminDatabase', adminDatabase);
 
 
 /* Default 404 handler */

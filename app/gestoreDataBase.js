@@ -49,6 +49,7 @@ router.post('', async (req, res) => {
         await newRastrelliera.save();
         console.log('New rastrelliera added:');
     }
+    console.log("data tragitto intero: ", rastrellieraGiàPresente)
     res.status(200).json({ message: 'Position received successfully', body: rastrellieraGiàPresente });
 });
 
