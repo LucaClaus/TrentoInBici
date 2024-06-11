@@ -5,7 +5,7 @@ function login()
     var password = document.getElementById("loginPassword").value;
     console.log("email: ", email, " password: ", password);
 
-    fetch('/api/v1/authentication', {
+    fetch('/api/v2/authentication', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify( { email: email, password: password } ),

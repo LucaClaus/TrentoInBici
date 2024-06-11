@@ -108,50 +108,45 @@ return new Promise((resolve, reject) => {
         // Utilizzare il servizio di geocodifica Nominatim di OpenStreetMap
         const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&addressdetails=1`;
 
-        fetch(url)
-        .then(response => response.json())
-        .then(data => {
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
             if (data.length > 0) {
                 const place = data[0];
                 const latitude = parseFloat(place.lat);
                 const longitude = parseFloat(place.lon);
-    
+
                 if (LAT_INF <= latitude && latitude < LAT_SUP && LON_SX <= longitude && longitude < LON_DX) {
-                    // Le coordinate sono all'interno dell'area geografica
-                    //resultElement.textContent = `Via trovata: ${place.display_name}`;
-                    //resultElement.style.color = 'green';
+                    // Coordinates are within the allowed area
                     latDest = latitude;
                     lonDest = longitude;
+
                     markerLayer.getSource().clear();
                     const marker = new ol.Feature({
                         geometry: new ol.geom.Point(ol.proj.fromLonLat([lonDest, latDest]))
                     });
-    
+
                     const view = map.getView();
                     const newCenter = ol.proj.fromLonLat([lonDest, latDest]);
                     view.setCenter(newCenter);
                     view.setZoom(15);
-    
+
                     markerLayer.getSource().addFeature(marker);
                     const divInitNav = document.getElementById('btnConfermaDestinazione');
-                    divInitNav.textContent=""
+                    divInitNav.textContent = "";
                     pulsanteConfermaDestinazione();
                 } else {
-                    // Le coordinate sono al di fuori dell'area geografica
+                    // Coordinates are outside the allowed area
                     resultElement.textContent = 'Via al di fuori dell\'area consentita.';
                     resultElement.style.color = 'red';
-                    // Non hai bisogno di chiamare reject qui poiché non sembra che stai utilizzando una promise esterna
-                    //reject('via al di fuori')
                 }
             } else {
                 resultElement.textContent = 'Via non trovata. Verifica l\'indirizzo inserito.';
                 resultElement.style.color = 'red';
-                //reject('Via non trovata');
             }
-        })
-        .catch(error => {
+        } catch (error) {
             alert('Errore durante la verifica della via. Riprova più tardi.');
-        });
+        }
     } else {
         resultElement.textContent = 'Inserisci una via per favore.';
         resultElement.style.color = 'red';
@@ -160,6 +155,7 @@ return new Promise((resolve, reject) => {
     });
 });
 }
+
 function pulsanteConfermaDestinazione(){
     const btnConfermaDestinazione = document.createElement('button');
     btnConfermaDestinazione.classList.add('elemCreato', 'btn', 'btn-success', 'mr-2');
