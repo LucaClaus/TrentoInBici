@@ -55,11 +55,11 @@ router.post('/tragittoIntero', async (req, res) => {
 
     //se manca la posizione ritorna errore
     if(!positionStart || positionStart.latitude==null || positionStart.longitude==null){
-        res.status(400).json({ error: 'NO Position'});
+        res.status(400).json({ error: 'NO Position start'});
         return
     }
     if(!positionDestination || positionDestination.latitude==null || positionDestination.longitude==null){
-        res.status(400).json({ error: 'NO Position'});
+        res.status(400).json({ error: 'NO Position destination'});
         return
     }
 
