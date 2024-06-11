@@ -2,7 +2,7 @@
 
 function coordinatesGoogleMaps(latitude, longitude){
   //console.log("destination googlemaps:", destination);
-    fetch('/api/v1/googleMaps', {
+    fetch('/api/v2/googleMaps', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -21,7 +21,7 @@ function coordinatesGoogleMaps(latitude, longitude){
 
 async function chiamataAPIbiciPropria(latitude, longitude) {
   try {
-      const response = await fetch('/api/v1/biciPropria', {
+      const response = await fetch('/api/v2/biciPropria', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ async function chiamataAPIbiciPropria(latitude, longitude) {
 
 async function chiamataAPIbiciPropriaAll(){
     try {
-        const response = await fetch('/api/v1/biciPropria/all', {
+        const response = await fetch('/api/v2/biciPropria/all', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ async function chiamataAPIbiciPropriaAll(){
 
 async function chiamataAPISenzaBiciI(latitude, longitude) {
     try {
-        const response = await fetch('/api/v1/senzaBici', {
+        const response = await fetch('/api/v2/senzaBici', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ async function chiamataAPISenzaBiciI(latitude, longitude) {
     let positionStart = { latitude: latitudeStart, longitude: longitudeStart };
     let positionDestination = { latitude: latitudeDestination, longitude: longitudeDestination };
     try {
-        const response = await fetch('/api/v1/senzaBici/tragittoIntero', {
+        const response = await fetch('/api/v2/senzaBici/tragittoIntero', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -91,7 +91,7 @@ async function chiamataAPISenzaBiciI(latitude, longitude) {
 
  async function chiamataAPISenzaBiciAll(){
     try {
-        const response = await fetch('/api/v1/senzaBici/all', {
+        const response = await fetch('/api/v2/senzaBici/all', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -107,7 +107,7 @@ async function chiamataAPISenzaBiciI(latitude, longitude) {
 
 async function chiamataAPIgestoreDatabase(latitude, longitude){
     try {
-        const response = await fetch('/api/v1/gestoreDataBase', {
+        const response = await fetch('/api/v2/gestoreDataBase', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

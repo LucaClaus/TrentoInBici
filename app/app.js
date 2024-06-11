@@ -46,18 +46,22 @@ app.use((req,res,next) => {
 /**
  * Authentication routing and middleware
  */
-app.use('/api/v1/authentication', authentication);
+app.use('/api/v2/authentication', authentication);
 
-app.use('/api/v1/gestoreDataBase', tokenChecker);
-app.use('/api/v1/adminDatabase', tokenCheckerAdmin);
+app.use('/api/v2/gestoreDataBase', tokenChecker);
+app.use('/api/v2/adminDatabase', tokenCheckerAdmin);
 
-
+//version 1.0
 app.use('/api/v1/biciPropria', biciPropria);
 app.use('/api/v1/googleMaps', googleMaps);
-app.use('/api/v1/senzaBici', senzaBici);
-app.use('/api/v1/infoStallo', infoStallo);
-app.use('/api/v1/gestoreDataBase', gestoreDataBase);
-app.use('/api/v1/adminDatabase', adminDatabase);
+
+//version 2.0
+app.use('/api/v2/biciPropria', biciPropria);
+app.use('/api/v2/googleMaps', googleMaps);
+app.use('/api/v2/senzaBici', senzaBici);
+app.use('/api/v2/infoStallo', infoStallo);
+app.use('/api/v2/gestoreDataBase', gestoreDataBase);
+app.use('/api/v2/adminDatabase', adminDatabase);
 
 
 /* Default 404 handler */
