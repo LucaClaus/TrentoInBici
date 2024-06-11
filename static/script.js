@@ -416,7 +416,7 @@ async function ricercaStalli(lat, lon){
             if (previousSelectedFeature) {
                 previousSelectedFeature.setStyle(new ol.style.Style({
                     image: new ol.style.Icon({
-                        src: 'res/icona-stallo.png',
+                        src: 'res/icona-rastrelliera.png',
                         anchor: [0.5, 1],
                         scale: 0.8
                     })
@@ -441,7 +441,7 @@ async function ricercaStalli(lat, lon){
             if (existingFeature) {
                 existingFeature.setStyle(new ol.style.Style({
                     image: new ol.style.Icon({
-                        src: 'res/icona-stallo-selezionato.png',
+                        src: 'res/icona-rastrelliera-selezionata.png',
                         anchor: [0.5, 1],
                         scale: 0.8
                     })
