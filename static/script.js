@@ -354,13 +354,12 @@ async function ricercaRastrelliere(lat, lon) {
     hideSpinner();
 }
 
-
-async function ricercaStalli(lat, lon){
+async function ricercaStalli(lat, lon) {
     showSpinner();
-    // Inizializzazione delle variabili
-    const ul = document.getElementById('rastrelliere'); // Lista per visualizzare i dati delle rastrelliere
+    const ul = document.getElementById('rastrelliere'); 
     ul.textContent = '';
     let selectedCoordinates = null;
+    let previousSelectedFeature = null;
     let first = true;
     let latitude = lat;
     let longitude = lon;
@@ -369,57 +368,50 @@ async function ricercaStalli(lat, lon){
         event.preventDefault();
     }, { passive: false });
     
-    /*const positionLabel = document.getElementById('position');
-    positionLabel.innerHTML = "Posizione: [" + latitude + ", " + longitude + "]";*/
-    
     const view = map.getView();
     const newCenter = ol.proj.fromLonLat([longitude, latitude]);
     view.setCenter(newCenter);
     view.setZoom(15);
     
-    // Aggiunta dei controlli alla mappa
     map.addControl(new ol.control.ScaleLine());
     map.addControl(new ol.control.MousePosition());
-    //map.addControl(new ol.control.LayerSwitcher());
     
-    // Aggiunta del marker centrale
     const centerFeature = new ol.Feature({
         geometry: new ol.geom.Point(ol.proj.fromLonLat([longitude, latitude]))
     });
     markerLayer.getSource().addFeature(centerFeature);
 
-        // Chiamata all'API per ottenere i dati delle rastrelliere
-        const data = await chiamataAPISenzaBiciI(latitude, longitude);
-        console.log(data);
+    const data = await chiamataAPISenzaBiciI(latitude, longitude);
+    console.log(data);
         
-        titoloStralli = document.getElementById("titoloRastrelliere");
-        titoloStralli.textContent="Stalli più vicini"
+    titoloStralli = document.getElementById("titoloRastrelliere");
+    titoloStralli.textContent = "Stalli più vicini";
 
-        let lonSelected;
-        let latSelected;
+    let lonSelected;
+    let latSelected;
     
-        data.body.forEach(function(stallo) {
+    data.body.forEach(function(stallo) {
         let btnStallo = document.createElement('button');
         btnStallo.classList.add('elemCreato', 'btn', 'btn-primary', 'mb-2');
         btnStallo.style.display = 'block';
-        btnStallo.textContent = "Distanza: " + approxNcifre((stallo.distance),2) + " km" + 
+        btnStallo.textContent = "Distanza: " + approxNcifre((stallo.distance), 2) + " km" + 
                                         ", Posti liberi: " + stallo.numPostiLiberi + 
-                                        ", Bici disponibili: " + stallo.numBiciDisponibili
+                                        ", Bici disponibili: " + stallo.numBiciDisponibili;
     
         let markerFeature = new ol.Feature({
             geometry: new ol.geom.Point(ol.proj.fromLonLat([stallo.longitude, stallo.latitude])),
-            description: "Rastrelliera"
+            description: "Stallo"
         });
         markerFeature.setStyle(new ol.style.Style({
             image: new ol.style.Icon({
-                src: 'res/icona-rastrelliera.png',
+                src: 'res/icona-stallo.png',
                 anchor: [0.5, 1],
                 scale: 0.8
             })
         }));
         rastrellieraLayer.getSource().addFeature(markerFeature);
     
-        btnRastrelliera.onclick = function() {
+        btnStallo.onclick = function() {
             if (previousSelectedFeature) {
                 previousSelectedFeature.setStyle(new ol.style.Style({
                     image: new ol.style.Icon({
@@ -430,8 +422,8 @@ async function ricercaStalli(lat, lon){
                 }));
             }
 
-            lonSelected = rastrelliera.longitude;
-            latSelected = rastrelliera.latitude;
+            lonSelected = stallo.longitude;
+            latSelected = stallo.latitude;
 
             let features = rastrellieraLayer.getSource().getFeatures();
 
@@ -456,28 +448,16 @@ async function ricercaStalli(lat, lon){
                 previousSelectedFeature = existingFeature;
             }
 
-            selectedCoordinates = [rastrelliera.latitude, rastrelliera.longitude];
-
-            if(existingFeature){
-                existingFeature.setStyle(new ol.style.Style({
-                    image: new ol.style.Icon({
-                        src: 'res/icona-rastrelliera-selezionata.png', 
-                        anchor: [0.5, 1],
-                        scale: 0.8
-                    })
-                }));
-            }
-        
             selectedCoordinates = [stallo.latitude, stallo.longitude];
-    
+
             if (first) {
                 let btnIniziaNavigazione = document.createElement('button');
-                btnIniziaNavigazione.classList.add('elemCreato','btn', 'btn-success', 'mr-2');
+                btnIniziaNavigazione.classList.add('elemCreato', 'btn', 'btn-success', 'mr-2');
                 btnIniziaNavigazione.textContent = "Inizia navigazione";
                 const divInitNav = document.getElementById('btnIniziaNavigazione');
                 let labelInitNav=document.createElement('p');
-                labelInitNav.classList.add('elemCreato')
-                labelInitNav.textContent = "Cliccando su Inizia Navigazione verrai reindirizzato sul sito di Google Maps per raggiungere al meglio la destinazione selezionata. Segui il percorso con tutte le tappe!"
+                labelInitNav.classList.add('elemCreato');
+                labelInitNav.textContent = "Cliccando su Inizia Navigazione verrai reindirizzato sul sito di Google Maps per raggiungere al meglio la destinazione selezionata. Segui il percorso con tutte le tappe!";
                 divInitNav.appendChild(labelInitNav);
                 divInitNav.appendChild(btnIniziaNavigazione);
                 first = false;
@@ -486,10 +466,13 @@ async function ricercaStalli(lat, lon){
                 };
             }
         };
-      ul.appendChild(btnStallo);
-  });
-  hideSpinner();
+      
+        ul.appendChild(btnStallo);
+    });
+  
+    hideSpinner();
 }
+
 
 async function stazioneBikeSharing() {
     resetMappa();
