@@ -355,7 +355,7 @@ async function ricercaRastrelliere(lat, lon) {
 }
 
 
-async function ricercaStalli(lat, lon) {
+async function ricercaStalli(lat, lon){
     showSpinner();
     const ul = document.getElementById('rastrelliere'); 
     ul.textContent = '';

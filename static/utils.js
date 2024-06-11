@@ -145,7 +145,8 @@ return new Promise((resolve, reject) => {
                 resultElement.style.color = 'red';
             }
         } catch (error) {
-            alert('Errore durante la verifica della via. Riprova più tardi.');
+            console.log('Errore durante la verifica della via. Riprova più tardi.')
+            
         }
     } else {
         resultElement.textContent = 'Inserisci una via per favore.';
@@ -250,7 +251,7 @@ async function creaLabelDestinazioneStallo(latStart, lonStart) {
                     reject('Via non trovata');
                 }
         }catch(error){
-                alert('Errore durante la verifica della via. Riprova più tardi.');
+                console.log('Errore durante la verifica della via. Riprova più tardi.')
                 //reject(error);
             }
         } else {
