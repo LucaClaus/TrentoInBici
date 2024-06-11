@@ -4,7 +4,7 @@ require('dotenv').config();
 
 describe('Test googleMaps', () => {
 
-  //test 11
+  //test 10
     test('POST /api/v1/googleMaps no destination', async () => {
     const response = await request(app).post('/api/v1/googleMaps').send();
       
@@ -12,7 +12,7 @@ describe('Test googleMaps', () => {
 
       });
 
-    //test 12
+    //test 11
     test('POST /api/v1/googleMaps url di navigazione con destinazione rastrelliera id 13', async () => {
 
     //via Roma 91, Trento
@@ -34,7 +34,7 @@ describe('Test googleMaps', () => {
     expect(response.body.body).toBe(expectedUrl);
   }, 15000);
 
-  //test 13
+  //test 12
   test('POST /api/v1/googleMaps url di navigazione con destinazione rastrelliera id 1', async () => {
 
       const position = {
@@ -55,7 +55,7 @@ describe('Test googleMaps', () => {
     expect(response.body.body).toBe(expectedUrl);
   }, 15000);
 
-  //test 14
+  //test 13
   test('POST /api/v1/googleMaps url di navigazione con destinazione rastrelliera id 20', async () => {
 
     const position = {
@@ -97,7 +97,7 @@ describe('Test googleMaps', () => {
     expect(response.body.body).toBe(expectedUrl);
   }, 15000);
 
-  //test 16
+  //test 15
   test('POST /api/v1/googleMaps no longitude', async () => {
 
     const position = {

@@ -21,18 +21,18 @@ describe('Test authentication', () => {
         mongoose.connection.close(true);
         console.log("Database connection closed");
     });
-
+    //test 21
     test('POST /api/v1/authentication wrong email correct password for admin', async () => {
         const credentials = {
             "email": "aa",
-            "password": "admin1234"
+            "password": "1234"
         };
         const response = await request(app).post('/api/v1/authentication').send(credentials);
 
         expect(response.statusCode).toBe(400);  
         expect(response.body.admin).toBe(undefined);  
     });
-
+    //test 22
     test('POST /api/v1/authentication admin correct email and password', async () => {
         const credentials = {
             "email": "admin",
@@ -44,6 +44,7 @@ describe('Test authentication', () => {
         expect(response.body.admin).toBe(true);
 
     });
+    //test 23
     test('POST /api/v1/authentication admin email correct and wrong password', async () => {
         const credentials = {
             "email": "admin",
@@ -54,7 +55,7 @@ describe('Test authentication', () => {
         expect(response.statusCode).toBe(400);
         expect(response.body.admin).toBe(undefined);
     });
-
+    //test 24
     test('POST /api/v1/authentication user correct email and password ', async () => {
         const credentials = {
             "email": "davide.luca@gruppo19.com",
@@ -65,6 +66,7 @@ describe('Test authentication', () => {
         expect(response.statusCode).toBe(200);
         expect(response.body.admin).toBe(false);
     });
+    //test 25
     test('POST /api/v1/authentication user correct email and wrong password ', async () => {
         const credentials = {
             "email": "davide.luca@gruppo19.com",
