@@ -150,15 +150,12 @@ return new Promise((resolve, reject) => {
             }
         })
         .catch(error => {
-            console.error('Errore durante la richiesta:', error);
-            resultElement.textContent = 'Errore durante la verifica della via. Riprova più tardi.';
-            resultElement.style.color = 'red';
-            reject(error);
+            alert('Errore durante la verifica della via. Riprova più tardi.');
         });
     } else {
         resultElement.textContent = 'Inserisci una via per favore.';
         resultElement.style.color = 'red';
-        reject('Indirizzo non inserito');
+        //reject('Indirizzo non inserito');
     }
     });
 });
@@ -258,14 +255,13 @@ async function creaLabelDestinazioneStallo(latStart, lonStart) {
                     reject('Via non trovata');
                 }
         }catch(error){
-                console.error('Errore durante la richiesta:', error);
                 alert('Errore durante la verifica della via. Riprova più tardi.');
-                reject(error);
+                //reject(error);
             }
         } else {
             resultElement.textContent = 'Inserisci una via per favore.';
             resultElement.style.color = 'red';
-            reject('Indirizzo non inserito');
+            //reject('Indirizzo non inserito');
         }
         });
     });
