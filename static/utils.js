@@ -79,6 +79,13 @@ async function creaLabelDestinazione() {
 
 return new Promise((resolve, reject) => {
 
+    const submit = document.createElement('button');
+    submit.classList.add('elemCreato', 'btn', 'btn-primary', 'mr-2');
+    submit.type = 'submit';
+    submit.textContent = 'Invia';
+    const resultElement = document.createElement('p');
+    resultElement.classList.add('elemCreato');
+
     // Aggiunta del label, dell'input e del submit button al form
     form.appendChild(label);
     form.appendChild(input);
@@ -166,6 +173,13 @@ return new Promise((resolve, reject) => {
 async function creaLabelDestinazioneStallo(latStart, lonStart) {
 
     return new Promise((resolve, reject) => {
+
+        const submit = document.createElement('button');
+        submit.classList.add('elemCreato', 'btn', 'btn-primary', 'mr-2');
+        submit.type = 'submit';
+        submit.textContent = 'Invia';
+        const resultElement = document.createElement('p');
+        resultElement.classList.add('elemCreato');
     
         // Aggiunta del label, dell'input e del submit button al form
         form.appendChild(label);
