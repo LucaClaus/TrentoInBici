@@ -95,6 +95,7 @@ router.post('/tragittoIntero', async (req, res) => {
 router.get('/all', async (req, res) => {
     let tuttiStalli= await riceviStalli();
     let data = await getDatiStallo(null, tuttiStalli);
+
     res.status(200).json({ message: 'All stalli received successfully', body: data });
 
 });
@@ -230,7 +231,7 @@ async function getDatiStallo(startPosition, destinations) {
 
 async function chiamataAPIinfoStallo(id) {
     try {
-        const url = 'https://trentoinbici.onrender.com/api/v1/infoStallo';
+        const url = 'https://trentoinbici.onrender.com/api/v2/infoStallo';
         const response = await fetch(url, {
             method: 'POST',
             headers: {
