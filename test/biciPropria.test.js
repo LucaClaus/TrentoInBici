@@ -22,7 +22,7 @@ describe('Test biciPropria', () => {
         console.log("Database connection closed");
       });
 
-    //test 3
+    //test 1
     test('POST /api/v1/biciPropria no position', async () => {
       const response = await request(app).post('/api/v1/biciPropria').send();
         
@@ -30,7 +30,7 @@ describe('Test biciPropria', () => {
 
     });
 
-    //test 4
+    //test 2
     test('POST /api/v1/biciPropria le 5 rastrelliere vicino a via Roma 91', async () => {
 
       //via Roma 91, Trento
@@ -57,8 +57,8 @@ describe('Test biciPropria', () => {
 
     }, 15000);
 
-    //test 5
-    test('POST /api/v1/biciPropria ritorna le 5 rastrelliere vicino a Via del Suffragio 55 46.07092577705874, 11.124855134294755', async () => {
+    //test 3
+    test('POST /api/v1/biciPropria ritorna le 5 rastrelliere vicino a Via del Suffragio 55', async () => {
 
         const position = {
             "position": {
@@ -83,7 +83,7 @@ describe('Test biciPropria', () => {
 
     }, 15000);
 
-    //test 5
+    //test 4
     test('POST /api/v1/biciPropria ritorna le 5 rastrelliere vicino a Viale S. Francesco d Assisi, 14 46.066443072385795, 11.126329182917267', async () => {
 
       const position = {
@@ -109,7 +109,7 @@ describe('Test biciPropria', () => {
 
   }, 15000);
 
-     //test 6
+     //test 5
      test('POST /api/v1/biciPropria ritorna le 5 rastrelliere vicino a Via Roberto da Sanseverino, 43 46.06367434248817, 11.113311581954505', async () => {
 
       const position = {
@@ -135,7 +135,7 @@ describe('Test biciPropria', () => {
 
   }, 15000);
 
-  //test 7
+  //test 6
   test('POST /api/v1/biciPropria position out of the area longitude', async () => {
 
     const position = {
@@ -151,7 +151,7 @@ describe('Test biciPropria', () => {
 
   });
 
-  //test 8
+  //test 7
   test('POST /api/v1/biciPropria position out of the area latitude', async () => {
 
     const position = {
@@ -167,7 +167,7 @@ describe('Test biciPropria', () => {
 
   });
 
-  //test 9
+  //test 8
   test('POST /api/v1/biciPropria position out of the area latitude and longitute', async () => {
 
     const position = {
@@ -183,7 +183,7 @@ describe('Test biciPropria', () => {
 
   });
 
-  //test 10 
+  //test 9 
   test('POST /api/v1/biciPropria no latitude', async () => {
 
     const position = {

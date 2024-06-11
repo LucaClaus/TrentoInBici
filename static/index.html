@@ -206,9 +206,13 @@ const containerAggiungiRastrelliera = document.getElementById("labelDestinazione
 // Pulizia del contenuto precedente del container
 containerAggiungiRastrelliera.innerHTML = '';
 
-const form = document.createElement('form');
-form.classList.add('elemCreato');
-form.id = 'addressForm';
+const form1 = document.createElement('form');
+form1.classList.add('elemCreato');
+form1.id = 'addressForm';
+
+const form2 = document.createElement('form');
+form2.classList.add('elemCreato');
+form2.id = 'addressForm';
 
 const formAggiungiRastrelliera = document.createElement('form');
 formAggiungiRastrelliera.classList.add('elemCreato');
@@ -227,6 +231,11 @@ input.placeholder = 'La tua destinazione...';
 
 const resultElement = document.createElement('p');
 resultElement.classList.add('elemCreato');
+
+const submitDest = document.createElement('button');
+submitDest.classList.add('elemCreato', 'btn', 'btn-primary', 'mr-2');
+submitDest.type = 'submit';
+submitDest.textContent = 'Invia dest';
 
 const submit = document.createElement('button');
 submit.classList.add('elemCreato', 'btn', 'btn-primary', 'mr-2');

@@ -21,7 +21,7 @@ describe('Test senzaBici', () => {
         console.log("Database connection closed");
     });
 
-    //test 20
+    //test 16
     test('POST /api/v1/senzaBici no position', async () => {
 
         const response = await request(app).post('/api/v1/senzaBici').send();
@@ -30,7 +30,7 @@ describe('Test senzaBici', () => {
 
     });
 
-    //test 21
+    //test 17
     test('POST /api/v1/senzaBici i 3 stalli vicino a Piazza Venezia, 24, 38122 Trento TN', async () => {
 
         //Piazza Venezia, 24, 38122 Trento TN
@@ -57,7 +57,7 @@ describe('Test senzaBici', () => {
     }, 30000);
 
 
-    //test 23
+    //test 18
     test('POST /api/v1/senzaBici position out of the area latitude', async () => {
 
         const position = {
@@ -73,7 +73,7 @@ describe('Test senzaBici', () => {
 
     });
 
-    //test 24
+    //test 19
     test('POST /api/v1/senzaBici position out of the area latitude and longitute', async () => {
 
         const position = {
@@ -89,7 +89,7 @@ describe('Test senzaBici', () => {
 
     });
 
-    //test 25 
+    //test 20
     test('POST /api/v1/senzaBici no latitude', async () => {
 
         const position = {

@@ -80,18 +80,18 @@ async function creaLabelDestinazione() {
 return new Promise((resolve, reject) => {
 
     // Aggiunta del label, dell'input e del submit button al form
-    form.appendChild(label);
-    form.appendChild(input);
-    form.appendChild(submit);
-    form.appendChild(resultElement);
+    form1.appendChild(label);
+    form1.appendChild(input);
+    form1.appendChild(submitDest);
+    form1.appendChild(resultElement);
 
     // Aggiunta del form al div container
-    container.appendChild(form);
+    container.appendChild(form1);
 
     document.getElementById('labelCliccaSuMappa').innerHTML="Oppure clicca sulla mappa sulla posizione desiderata";
 
     // Aggiungi l'event listener al form creato dinamicamente
-    form.addEventListener('submit', async function(event) {
+    form1.addEventListener('submit', async function(event) {
 
     resetMappa();
     rimuoviElementiCreati()
@@ -99,7 +99,7 @@ return new Promise((resolve, reject) => {
     event.preventDefault();
 
     const address = document.getElementById('addressInput').value;
-    
+
     resultElement.innerHTML='';
     document.getElementById('titoloRastrelliere').innerHTML="";
     document.getElementById('rastrelliere').innerHTML="";
@@ -136,7 +136,6 @@ return new Promise((resolve, reject) => {
                     const divInitNav = document.getElementById('btnConfermaDestinazione');
                     divInitNav.textContent=""
                     pulsanteConfermaDestinazione();
-                    // resolve({ latitude, longitude });
                 } else {
                     // Le coordinate sono al di fuori dell'area geografica
                     resultElement.textContent = 'Via al di fuori dell\'area consentita.';
@@ -164,25 +163,42 @@ return new Promise((resolve, reject) => {
     });
 });
 }
+function pulsanteConfermaDestinazione(){
+    const btnConfermaDestinazione = document.createElement('button');
+    btnConfermaDestinazione.classList.add('elemCreato', 'btn', 'btn-success', 'mr-2');
+    btnConfermaDestinazione.textContent = 'Conferma Destinazione';
+    btnConfermaDestinazione.type = 'submit';
+    btnConfermaDestinazione.onclick = function() {
+        resetMappa()
+        rimuoviElementiCreati();
+        ricercaRastrelliere(latDest, lonDest);
+        creaLabelDestinazione();
+    };
+
+    const divInitNav = document.getElementById('btnConfermaDestinazione');
+    divInitNav.innerHTML = ''; // Rimuovi qualsiasi contenuto precedente
+    divInitNav.appendChild(btnConfermaDestinazione);
+}
 
 async function creaLabelDestinazioneStallo(latStart, lonStart) {
 
     return new Promise((resolve, reject) => {
     
         // Aggiunta del label, dell'input e del submit button al form
-        form.appendChild(label);
-        form.appendChild(input);
-        form.appendChild(submit);
-        form.appendChild(resultElement);
+        form2.appendChild(label);
+        form2.appendChild(input);
+        form2.appendChild(submit);
+        form2.appendChild(resultElement);
+        input.textContent=""
 
     
         // Aggiunta del form al div container
-        container.appendChild(form);
+        container.appendChild(form2);
 
         document.getElementById('labelCliccaSuMappa').innerHTML="Oppure clicca sulla mappa sulla posizione desiderata";
     
         // Aggiungi l'event listener al form creato dinamicamente
-        form.addEventListener('submit', async function(event) {
+        form2.addEventListener('submit', async function(event) {
     
         resetMappa();
         event.preventDefault();
@@ -228,7 +244,7 @@ async function creaLabelDestinazioneStallo(latStart, lonStart) {
                         const divInitNav = document.getElementById('btnConfermaDestinazione');
                         divInitNav.textContent=""
                         pulsanteConfermaDestinazioneStallo(latStart, lonStart);
-
+                        form.removeEventListener('submit');
                         resolve({ latitude, longitude });
                     } else {
                         // Le coordinate sono al di fuori dell'area geografica
@@ -253,6 +269,20 @@ async function creaLabelDestinazioneStallo(latStart, lonStart) {
         }
         });
     });
+}
+function pulsanteConfermaDestinazioneStallo(latStart, lonStart){
+    const btnConfermaDestinazione = document.createElement('button');
+    btnConfermaDestinazione.classList.add('elemCreato','btn', 'btn-success', 'mr-2');
+    btnConfermaDestinazione.textContent = 'Conferma Destinazione';
+    btnConfermaDestinazione.type = 'submit';
+    btnConfermaDestinazione.onclick = function() {
+        rimuoviElementiCreati();
+        ricercaStallo(latStart, lonStart, latDest, lonDest);
+        creaLabelDestinazioneStallo(latStart, lonStart)
+    };
+    const divInitNav = document.getElementById('btnConfermaDestinazione');
+    divInitNav.innerHTML = ''; // Rimuovi qualsiasi contenuto precedente
+    divInitNav.appendChild(btnConfermaDestinazione);
 }
 
 async function creaLableInserisciRastrelliera(){
@@ -364,38 +394,6 @@ async function pulsanteInserisciRastrelliera(latDest, lonDest, place){
         }
     };
 
-    const divInitNav = document.getElementById('btnConfermaDestinazione');
-    divInitNav.innerHTML = ''; // Rimuovi qualsiasi contenuto precedente
-    divInitNav.appendChild(btnConfermaDestinazione);
-}
-
-function pulsanteConfermaDestinazione(){
-    const btnConfermaDestinazione = document.createElement('button');
-    btnConfermaDestinazione.classList.add('elemCreato', 'elemCreato', 'btn', 'btn-success', 'mr-2');
-    btnConfermaDestinazione.textContent = 'Conferma Destinazione';
-    btnConfermaDestinazione.type = 'submit';
-    btnConfermaDestinazione.onclick = function() {
-        resetMappa()
-        ricercaRastrelliere(latDest, lonDest);
-        rimuoviElementiCreati();
-        creaLabelDestinazione();
-    };
-
-    const divInitNav = document.getElementById('btnConfermaDestinazione');
-    divInitNav.innerHTML = ''; // Rimuovi qualsiasi contenuto precedente
-    divInitNav.appendChild(btnConfermaDestinazione);
-}
-
-function pulsanteConfermaDestinazioneStallo(latStart, lonStart){
-    const btnConfermaDestinazione = document.createElement('button');
-    btnConfermaDestinazione.classList.add('elemCreato', 'elemCreato', 'btn', 'btn-success', 'mr-2');
-    btnConfermaDestinazione.textContent = 'Conferma Destinazione';
-    btnConfermaDestinazione.type = 'submit';
-    btnConfermaDestinazione.onclick = function() {
-        ricercaStallo(latStart, lonStart, latDest, lonDest);
-        rimuoviElementiCreati();
-        creaLabelDestinazioneStallo(latStart, lonStart)
-    };
     const divInitNav = document.getElementById('btnConfermaDestinazione');
     divInitNav.innerHTML = ''; // Rimuovi qualsiasi contenuto precedente
     divInitNav.appendChild(btnConfermaDestinazione);
