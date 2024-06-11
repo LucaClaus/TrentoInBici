@@ -404,7 +404,7 @@ async function ricercaStalli(lat, lon) {
         });
         markerFeature.setStyle(new ol.style.Style({
             image: new ol.style.Icon({
-                src: 'res/icona-stallo.png',
+                src: 'res/icona-rastrelliera.png',
                 anchor: [0.5, 1],
                 scale: 0.8
             })
