@@ -60,6 +60,7 @@ router.post('/tragittoIntero', async (req, res) => {
     }
     if(!positionDestination || positionDestination.latitude==null || positionDestination.longitude==null){
         res.status(400).json({ error: 'NO destination position'});
+
         return
     }
 
