@@ -108,14 +108,9 @@ return new Promise((resolve, reject) => {
         // Utilizzare il servizio di geocodifica Nominatim di OpenStreetMap
         const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&addressdetails=1`;
 
-        try{
-            let response= await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            let data= await response.json()
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
             if (data.length > 0) {
                 const place = data[0];
                 const latitude = parseFloat(place.lat);
@@ -152,11 +147,13 @@ return new Promise((resolve, reject) => {
                 resultElement.style.color = 'red';
                 //reject('Via non trovata');
             }
-        }catch(error) {
+        })
+        .catch(error => {
             console.error('Errore durante la richiesta:', error);
-            alert('Errore durante la verifica della via. Riprova più tardi.');
+            resultElement.textContent = 'Errore durante la verifica della via. Riprova più tardi.';
+            resultElement.style.color = 'red';
             reject(error);
-        }
+        });
     } else {
         resultElement.textContent = 'Inserisci una via per favore.';
         resultElement.style.color = 'red';
