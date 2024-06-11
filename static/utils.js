@@ -186,7 +186,6 @@ async function creaLabelDestinazioneStallo(latStart, lonStart) {
         form2.appendChild(input);
         form2.appendChild(submit);
         form2.appendChild(resultElement);
-        input.textContent=""
 
     
         // Aggiunta del form al div container
