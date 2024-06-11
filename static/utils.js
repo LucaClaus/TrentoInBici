@@ -79,13 +79,6 @@ async function creaLabelDestinazione() {
 
 return new Promise((resolve, reject) => {
 
-    const submit = document.createElement('button');
-    submit.classList.add('elemCreato', 'btn', 'btn-primary', 'mr-2');
-    submit.type = 'submit';
-    submit.textContent = 'Invia';
-    const resultElement = document.createElement('p');
-    resultElement.classList.add('elemCreato');
-
     // Aggiunta del label, dell'input e del submit button al form
     form.appendChild(label);
     form.appendChild(input);
@@ -140,6 +133,8 @@ return new Promise((resolve, reject) => {
                     view.setZoom(15);
     
                     markerLayer.getSource().addFeature(marker);
+                    const divInitNav = document.getElementById('btnConfermaDestinazione');
+                    divInitNav.textContent=""
                     pulsanteConfermaDestinazione();
                     // resolve({ latitude, longitude });
                 } else {
@@ -173,13 +168,6 @@ return new Promise((resolve, reject) => {
 async function creaLabelDestinazioneStallo(latStart, lonStart) {
 
     return new Promise((resolve, reject) => {
-
-        const submit = document.createElement('button');
-        submit.classList.add('elemCreato', 'btn', 'btn-primary', 'mr-2');
-        submit.type = 'submit';
-        submit.textContent = 'Invia';
-        const resultElement = document.createElement('p');
-        resultElement.classList.add('elemCreato');
     
         // Aggiunta del label, dell'input e del submit button al form
         form.appendChild(label);
@@ -201,7 +189,6 @@ async function creaLabelDestinazioneStallo(latStart, lonStart) {
     
         const address = document.getElementById('addressInput').value;
         
-        resultElement.innerHTML='';
         resultElement.innerHTML='';
         document.getElementById('position').innerHTML="";
         const elementiDaRimuovere = document.querySelectorAll('.initNav');
@@ -238,7 +225,10 @@ async function creaLabelDestinazioneStallo(latStart, lonStart) {
                         view.setZoom(15);
         
                         markerDest.getSource().addFeature(marker);
+                        const divInitNav = document.getElementById('btnConfermaDestinazione');
+                        divInitNav.textContent=""
                         pulsanteConfermaDestinazioneStallo(latStart, lonStart);
+
                         resolve({ latitude, longitude });
                     } else {
                         // Le coordinate sono al di fuori dell'area geografica
