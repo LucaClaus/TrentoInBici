@@ -77,7 +77,7 @@ router.post('', async function(req, res) {
 		id: user._id,
 		admin: admin,
 		sessionTime: options.expiresIn,
-		self: "api/v1/" + user._id
+		self: "api/v2/" + user._id
 	});
 
 });
