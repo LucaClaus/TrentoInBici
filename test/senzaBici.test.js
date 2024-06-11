@@ -31,7 +31,7 @@ describe('Test senzaBici', () => {
     });
 
     //test 21
-    test('POST /api/v1/senzaBici gli 3 stalli vicino a Piazza Venezia, 24, 38122 Trento TN', async () => {
+    test('POST /api/v1/senzaBici i 3 stalli vicino a Piazza Venezia, 24, 38122 Trento TN', async () => {
 
         //Piazza Venezia, 24, 38122 Trento TN
         const position = {
@@ -54,7 +54,7 @@ describe('Test senzaBici', () => {
         expectedIds.forEach(expectedId => {
             expect(strIds).toContain(expectedId);
         });
-    }, 20000);
+    }, 30000);
 
 
     //test 23

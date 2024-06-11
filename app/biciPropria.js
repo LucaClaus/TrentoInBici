@@ -49,7 +49,9 @@ router.post('', async (req, res) => {
 
     router.get('/all', async (req, res) => {
 
-        let tutteRastrelliere= await riceviRastrelliere();
+        let datiRastrelliere= await riceviRastrelliere();
+
+        let tutteRastrelliere = await getDistancesFromPosition(null, datiRastrelliere)
 
         res.status(200).json({ message: 'All rastrelliere received successfully', body: tutteRastrelliere });
 
@@ -110,6 +112,22 @@ async function calcolaDistanzaGeometrica(lat1, lon1, lat2, lon2) {
 
 async function getDistancesFromPosition(startPosition, destinations) {
     let distances = [];
+
+    if(startPosition==null){
+        for (let i = 0; i < destinations.length; i++) {
+            let destination = destinations[i];
+            let datiStallo = {
+                id: destination.id,
+                latitude: destination.latitude,
+                longitude: destination.longitude,
+                distance: 0,
+                travelTime: 0,
+            };
+
+            distances.push(datiStallo);
+        }
+        return distances;
+    }
 
     for (let i = 0; i < destinations.length; i++) {
         let destination = destinations[i];

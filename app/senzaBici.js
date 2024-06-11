@@ -55,21 +55,22 @@ router.post('/tragittoIntero', async (req, res) => {
 
     //se manca la posizione ritorna errore
     if(!positionStart || positionStart.latitude==null || positionStart.longitude==null){
-        res.status(400).json({ error: 'NO Position'});
+        res.status(400).json({ error: 'NO Start position'});
         return
     }
     if(!positionDestination || positionDestination.latitude==null || positionDestination.longitude==null){
-        res.status(400).json({ error: 'NO Position'});
+        res.status(400).json({ error: 'NO destination position'});
+
         return
     }
 
     //se la posizione data è la di fuori del comune di Trento torna errore
     if(!(LAT_INF <= positionStart.latitude && positionStart.latitude < LAT_SUP) || !(LON_SX <= positionStart.longitude && positionStart.longitude < LON_DX)){
-        res.status(401).json({ error: 'La posizione non è compresa nel comune di Trento'});
+        res.status(401).json({ error: 'La posizione di partenza non è compresa nel comune di Trento'});
         return
     }
     if(!(LAT_INF <= positionDestination.latitude && positionDestination.latitude < LAT_SUP) || !(LON_SX <= positionDestination.longitude && positionDestination.longitude < LON_DX)){
-        res.status(401).json({ error: 'La posizione non è compresa nel comune di Trento'});
+        res.status(401).json({ error: 'La posizione di arrivo non è compresa nel comune di Trento'});
         return
     }
 
@@ -84,6 +85,7 @@ router.post('/tragittoIntero', async (req, res) => {
     stalliPiuViciniGeometricamenteDestination = stalliPiuViciniGeometricamenteDestination.slice(0, 2);
 
     let data = await calcolaPercorsoMigliore(positionStart, positionDestination, stalliPiuViciniGeometricamenteStart, stalliPiuViciniGeometricamenteDestination);
+
     let aPiedi = await tragittoAPiedi(positionStart.latitude, positionStart.longitude, positionDestination.latitude, positionDestination.longitude);
     data.aPiedi = aPiedi;
 
@@ -93,7 +95,7 @@ router.post('/tragittoIntero', async (req, res) => {
 router.get('/all', async (req, res) => {
     let tuttiStalli= await riceviStalli();
     let data = await getDatiStallo(null, tuttiStalli);
-    res.status(200).json({ message: 'All stalli received successfully', body: tuttiStalli });
+    res.status(200).json({ message: 'All stalli received successfully', body: data });
 
 });
 
@@ -274,6 +276,7 @@ async function calcolaPercorsoMigliore(positionStart, positionDestination, stall
             await new Promise(resolve => setTimeout(resolve, 1000));
         }
     }
+     bestStops = await getDatiStallo(null, bestStops);
 
     return { bestStops, minDuration, minDistance };
 }
